@@ -8,8 +8,8 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/reinhardjs/go-epp-rest/internal/config"
 	"gitlab.com/reinhardjs/go-epp-rest/internal/constants"
-	"gitlab.com/reinhardjs/go-epp-rest/internal/session_pool"
 	"gitlab.com/reinhardjs/go-epp-rest/pkg/webcc_epp"
+	"gitlab.com/reinhardjs/go-epp-rest/pkg/webcc_epp/session_pool"
 )
 
 type server struct {
