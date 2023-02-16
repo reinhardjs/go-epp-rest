@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
@@ -27,9 +28,16 @@ func (s *server) Run() error {
 		return errors.Wrap(err, "server run: godotenv load")
 	}
 
+	tcpHost := os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_HOST)
+	tcpPort, err := strconv.Atoi(os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_PORT))
+
+	if err != nil {
+		return errors.Wrap(err, "server run: strconv Atoi tcp port value from env")
+	}
+
 	tcpConfig := session_pool.TcpConfig{
-		Host:    os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_HOST),
-		Port:    1700,
+		Host:    tcpHost,
+		Port:    tcpPort,
 		TLSCert: s.cfg.PayWebCCCert,
 	}
 	tcpConnPool, err := session_pool.CreateTcpConnPool(&tcpConfig)
