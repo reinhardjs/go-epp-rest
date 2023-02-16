@@ -1,63 +1,89 @@
 package session_pool
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/bombsimon/epp-go"
 )
+
+const maxQueueLength = 10_000
 
 // TcpConfig is a set of configuration for a TCP connection pool
 type TcpConfig struct {
 	Host         string
 	Port         int
+	TLSCert      *tls.Certificate
 	MaxIdleConns int
 	MaxOpenConn  int
+}
+
+// CreateTcpConnPool() creates a connection pool
+// and starts the worker that handles connection request
+func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
+	pool := &TcpConnPool{
+		host:         cfg.Host,
+		port:         cfg.Port,
+		tlsCert:      cfg.TLSCert,
+		idleConns:    make(map[string]*TcpConn),
+		requestChan:  make(chan *connRequest, maxQueueLength),
+		maxOpenCount: cfg.MaxOpenConn,
+		maxIdleCount: cfg.MaxIdleConns,
+	}
+
+	go pool.handleConnectionRequest()
+
+	return pool, nil
 }
 
 // TcpConnPool represents a pool of tcp connections
 type TcpConnPool struct {
 	host         string
 	port         int
+	tlsCert      *tls.Certificate
 	mu           sync.Mutex          // mutex to prevent race conditions
-	idleConns    map[string]*tcpConn // holds the idle connections
+	idleConns    map[string]*TcpConn // holds the idle connections
 	numOpen      int                 // counter that tracks open connections
 	maxOpenCount int
 	maxIdleCount int
 	requestChan  chan *connRequest // A queue of connection requests
 }
 
-// tcpConn is a wrapper for a single tcp connection
-type tcpConn struct {
-	id   string       // A unique id to identify a connection
-	pool *TcpConnPool // The TCP connecion pool
-	conn net.Conn     // The underlying TCP connection
+// TcpConn is a wrapper for a single tcp connection
+type TcpConn struct {
+	Id   string       // A unique id to identify a connection
+	Pool *TcpConnPool // The TCP connecion pool
+	Conn net.Conn     // The underlying TCP connection
 }
 
 // connRequest wraps a channel to receive a connection
 // and a channel to receive an error
 type connRequest struct {
-	connChan chan *tcpConn
+	connChan chan *TcpConn
 	errChan  chan error
 }
 
 // put() attempts to return a used connection back to the pool
 // It closes the connection if it can't do so
-func (p *TcpConnPool) put(c *tcpConn) {
+func (p *TcpConnPool) Put(c *TcpConn) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
 	if p.maxIdleCount > 0 && p.maxIdleCount > len(p.idleConns) {
-		p.idleConns[c.id] = c // put into the pool
+		p.idleConns[c.Id] = c // put into the pool
 	} else {
-		c.conn.Close()
-		c.pool.numOpen--
+		c.Conn.Close()
+		c.Pool.numOpen--
 	}
 }
 
 // get() retrieves a TCP connection
-func (p *TcpConnPool) get() (*tcpConn, error) {
+func (p *TcpConnPool) Get() (*TcpConn, error) {
 	p.mu.Lock()
 
 	// Case 1: Gets a free connection from the pool if any
@@ -66,7 +92,7 @@ func (p *TcpConnPool) get() (*tcpConn, error) {
 		// Loop map to get one conn
 		for _, c := range p.idleConns {
 			// remove from pool
-			delete(p.idleConns, c.id)
+			delete(p.idleConns, c.Id)
 			p.mu.Unlock()
 			return c, nil
 		}
@@ -76,7 +102,7 @@ func (p *TcpConnPool) get() (*tcpConn, error) {
 	if p.maxOpenCount > 0 && p.numOpen >= p.maxOpenCount {
 		// Create the request
 		req := &connRequest{
-			connChan: make(chan *tcpConn, 1),
+			connChan: make(chan *TcpConn, 1),
 			errChan:  make(chan error, 1),
 		}
 
@@ -112,19 +138,31 @@ func (p *TcpConnPool) get() (*tcpConn, error) {
 }
 
 // openNewTcpConnection() creates a new TCP connection at p.host and p.port
-func (p *TcpConnPool) openNewTcpConnection() (*tcpConn, error) {
+func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true,
+		Certificates:       []tls.Certificate{*p.tlsCert},
+	}
 	addr := fmt.Sprintf("%s:%d", p.host, p.port)
 
-	c, err := net.Dial("tcp", addr)
+	c, err := tls.Dial("tcp", addr, tlsConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	return &tcpConn{
+	// Read the greeting.
+	greeting, err := epp.ReadMessage(c)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println(string(greeting))
+
+	return &TcpConn{
 		// Use unix time as id
-		id:   fmt.Sprintf("%v", time.Now().UnixNano()),
-		conn: c,
-		pool: p,
+		Id:   fmt.Sprintf("%v", time.Now().UnixNano()),
+		Conn: c,
+		Pool: p,
 	}, nil
 }
 
@@ -158,7 +196,7 @@ func (p *TcpConnPool) handleConnectionRequest() {
 				numIdle := len(p.idleConns)
 				if numIdle > 0 {
 					for _, c := range p.idleConns {
-						delete(p.idleConns, c.id)
+						delete(p.idleConns, c.Id)
 						p.mu.Unlock()
 						req.connChan <- c // give conn
 						requestDone = true
