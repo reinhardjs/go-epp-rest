@@ -1,4 +1,4 @@
-module gitlab.com/reinhardjs/verisign-epp-rest
+module gitlab.com/reinhardjs/go-epp-rest
 
 go 1.19
 
