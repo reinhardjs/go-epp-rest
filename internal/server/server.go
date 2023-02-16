@@ -1,16 +1,15 @@
 package server
 
 import (
-	"crypto/tls"
 	"log"
 	"os"
 
-	"github.com/bombsimon/epp-go"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"gitlab.com/reinhardjs/go-epp-rest/internal/config"
 	"gitlab.com/reinhardjs/go-epp-rest/internal/constants"
 	"gitlab.com/reinhardjs/go-epp-rest/internal/session_pool"
+	"gitlab.com/reinhardjs/go-epp-rest/pkg/webcc_epp"
 )
 
 type server struct {
@@ -24,25 +23,37 @@ func NewServer(cfg *config.Config) *server {
 
 func (s *server) Run() error {
 	err := godotenv.Load()
-
 	if err != nil {
-		return errors.Wrap(err, "server run: godotenv load:")
+		return errors.Wrap(err, "server run: godotenv load")
 	}
 
-	client := &epp.Client{
-		TLSConfig: &tls.Config{
-			InsecureSkipVerify: true,
-			Certificates:       []tls.Certificate{*s.cfg.Cert},
-		},
+	tcpConfig := session_pool.TcpConfig{
+		Host:    os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_HOST),
+		Port:    1700,
+		TLSCert: s.cfg.PayWebCCCert,
 	}
-
-	greeting, err := client.Connect(os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_HOST))
-
+	tcpConnPool, err := session_pool.CreateTcpConnPool(&tcpConfig)
 	if err != nil {
-		log.Fatal(errors.Wrap(err, "server run: tcp client connect"))
+		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}
 
-	log.Println(greeting)
+	tcpConn, err := tcpConnPool.Get()
+	if err != nil {
+		return errors.Wrap(err, "server run: tcpConnPool get")
+	}
+
+	username := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_USERNAME)
+	password := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_PASSWORD)
+	eppClient := webcc_epp.NewClient(tcpConn.Conn)
+
+	response, err := eppClient.Login(username, password)
+	if err != nil {
+		log.Println(err.Error())
+		os.Exit(1)
+	}
+
+	log.Println("Login command result :")
+	log.Println(string(response))
 
 	return nil
 }
