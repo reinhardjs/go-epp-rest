@@ -12,13 +12,13 @@ func main() {
 	cfg, err := config.InitConfig()
 
 	if err != nil {
-		log.Println(errors.Wrap(err, "main: init config:"))
+		log.Println(errors.Wrap(err, "main: init config"))
 	}
 
 	s := server.NewServer(cfg)
 	err = s.Run()
 
 	if err != nil {
-		log.Println(errors.Wrap(err, "main: new server:"))
+		log.Println(errors.Wrap(err, "main: new server"))
 	}
 }
