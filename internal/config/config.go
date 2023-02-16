@@ -10,27 +10,27 @@ import (
 )
 
 type Config struct {
-	Cert *tls.Certificate
+	PayWebCCCert *tls.Certificate
 }
 
 func InitConfig() (*Config, error) {
 	err := godotenv.Load()
 
 	if err != nil {
-		return nil, errors.Wrap(err, "init config: godotenv load:")
+		return nil, errors.Wrap(err, "init config: godotenv load")
 	}
 
 	cfg := &Config{}
 
 	trustoreFileName := os.Getenv(constants.PAY_WEB_CC_TRUSTORE_FILENAME)
 	keystoreFileName := os.Getenv(constants.PAY_WEB_CC_KEYSTORE_FILENAME)
-	cert, err := tls.LoadX509KeyPair(trustoreFileName, keystoreFileName)
+	payWebCCCert, err := tls.LoadX509KeyPair(trustoreFileName, keystoreFileName)
 
 	if err != nil {
-		return nil, errors.Wrap(err, "init config: load x509 key pair:")
+		return nil, errors.Wrap(err, "init config: load x509 key pair")
 	}
 
-	cfg.Cert = &cert
+	cfg.PayWebCCCert = &payWebCCCert
 
 	return cfg, nil
 }
