@@ -6,7 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
-	"gitlab.com/reinhardjs/go-epp-rest/internal/constants"
+	"gitlab.com/merekmu/go-epp-rest/internal/constants"
 )
 
 type Config struct {

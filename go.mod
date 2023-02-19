@@ -1,4 +1,4 @@
-module gitlab.com/reinhardjs/go-epp-rest
+module gitlab.com/merekmu/go-epp-rest
 
 go 1.19
 

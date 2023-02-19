@@ -7,10 +7,10 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
-	"gitlab.com/reinhardjs/go-epp-rest/internal/config"
-	"gitlab.com/reinhardjs/go-epp-rest/internal/constants"
-	"gitlab.com/reinhardjs/go-epp-rest/pkg/webcc_epp"
-	"gitlab.com/reinhardjs/go-epp-rest/pkg/webcc_epp/session_pool"
+	"gitlab.com/merekmu/go-epp-rest/internal/config"
+	"gitlab.com/merekmu/go-epp-rest/internal/constants"
+	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp"
+	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/session_pool"
 )
 
 type server struct {

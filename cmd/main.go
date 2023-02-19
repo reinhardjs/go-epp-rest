@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/pkg/errors"
-	"gitlab.com/reinhardjs/go-epp-rest/internal/config"
-	"gitlab.com/reinhardjs/go-epp-rest/internal/server"
+	"gitlab.com/merekmu/go-epp-rest/internal/config"
+	"gitlab.com/merekmu/go-epp-rest/internal/server"
 )
 
 func main() {
