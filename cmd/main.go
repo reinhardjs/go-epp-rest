@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/config"
+	"gitlab.com/merekmu/go-epp-rest/config"
 	"gitlab.com/merekmu/go-epp-rest/internal/server"
 )
 

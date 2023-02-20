@@ -7,8 +7,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/config"
-	"gitlab.com/merekmu/go-epp-rest/internal/constants"
+	"gitlab.com/merekmu/go-epp-rest/config"
+	"gitlab.com/merekmu/go-epp-rest/constants"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
