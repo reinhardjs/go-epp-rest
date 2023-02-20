@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/config"
 	"gitlab.com/merekmu/go-epp-rest/internal/constants"
-	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp"
+	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
 
@@ -52,7 +52,7 @@ func (s *server) Run() error {
 
 	username := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_USERNAME)
 	password := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_PASSWORD)
-	eppClient := webcc_epp.NewClient(tcpConn.Conn)
+	eppClient := infrastructure.NewEppClient(tcpConn.Conn)
 
 	response, err := eppClient.Login(username, password)
 	if err != nil {

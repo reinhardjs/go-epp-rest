@@ -1,4 +1,4 @@
-package webcc_epp
+package infrastructure
 
 import (
 	"net"
@@ -9,19 +9,24 @@ import (
 )
 
 // Client represents an EPP client.
-type Client struct {
+type eppClient struct {
 	// conn holds the TCP connection to the server.
 	conn net.Conn
 }
 
-func NewClient(conn net.Conn) *Client {
-	return &Client{
+type EppClient interface {
+	Send(data []byte) ([]byte, error)
+	Login(username, password string) ([]byte, error)
+}
+
+func NewEppClient(conn net.Conn) EppClient {
+	return &eppClient{
 		conn: conn,
 	}
 }
 
 // Send will send data to the server.
-func (c *Client) Send(data []byte) ([]byte, error) {
+func (c *eppClient) Send(data []byte) ([]byte, error) {
 	err := epp.WriteMessage(c.conn, data)
 	if err != nil {
 		_ = c.conn.Close()
@@ -41,7 +46,7 @@ func (c *Client) Send(data []byte) ([]byte, error) {
 }
 
 // Login will perform a login to an EPP server.
-func (c *Client) Login(username, password string) ([]byte, error) {
+func (c *eppClient) Login(username, password string) ([]byte, error) {
 	login := types.Login{
 		ClientID: username,
 		Password: password,
