@@ -10,12 +10,12 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/config"
 	"gitlab.com/merekmu/go-epp-rest/internal/constants"
 	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp"
-	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/session_pool"
+	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
 
 type server struct {
 	cfg         *config.Config
-	sessionPool *session_pool.TcpConnPool
+	sessionPool *utils.TcpConnPool
 }
 
 func NewServer(cfg *config.Config) *server {
@@ -35,12 +35,12 @@ func (s *server) Run() error {
 		return errors.Wrap(err, "server run: strconv Atoi tcp port value from env")
 	}
 
-	tcpConfig := session_pool.TcpConfig{
+	tcpConfig := utils.TcpConfig{
 		Host:    tcpHost,
 		Port:    tcpPort,
 		TLSCert: s.cfg.PayWebCCCert,
 	}
-	tcpConnPool, err := session_pool.CreateTcpConnPool(&tcpConfig)
+	tcpConnPool, err := utils.CreateTcpConnPool(&tcpConfig)
 	if err != nil {
 		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}

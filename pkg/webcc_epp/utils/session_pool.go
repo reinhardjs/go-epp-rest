@@ -1,4 +1,4 @@
-package session_pool
+package utils
 
 import (
 	"crypto/tls"
