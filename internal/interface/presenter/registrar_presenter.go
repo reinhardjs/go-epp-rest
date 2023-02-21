@@ -6,10 +6,10 @@ import (
 
 type domainPresenter struct{}
 
-func NewUserPresenter() presenter.DomainPresenter {
+func NewUserPresenter() presenter.RegistrarPresenter {
 	return &domainPresenter{}
 }
 
-func (up *domainPresenter) ResponseQueryDomain(response string) (string, error) {
+func (up *domainPresenter) ResponseCheck(response string) (string, error) {
 	return response, nil
 }

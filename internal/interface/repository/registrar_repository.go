@@ -11,14 +11,14 @@ type domainRepository struct {
 	eppClient infrastructure.EppClient
 }
 
-func NewDomainRepository(eppClient infrastructure.EppClient) repository.DomainRepository {
+func NewDomainRepository(eppClient infrastructure.EppClient) repository.RegistrarRepository {
 	return &domainRepository{eppClient}
 }
 
-func (r *domainRepository) DoQueryDomain(domainList []string, ext string, langTag string) (string, error) {
+func (r *domainRepository) Check(list []string, ext string, langTag string) (string, error) {
 	domainCheck := types.DomainCheckType{
 		Check: types.DomainCheck{
-			Names: domainList,
+			Names: list,
 		},
 	}
 
