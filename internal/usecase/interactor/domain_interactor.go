@@ -25,18 +25,18 @@ func NewDomainInteractor[T constraints.RegistrarResponseConstraint](domainReposi
 }
 
 func (interactor *domainInteractor[T]) Send(data interface{}) (res T, err error) {
-	responseByte, err := interactor.RegistrarRepository.Check(data)
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarRepository.Check")
+		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarRepository.SendCommand")
 		return
 	}
 
 	log.Println("XML Response: \n", string(responseByte))
 
-	genericResponseObj, err := interactor.RegistrarPresenter.Check(responseByte)
+	genericResponseObj, err := interactor.RegistrarPresenter.MapResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarPresenter.Check")
+		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarPresenter.MapResponse")
 		return
 	}
 
