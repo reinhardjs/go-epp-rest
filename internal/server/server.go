@@ -1,19 +1,17 @@
 package server
 
 import (
-	"encoding/xml"
 	"log"
 	"os"
 	"strconv"
 
-	"github.com/bombsimon/epp-go"
-	"github.com/bombsimon/epp-go/types"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/config"
 	"gitlab.com/merekmu/go-epp-rest/constants"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/router"
+	"gitlab.com/merekmu/go-epp-rest/internal/registry"
 	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
 
@@ -67,31 +65,10 @@ func (s *server) Run() error {
 	log.Println("Login command result :")
 	log.Println(string(response))
 
-	domainCheck := types.DomainCheckType{
-		Check: types.DomainCheck{
-			Names: []string{"reinhard.com", "jonathan.com"},
-		},
-	}
+	registry := registry.NewRegistry(eppClient)
 
-	encoded, err := epp.Encode(domainCheck, epp.ClientXMLAttributes())
-	if err != nil {
-		log.Println("Error :", err)
-	}
-
-	byteResponse, err := eppClient.Send(encoded)
-	if err != nil {
-		log.Println("Error :", err)
-	}
-
-	log.Println("Response :", string(byteResponse))
-
-	responseObj := model.DomainCheckResponse{}
-
-	if err := xml.Unmarshal(byteResponse, &responseObj); err != nil {
-		log.Println("Error :", err)
-	}
-
-	log.Println("Response Obj :", responseObj)
+	router := router.NewRouter(registry.NewAppController())
+	router.Run("localhost:8080")
 
 	return nil
 }

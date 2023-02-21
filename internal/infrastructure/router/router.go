@@ -2,12 +2,10 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"gitlab.com/merekmu/go-epp-rest/internal/interface/controller"
 )
 
-func NewRouter() *gin.Engine {
+func NewRouter(appController controller.AppController) *gin.Engine {
 	router := gin.Default()
-
-	router.Run("localhost:8080")
-
 	return router
 }
