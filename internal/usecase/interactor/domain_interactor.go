@@ -16,11 +16,7 @@ type domainInteractor[T constraints.RegistrarResponseConstraint] struct {
 	RegistrarPresenter  presenter.RegistrarPresenter[T]
 }
 
-type DomainInteractor interface {
-	Check(data interface{}, ext string, langTag string) (string, error)
-}
-
-func NewDomainInteractor[T constraints.RegistrarResponseConstraint](domainRepository repository.RegistrarRepository, domainPresenter presenter.RegistrarPresenter[T]) DomainInteractor {
+func NewDomainInteractor[T constraints.RegistrarResponseConstraint](domainRepository repository.RegistrarRepository, domainPresenter presenter.RegistrarPresenter[T]) RegistrarInteractor {
 	return &domainInteractor[T]{
 		RegistrarRepository: domainRepository,
 		RegistrarPresenter:  domainPresenter,
@@ -34,10 +30,10 @@ func (interactor *domainInteractor[T]) Check(data interface{}, ext string, langT
 		return
 	}
 
-	genericResponseObj, err := interactor.RegistrarPresenter.ResponseCheck(response)
+	genericResponseObj, err := interactor.RegistrarPresenter.Check(response)
 
 	if err != nil {
-		returnedErr = errors.Wrap(err, "Domain Interactor: Check interactor.RegistrarPresenter.ResponseCheck")
+		returnedErr = errors.Wrap(err, "Domain Interactor: Check interactor.RegistrarPresenter.Check")
 		return
 	}
 

@@ -15,7 +15,7 @@ func NewRegistrarPresenter[T constraints.RegistrarResponseConstraint]() presente
 	return &registrarPresenter[T]{}
 }
 
-func (p *registrarPresenter[T]) ResponseCheck(response []byte) (responseObject T, err error) {
+func (p *registrarPresenter[T]) Check(response []byte) (responseObject T, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "Domain Controller: CheckDomain xml.Unmarshal"))

@@ -11,20 +11,20 @@ import (
 )
 
 type domainController struct {
-	registrarInteractor interactor.DomainInteractor
+	registrarInteractor interactor.RegistrarInteractor
 }
 
 type DomainController interface {
-	CheckDomain(c *gin.Context)
+	Check(c *gin.Context)
 }
 
-func NewDomainController(interactor interactor.DomainInteractor) DomainController {
+func NewDomainController(interactor interactor.RegistrarInteractor) DomainController {
 	return &domainController{
 		registrarInteractor: interactor,
 	}
 }
 
-func (controller *domainController) CheckDomain(c *gin.Context) {
+func (controller *domainController) Check(c *gin.Context) {
 
 	domainList := strings.Split(c.Query("domainlist"), ",")
 
@@ -37,7 +37,7 @@ func (controller *domainController) CheckDomain(c *gin.Context) {
 	responseString, err := controller.registrarInteractor.Check(data, "com", "eng")
 
 	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController CheckDomain: controller.registrarInteractor.Check"))
+		log.Println(errors.Wrap(err, "DomainController Check: controller.registrarInteractor.Check"))
 	}
 
 	c.String(200, responseString)

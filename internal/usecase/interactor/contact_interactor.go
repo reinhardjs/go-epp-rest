@@ -17,11 +17,7 @@ type contactInteractor[T constraints.RegistrarResponseConstraint] struct {
 	RegistrarPresenter  presenter.RegistrarPresenter[T]
 }
 
-type ContactInteractor interface {
-	Check(data interface{}, ext string, langTag string) (string, error)
-}
-
-func NewContactInteractor[T constraints.RegistrarResponseConstraint](repository repository.RegistrarRepository, presenter presenter.RegistrarPresenter[T]) ContactInteractor {
+func NewContactInteractor[T constraints.RegistrarResponseConstraint](repository repository.RegistrarRepository, presenter presenter.RegistrarPresenter[T]) RegistrarInteractor {
 	return &contactInteractor[T]{
 		RegistrarRepository: repository,
 		RegistrarPresenter:  presenter,
@@ -37,10 +33,10 @@ func (interactor *contactInteractor[T]) Check(data interface{}, ext string, lang
 
 	log.Println("XML Response: \n", string(response))
 
-	genericResponseObj, err := interactor.RegistrarPresenter.ResponseCheck(response)
+	genericResponseObj, err := interactor.RegistrarPresenter.Check(response)
 
 	if err != nil {
-		returnedErr = errors.Wrap(err, "Contact Interactor: Check interactor.RegistrarPresenter.ResponseCheck")
+		returnedErr = errors.Wrap(err, "Contact Interactor: Check interactor.RegistrarPresenter.Check")
 		return
 	}
 

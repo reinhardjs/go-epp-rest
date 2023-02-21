@@ -11,20 +11,20 @@ import (
 )
 
 type contactController struct {
-	registrarInteractor interactor.ContactInteractor
+	registrarInteractor interactor.RegistrarInteractor
 }
 
 type ContactController interface {
-	CheckContact(c *gin.Context)
+	Check(c *gin.Context)
 }
 
-func NewContactController(interactor interactor.ContactInteractor) ContactController {
+func NewContactController(interactor interactor.RegistrarInteractor) ContactController {
 	return &contactController{
 		registrarInteractor: interactor,
 	}
 }
 
-func (controller *contactController) CheckContact(c *gin.Context) {
+func (controller *contactController) Check(c *gin.Context) {
 
 	contactList := strings.Split(c.Query("contactlist"), ",")
 
@@ -37,7 +37,7 @@ func (controller *contactController) CheckContact(c *gin.Context) {
 	responseString, err := controller.registrarInteractor.Check(data, "com", "eng")
 
 	if err != nil {
-		log.Println(errors.Wrap(err, "ContactController CheckContact: controller.registrarInteractor.Check"))
+		log.Println(errors.Wrap(err, "ContactController Check: controller.registrarInteractor.Check"))
 	}
 
 	c.String(200, responseString)
