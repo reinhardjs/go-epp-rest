@@ -7,24 +7,25 @@ import (
 	"github.com/bombsimon/epp-go/types"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/interface/constraints"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 )
 
-type domainController struct {
-	registrarInteractor interactor.RegistrarInteractor
+type domainController[T constraints.RegistrarResponseConstraint] struct {
+	registrarInteractor interactor.RegistrarInteractor[T]
 }
 
 type DomainController interface {
 	Check(c *gin.Context)
 }
 
-func NewDomainController(interactor interactor.RegistrarInteractor) DomainController {
-	return &domainController{
+func NewDomainController[T constraints.RegistrarResponseConstraint](interactor interactor.RegistrarInteractor[T]) DomainController {
+	return &domainController[T]{
 		registrarInteractor: interactor,
 	}
 }
 
-func (controller *domainController) Check(c *gin.Context) {
+func (controller *domainController[T]) Check(c *gin.Context) {
 
 	domainList := strings.Split(c.Query("domainlist"), ",")
 

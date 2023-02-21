@@ -2,6 +2,7 @@ package interactor
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -16,31 +17,44 @@ type domainInteractor[T constraints.RegistrarResponseConstraint] struct {
 	RegistrarPresenter  presenter.RegistrarPresenter[T]
 }
 
-func NewDomainInteractor[T constraints.RegistrarResponseConstraint](domainRepository repository.RegistrarRepository, domainPresenter presenter.RegistrarPresenter[T]) RegistrarInteractor {
+func NewDomainInteractor[T constraints.RegistrarResponseConstraint](domainRepository repository.RegistrarRepository, domainPresenter presenter.RegistrarPresenter[T]) RegistrarInteractor[T] {
 	return &domainInteractor[T]{
 		RegistrarRepository: domainRepository,
 		RegistrarPresenter:  domainPresenter,
 	}
 }
 
-func (interactor *domainInteractor[T]) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
-	response, err := interactor.RegistrarRepository.Check(data)
+func (interactor *domainInteractor[T]) Send(data interface{}) (res T, err error) {
+	responseByte, err := interactor.RegistrarRepository.Check(data)
 	if err != nil {
-		returnedErr = errors.Wrap(err, "Domain Interactor: Check interactor.RegistrarRepository.Check")
+		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarRepository.Check")
 		return
 	}
 
-	genericResponseObj, err := interactor.RegistrarPresenter.Check(response)
+	log.Println("XML Response: \n", string(responseByte))
+
+	genericResponseObj, err := interactor.RegistrarPresenter.Check(responseByte)
 
 	if err != nil {
-		returnedErr = errors.Wrap(err, "Domain Interactor: Check interactor.RegistrarPresenter.Check")
+		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarPresenter.Check")
+		return
+	}
+
+	res = genericResponseObj
+	return
+}
+
+func (interactor *domainInteractor[T]) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
+	genericResponseObj, err := interactor.Send(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Check: interactor.Send")
 		return
 	}
 
 	// converting from generic object into model object
-	responseObj := any(genericResponseObj).(model.CheckDomainResponse)
+	modelResponseObj := any(genericResponseObj).(model.CheckDomainResponse)
 
-	for _, element := range responseObj.ResultData.CheckDatas {
+	for _, element := range modelResponseObj.ResultData.CheckDatas {
 		notStr := ""
 		if element.Name.AvailKey == 0 {
 			notStr = "not "

@@ -7,24 +7,25 @@ import (
 	"github.com/bombsimon/epp-go/types"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/interface/constraints"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 )
 
-type hostController struct {
-	registrarInteractor interactor.RegistrarInteractor
+type hostController[T constraints.RegistrarResponseConstraint] struct {
+	registrarInteractor interactor.RegistrarInteractor[T]
 }
 
 type HostController interface {
 	Check(c *gin.Context)
 }
 
-func NewHostController(interactor interactor.RegistrarInteractor) HostController {
-	return &hostController{
+func NewHostController[T constraints.RegistrarResponseConstraint](interactor interactor.RegistrarInteractor[T]) HostController {
+	return &hostController[T]{
 		registrarInteractor: interactor,
 	}
 }
 
-func (controller *hostController) Check(c *gin.Context) {
+func (controller *hostController[T]) Check(c *gin.Context) {
 
 	hostList := strings.Split(c.Query("hostlist"), ",")
 

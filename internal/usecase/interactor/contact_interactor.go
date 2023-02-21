@@ -17,33 +17,44 @@ type contactInteractor[T constraints.RegistrarResponseConstraint] struct {
 	RegistrarPresenter  presenter.RegistrarPresenter[T]
 }
 
-func NewContactInteractor[T constraints.RegistrarResponseConstraint](repository repository.RegistrarRepository, presenter presenter.RegistrarPresenter[T]) RegistrarInteractor {
+func NewContactInteractor[T constraints.RegistrarResponseConstraint](repository repository.RegistrarRepository, presenter presenter.RegistrarPresenter[T]) RegistrarInteractor[T] {
 	return &contactInteractor[T]{
 		RegistrarRepository: repository,
 		RegistrarPresenter:  presenter,
 	}
 }
 
-func (interactor *contactInteractor[T]) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
-	response, err := interactor.RegistrarRepository.Check(data)
+func (interactor *contactInteractor[T]) Send(data interface{}) (res T, err error) {
+	responseByte, err := interactor.RegistrarRepository.Check(data)
 	if err != nil {
-		returnedErr = errors.Wrap(err, "Contact Interactor: Check interactor.RegistrarRepository.Check")
+		err = errors.Wrap(err, "ContactInteractor Send: interactor.RegistrarRepository.Check")
 		return
 	}
 
-	log.Println("XML Response: \n", string(response))
+	log.Println("XML Response: \n", string(responseByte))
 
-	genericResponseObj, err := interactor.RegistrarPresenter.Check(response)
+	genericResponseObj, err := interactor.RegistrarPresenter.Check(responseByte)
 
 	if err != nil {
-		returnedErr = errors.Wrap(err, "Contact Interactor: Check interactor.RegistrarPresenter.Check")
+		err = errors.Wrap(err, "ContactInteractor Send: interactor.RegistrarPresenter.Check")
+		return
+	}
+
+	res = genericResponseObj
+	return
+}
+
+func (interactor *contactInteractor[T]) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
+	genericResponseObj, err := interactor.Send(data)
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Check: interactor.Send")
 		return
 	}
 
 	// converting from generic object into model object
-	responseObj := any(genericResponseObj).(model.CheckContactResponse)
+	modelResponseObj := any(genericResponseObj).(model.CheckContactResponse)
 
-	for _, element := range responseObj.ResultData.CheckDatas {
+	for _, element := range modelResponseObj.ResultData.CheckDatas {
 		notStr := ""
 		if element.Id.AvailKey == 0 {
 			notStr = "not "
