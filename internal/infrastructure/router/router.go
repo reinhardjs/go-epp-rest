@@ -8,5 +8,6 @@ import (
 func NewRouter(appController controller.AppController) *gin.Engine {
 	router := gin.Default()
 	router.GET("/domain/check", func(c *gin.Context) { appController.Domain.CheckDomain(c) })
+	router.GET("/contact/check", func(c *gin.Context) { appController.Contact.CheckContact(c) })
 	return router
 }
