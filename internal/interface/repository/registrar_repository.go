@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/bombsimon/epp-go"
+	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
@@ -17,12 +18,12 @@ func NewRegistrarRepository(eppClient infrastructure.EppClient) repository.Regis
 func (r *registrarRepository) sendXMLTCPRequest(data interface{}) (string, error) {
 	encoded, err := epp.Encode(data, epp.ClientXMLAttributes())
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "registrarRepository sendXMLTCPRequest: epp.Encode")
 	}
 
 	byteResponse, err := r.eppClient.Send(encoded)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "registrarRepository sendXMLTCPRequest: r.eppClient.Send")
 	}
 
 	return string(byteResponse), nil

@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
@@ -25,7 +26,7 @@ func (interactor *registrarInteractor) Check(data interface{}, ext string, langT
 	response, err := interactor.RegistrarRepository.Check(data)
 
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "Domain Interactor: Check interactor.RegistrarRepository.Check")
 	}
 
 	return interactor.RegistrarPresenter.ResponseCheck(response)

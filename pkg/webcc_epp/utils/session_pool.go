@@ -2,12 +2,13 @@ package utils
 
 import (
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/bombsimon/epp-go"
 )
@@ -131,7 +132,7 @@ func (p *TcpConnPool) Get() (*TcpConn, error) {
 		p.mu.Lock()
 		p.numOpen--
 		p.mu.Unlock()
-		return nil, err
+		return nil, errors.Wrap(err, "TcpConnPool Get: p.openNewTcpConnection")
 	}
 
 	return newTcpConn, nil
@@ -147,13 +148,13 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 
 	c, err := tls.Dial("tcp", addr, tlsConfig)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "TcpConnPool openNewTcpConnection: tls.Dial")
 	}
 
 	// Read the greeting.
 	greeting, err := epp.ReadMessage(c)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "TcpConnPool openNewTcpConnection: epp.ReadMessage")
 	}
 
 	log.Println(string(greeting))

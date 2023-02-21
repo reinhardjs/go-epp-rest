@@ -58,7 +58,7 @@ func (s *server) Run() error {
 
 	response, err := eppClient.Login(username, password)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
 		os.Exit(1)
 	}
 
