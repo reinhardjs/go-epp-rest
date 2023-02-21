@@ -42,7 +42,7 @@ func (interactor *domainInteractor[T]) Check(data interface{}, ext string, langT
 	}
 
 	// converting from generic object into model object
-	responseObj := any(genericResponseObj).(model.DomainCheckResponse)
+	responseObj := any(genericResponseObj).(model.CheckDomainResponse)
 
 	for _, element := range responseObj.ResultData.CheckDatas {
 		notStr := ""

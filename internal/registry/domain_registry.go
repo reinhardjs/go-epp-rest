@@ -11,7 +11,7 @@ import (
 func (r *registry) NewDomainController() controller.DomainController {
 	registrarInteractor := interactor.NewDomainInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
-		presenter.NewRegistrarPresenter[model.DomainCheckResponse](),
+		presenter.NewRegistrarPresenter[model.CheckDomainResponse](),
 	)
 
 	return controller.NewDomainController(registrarInteractor)

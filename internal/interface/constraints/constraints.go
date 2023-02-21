@@ -5,5 +5,5 @@ import (
 )
 
 type RegistrarResponseConstraint interface {
-	model.DomainCheckResponse | model.ContactCheckResponse
+	model.CheckDomainResponse | model.CheckContactResponse
 }

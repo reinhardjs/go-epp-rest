@@ -45,7 +45,7 @@ func (interactor *contactInteractor[T]) Check(data interface{}, ext string, lang
 	}
 
 	// converting from generic object into model object
-	responseObj := any(genericResponseObj).(model.ContactCheckResponse)
+	responseObj := any(genericResponseObj).(model.CheckContactResponse)
 
 	for _, element := range responseObj.ResultData.CheckDatas {
 		notStr := ""

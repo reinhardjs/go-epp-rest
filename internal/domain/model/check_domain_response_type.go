@@ -1,17 +1,17 @@
 package model
 
 // Response represents an EPP response.
-type DomainCheckResponse struct {
+type CheckDomainResponse struct {
 	Result        []Result              `xml:"response>result"`
-	ResultData    DomainCheckResultData `xml:"response>resData"`
+	ResultData    CheckDomainResultData `xml:"response>resData"`
 	TransactionID TransactionID         `xml:"response>trID"`
 }
 
-type DomainCheckResultData struct {
-	CheckDatas []DomainCheckData `xml:"chkData>cd"`
+type CheckDomainResultData struct {
+	CheckDatas []CheckDomainData `xml:"chkData>cd"`
 }
 
-type DomainCheckData struct {
+type CheckDomainData struct {
 	Name   Name   `xml:"name"`
 	Reason string `xml:"reason,omitempty"`
 }

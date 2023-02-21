@@ -1,17 +1,17 @@
 package model
 
 // Response represents an EPP response.
-type ContactCheckResponse struct {
+type CheckContactResponse struct {
 	Result        []Result               `xml:"response>result"`
-	ResultData    ContactCheckResultData `xml:"response>resData"`
+	ResultData    CheckContactResultData `xml:"response>resData"`
 	TransactionID TransactionID          `xml:"response>trID"`
 }
 
-type ContactCheckResultData struct {
-	CheckDatas []ContactCheckData `xml:"chkData>cd"`
+type CheckContactResultData struct {
+	CheckDatas []CheckContactData `xml:"chkData>cd"`
 }
 
-type ContactCheckData struct {
+type CheckContactData struct {
 	Id     Id     `xml:"id"`
 	Reason string `xml:"reason,omitempty"`
 }

@@ -11,7 +11,7 @@ import (
 func (r *registry) NewContactController() controller.ContactController {
 	registrarInteractor := interactor.NewContactInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
-		presenter.NewRegistrarPresenter[model.ContactCheckResponse](),
+		presenter.NewRegistrarPresenter[model.CheckContactResponse](),
 	)
 
 	return controller.NewContactController(registrarInteractor)
