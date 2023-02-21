@@ -5,7 +5,6 @@ import (
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/config"
-	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/router"
 	"gitlab.com/merekmu/go-epp-rest/internal/server"
 )
 
@@ -22,7 +21,4 @@ func main() {
 	if err != nil {
 		log.Println(errors.Wrap(err, "main: new server"))
 	}
-
-	r := router.NewRouter()
-	r.Run()
 }
