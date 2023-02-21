@@ -9,13 +9,13 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 
-type domainPresenter[T constraints.RegistrarResponseConstraint] struct{}
+type registrarPresenter[T constraints.RegistrarResponseConstraint] struct{}
 
-func NewDomainPresenter[T constraints.RegistrarResponseConstraint]() presenter.RegistrarPresenter[T] {
-	return &domainPresenter[T]{}
+func NewRegistrarPresenter[T constraints.RegistrarResponseConstraint]() presenter.RegistrarPresenter[T] {
+	return &registrarPresenter[T]{}
 }
 
-func (p *domainPresenter[T]) ResponseCheck(response []byte) (responseObject T, err error) {
+func (p *registrarPresenter[T]) ResponseCheck(response []byte) (responseObject T, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "Domain Controller: CheckDomain xml.Unmarshal"))
