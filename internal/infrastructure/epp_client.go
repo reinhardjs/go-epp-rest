@@ -6,6 +6,7 @@ import (
 
 	"github.com/bombsimon/epp-go"
 	"github.com/bombsimon/epp-go/types"
+	"github.com/pkg/errors"
 )
 
 // Client represents an EPP client.
@@ -31,7 +32,7 @@ func (c *eppClient) Send(data []byte) ([]byte, error) {
 	if err != nil {
 		_ = c.conn.Close()
 
-		return nil, err
+		return nil, errors.Wrap(err, "EppClient Send: epp.WriteMessage")
 	}
 
 	_ = c.conn.SetReadDeadline(time.Now().Add(2 * time.Second))
@@ -39,7 +40,7 @@ func (c *eppClient) Send(data []byte) ([]byte, error) {
 	if err != nil {
 		_ = c.conn.Close()
 
-		return nil, err
+		return nil, errors.Wrap(err, "EppClient Send: epp.ReadMessage")
 	}
 
 	return msg, nil
@@ -71,7 +72,7 @@ func (c *eppClient) Login(username, password string) ([]byte, error) {
 
 	encoded, err := epp.Encode(login, epp.ClientXMLAttributes())
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "EppClient Send: epp.ReadMessage")
 	}
 
 	return c.Send(encoded)

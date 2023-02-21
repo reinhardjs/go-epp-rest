@@ -10,6 +10,8 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/config"
 	"gitlab.com/merekmu/go-epp-rest/constants"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/router"
+	"gitlab.com/merekmu/go-epp-rest/internal/registry"
 	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
 
@@ -56,12 +58,17 @@ func (s *server) Run() error {
 
 	response, err := eppClient.Login(username, password)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
 		os.Exit(1)
 	}
 
 	log.Println("Login command result :")
 	log.Println(string(response))
+
+	registry := registry.NewRegistry(eppClient)
+
+	router := router.NewRouter(registry.NewAppController())
+	router.Run("localhost:8080")
 
 	return nil
 }
