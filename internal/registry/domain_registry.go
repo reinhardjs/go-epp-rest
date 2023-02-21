@@ -8,9 +8,9 @@ import (
 )
 
 func (r *registry) NewDomainController() controller.DomainController {
-	registrarInteractor := interactor.NewRegistrarInteractor(
+	registrarInteractor := interactor.NewDomainInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
-		presenter.NewDomainPresenter(),
+		presenter.NewRegistrarPresenter(),
 	)
 
 	return controller.NewDomainController(registrarInteractor)
