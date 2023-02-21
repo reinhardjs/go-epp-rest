@@ -5,24 +5,24 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
 
-type domainInteractor struct {
+type registrarInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	RegistrarPresenter  presenter.RegistrarPresenter
 }
 
-type DomainInteractor interface {
-	Check(list []string, ext string, langTag string) (string, error)
+type RegistrarInteractor interface {
+	Check(data interface{}, ext string, langTag string) (string, error)
 }
 
-func NewDomainInteractor(registrarRepository repository.RegistrarRepository, registrarPresenter presenter.RegistrarPresenter) DomainInteractor {
-	return &domainInteractor{
+func NewDomainInteractor(registrarRepository repository.RegistrarRepository, registrarPresenter presenter.RegistrarPresenter) RegistrarInteractor {
+	return &registrarInteractor{
 		RegistrarRepository: registrarRepository,
 		RegistrarPresenter:  registrarPresenter,
 	}
 }
 
-func (interactor *domainInteractor) Check(list []string, ext string, langTag string) (string, error) {
-	response, err := interactor.RegistrarRepository.Check(list, ext, langTag)
+func (interactor *registrarInteractor) Check(data interface{}, ext string, langTag string) (string, error) {
+	response, err := interactor.RegistrarRepository.Check(data)
 
 	if err != nil {
 		return "", err
