@@ -5,5 +5,5 @@ import (
 )
 
 type DomainPresenter interface {
-	MapResponse(response []byte) (model.CheckDomainResponse, error)
+	MapCheckResponse(response []byte) (model.CheckDomainResponse, error)
 }
