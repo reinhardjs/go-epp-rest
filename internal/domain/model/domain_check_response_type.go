@@ -12,6 +12,11 @@ type DomainCheckResultData struct {
 }
 
 type DomainCheckData struct {
-	Name   string `xml:"name"`
+	Name   Name   `xml:"name"`
 	Reason string `xml:"reason,omitempty"`
+}
+
+type Name struct {
+	AvailKey int    `xml:"avail,attr"`
+	Value    string `xml:",chardata"`
 }
