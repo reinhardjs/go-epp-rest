@@ -5,5 +5,5 @@ import (
 )
 
 type RegistrarPresenter[T constraints.RegistrarResponseConstraint] interface {
-	ResponseCheck(response string) (string, error)
+	ResponseCheck(response []byte) (string, error)
 }

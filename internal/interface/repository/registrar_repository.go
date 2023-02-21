@@ -15,20 +15,20 @@ func NewRegistrarRepository(eppClient infrastructure.EppClient) repository.Regis
 	return &registrarRepository{eppClient}
 }
 
-func (r *registrarRepository) sendXMLTCPRequest(data interface{}) (string, error) {
+func (r *registrarRepository) sendXMLTCPRequest(data interface{}) ([]byte, error) {
 	encoded, err := epp.Encode(data, epp.ClientXMLAttributes())
 	if err != nil {
-		return "", errors.Wrap(err, "registrarRepository sendXMLTCPRequest: epp.Encode")
+		return nil, errors.Wrap(err, "registrarRepository sendXMLTCPRequest: epp.Encode")
 	}
 
 	byteResponse, err := r.eppClient.Send(encoded)
 	if err != nil {
-		return "", errors.Wrap(err, "registrarRepository sendXMLTCPRequest: r.eppClient.Send")
+		return nil, errors.Wrap(err, "registrarRepository sendXMLTCPRequest: r.eppClient.Send")
 	}
 
-	return string(byteResponse), nil
+	return byteResponse, nil
 }
 
-func (r *registrarRepository) Check(data interface{}) (string, error) {
+func (r *registrarRepository) Check(data interface{}) ([]byte, error) {
 	return r.sendXMLTCPRequest(data)
 }

@@ -17,12 +17,10 @@ func NewDomainPresenter() presenter.RegistrarPresenter[model.DomainCheckResponse
 	return &domainPresenter[model.DomainCheckResponse]{}
 }
 
-func (p *domainPresenter[T]) ResponseCheck(responseString string) (response string, err error) {
+func (p *domainPresenter[T]) ResponseCheck(response []byte) (responseString string, err error) {
 	responseObj := model.DomainCheckResponse{}
 
-	log.Println(responseString)
-
-	if err := xml.Unmarshal([]byte(responseString), &responseObj); err != nil {
+	if err := xml.Unmarshal(response, &responseObj); err != nil {
 		log.Println(errors.Wrap(err, "Domain Controller: CheckDomain xml.Unmarshal"))
 	}
 
@@ -31,10 +29,10 @@ func (p *domainPresenter[T]) ResponseCheck(responseString string) (response stri
 		if element.Name.AvailKey == 0 {
 			notStr = "not "
 		}
-		response += fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr)
+		responseString += fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr)
 	}
 
-	response = strings.TrimSuffix(response, "\n")
+	responseString = strings.TrimSuffix(responseString, "\n")
 
 	return
 }
