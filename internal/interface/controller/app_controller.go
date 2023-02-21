@@ -1,5 +1,6 @@
 package controller
 
 type AppController struct {
-	Domain interface{ DomainController }
+	Domain  interface{ DomainController }
+	Contact interface{ ContactController }
 }
