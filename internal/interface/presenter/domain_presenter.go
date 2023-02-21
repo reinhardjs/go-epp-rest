@@ -2,37 +2,24 @@ package presenter
 
 import (
 	"encoding/xml"
-	"fmt"
 	"log"
-	"strings"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
+	"gitlab.com/merekmu/go-epp-rest/internal/interface/constraints"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 
-type domainPresenter struct{}
+type registrarPresenter[T constraints.RegistrarResponseConstraint] struct{}
 
-func NewDomainPresenter() presenter.RegistrarPresenter {
-	return &domainPresenter{}
+func NewRegistrarPresenter[T constraints.RegistrarResponseConstraint]() presenter.RegistrarPresenter[T] {
+	return &registrarPresenter[T]{}
 }
 
-func (p *domainPresenter) ResponseCheck(response []byte) (responseString string, err error) {
-	responseObj := model.DomainCheckResponse{}
+func (p *registrarPresenter[T]) ResponseCheck(response []byte) (responseObject T, err error) {
 
-	if err := xml.Unmarshal(response, &responseObj); err != nil {
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "Domain Controller: CheckDomain xml.Unmarshal"))
 	}
-
-	for _, element := range responseObj.ResultData.CheckDatas {
-		notStr := ""
-		if element.Name.AvailKey == 0 {
-			notStr = "not "
-		}
-		responseString += fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr)
-	}
-
-	responseString = strings.TrimSuffix(responseString, "\n")
 
 	return
 }
