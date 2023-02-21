@@ -11,14 +11,14 @@ import (
 )
 
 type domainController struct {
-	registrarInteractor interactor.RegistrarInteractor
+	registrarInteractor interactor.DomainInteractor
 }
 
 type DomainController interface {
 	CheckDomain(c *gin.Context)
 }
 
-func NewDomainController(interactor interactor.RegistrarInteractor) DomainController {
+func NewDomainController(interactor interactor.DomainInteractor) DomainController {
 	return &domainController{
 		registrarInteractor: interactor,
 	}
