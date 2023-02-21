@@ -11,13 +11,13 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 
-type domainPresenter[T model.DomainCheckResponse] struct{}
+type domainPresenter struct{}
 
-func NewDomainPresenter() presenter.RegistrarPresenter[model.DomainCheckResponse] {
-	return &domainPresenter[model.DomainCheckResponse]{}
+func NewDomainPresenter() presenter.RegistrarPresenter {
+	return &domainPresenter{}
 }
 
-func (p *domainPresenter[T]) ResponseCheck(response []byte) (responseString string, err error) {
+func (p *domainPresenter) ResponseCheck(response []byte) (responseString string, err error) {
 	responseObj := model.DomainCheckResponse{}
 
 	if err := xml.Unmarshal(response, &responseObj); err != nil {
