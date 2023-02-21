@@ -7,25 +7,24 @@ import (
 	"github.com/bombsimon/epp-go/types"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/interface/constraints"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 )
 
-type domainController[T constraints.RegistrarResponseConstraint] struct {
-	registrarInteractor interactor.RegistrarInteractor[T]
+type domainController struct {
+	interactor interactor.DomainInteractor
 }
 
 type DomainController interface {
 	Check(c *gin.Context)
 }
 
-func NewDomainController[T constraints.RegistrarResponseConstraint](interactor interactor.RegistrarInteractor[T]) DomainController {
-	return &domainController[T]{
-		registrarInteractor: interactor,
+func NewDomainController(interactor interactor.DomainInteractor) DomainController {
+	return &domainController{
+		interactor: interactor,
 	}
 }
 
-func (controller *domainController[T]) Check(c *gin.Context) {
+func (controller *domainController) Check(c *gin.Context) {
 
 	domainList := strings.Split(c.Query("domainlist"), ",")
 
@@ -35,10 +34,10 @@ func (controller *domainController[T]) Check(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.registrarInteractor.Check(data, "com", "eng")
+	responseString, err := controller.interactor.Check(data, "com", "eng")
 
 	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Check: controller.registrarInteractor.Check"))
+		log.Println(errors.Wrap(err, "DomainController Check: controller.interactor.Check"))
 	}
 
 	c.String(200, responseString)

@@ -7,24 +7,28 @@ import (
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
-	"gitlab.com/merekmu/go-epp-rest/internal/interface/constraints"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
 
-type contactInteractor[T constraints.RegistrarResponseConstraint] struct {
+type contactInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
-	RegistrarPresenter  presenter.RegistrarPresenter[T]
+	Presenter           presenter.ContactPresenter
 }
 
-func NewContactInteractor[T constraints.RegistrarResponseConstraint](repository repository.RegistrarRepository, presenter presenter.RegistrarPresenter[T]) RegistrarInteractor[T] {
-	return &contactInteractor[T]{
+type ContactInteractor interface {
+	Send(data interface{}) (interface{}, error)
+	Check(data interface{}, ext string, langTag string) (res string, err error)
+}
+
+func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter) ContactInteractor {
+	return &contactInteractor{
 		RegistrarRepository: repository,
-		RegistrarPresenter:  presenter,
+		Presenter:           presenter,
 	}
 }
 
-func (interactor *contactInteractor[T]) Send(data interface{}) (res T, err error) {
+func (interactor *contactInteractor) Send(data interface{}) (res interface{}, err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Send: interactor.RegistrarRepository.SendCommand")
@@ -33,10 +37,10 @@ func (interactor *contactInteractor[T]) Send(data interface{}) (res T, err error
 
 	log.Println("XML Response: \n", string(responseByte))
 
-	genericResponseObj, err := interactor.RegistrarPresenter.MapResponse(responseByte)
+	genericResponseObj, err := interactor.Presenter.MapResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Send: interactor.RegistrarPresenter.MapResponse")
+		err = errors.Wrap(err, "ContactInteractor Send: interactor.ContactPresenter.MapResponse")
 		return
 	}
 
@@ -44,7 +48,7 @@ func (interactor *contactInteractor[T]) Send(data interface{}) (res T, err error
 	return
 }
 
-func (interactor *contactInteractor[T]) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
+func (interactor *contactInteractor) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
 	genericResponseObj, err := interactor.Send(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Check: interactor.Send")
