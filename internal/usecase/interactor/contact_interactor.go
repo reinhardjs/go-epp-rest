@@ -17,6 +17,7 @@ type contactInteractor struct {
 type ContactInteractor interface {
 	Check(data interface{}, ext string, langTag string) (res string, err error)
 	Create(data interface{}, ext string, langTag string) (res string, err error)
+	Update(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter) ContactInteractor {
@@ -69,6 +70,25 @@ func (interactor *contactInteractor) Create(data interface{}, ext string, langTa
 	res += fmt.Sprintf("ID %s\n", responseObj.ResultData.CreateData.Id)
 	res += fmt.Sprintf("Create Date %s\n", responseObj.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
+
+	return
+}
+
+func (interactor *contactInteractor) Update(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Update: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapUpdateResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Update: interactor.ContactPresenter.MapCreateResponse")
+		return
+	}
+
+	res = fmt.Sprintf("%v %v", responseObj.Result[0].Code, responseObj.Result[0].Message)
 
 	return
 }

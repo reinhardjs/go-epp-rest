@@ -70,7 +70,7 @@ type ContactTransferType struct {
 
 // ContactUpdateType represents a contact update command.
 type ContactUpdateType struct {
-	Update ContactUpdate `xml:"urn:ietf:params:xml:ns:contact-1.0 command>transfer>transfer"`
+	Update ContactUpdate `xml:"urn:ietf:params:xml:ns:contact-1.0 command>update>update"`
 }
 
 // ContactCheckDataType represents contact check data.
@@ -137,7 +137,7 @@ type ContactUpdate struct {
 	Name   string            `xml:"id"`
 	Add    *ContactAddRemove `xml:"add,omitempty"`
 	Remove *ContactAddRemove `xml:"rem,omitempty"`
-	Change *ContactChange    `xml:"chg>name,omitempty"`
+	Change *ContactChange    `xml:"chg,omitempty"`
 }
 
 // ContactCheckData represents the data returned from a contact check command.
@@ -208,8 +208,8 @@ type ContactChange struct {
 	Voice      E164Type     `xml:"voice,omitempty"`
 	Fax        E164Type     `xml:"fax,omitempty"`
 	Email      string       `xml:"email,omitempty"`
-	AuthInfo   AuthInfo     `xml:"authInfo,omitempty"`
-	Disclose   Disclose     `xml:"disclose,omitempty,omitempty"`
+	AuthInfo   *AuthInfo    `xml:"authInfo,omitempty"`
+	Disclose   *Disclose    `xml:"disclose,omitempty,omitempty"`
 }
 
 // ContactStatus represents statuses for a contact.
