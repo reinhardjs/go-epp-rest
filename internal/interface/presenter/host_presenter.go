@@ -18,7 +18,16 @@ func NewHostPresenter() presenter.HostPresenter {
 func (p *hostPresenter) MapCheckResponse(response []byte) (responseObject model.CheckHostResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "Domain Controller: CheckDomain xml.Unmarshal"))
+		log.Println(errors.Wrap(err, "HostPresenter MapCheckResponse: xml.Unmarshal"))
+	}
+
+	return
+}
+
+func (p *hostPresenter) MapCreateResponse(response []byte) (responseObject model.CreateHostResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "HostPresenter MapCreateResponse: xml.Unmarshal"))
 	}
 
 	return

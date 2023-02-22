@@ -6,4 +6,5 @@ import (
 
 type HostPresenter interface {
 	MapCheckResponse(response []byte) (model.CheckHostResponse, error)
+	MapCreateResponse(response []byte) (model.CreateHostResponse, error)
 }

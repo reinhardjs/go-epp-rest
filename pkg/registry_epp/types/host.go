@@ -75,8 +75,8 @@ type HostCheck struct {
 
 // HostCreate represents a host create request to the EPP server.
 type HostCreate struct {
-	Name    string      `xml:"name"`
-	Address HostAddress `xml:"addr,omitempty"`
+	Name    string        `xml:"name"`
+	Address []HostAddress `xml:"addr,omitempty"`
 }
 
 // HostDelete represents a host delete request to the EPP server.
@@ -130,7 +130,7 @@ type HostAddRemove struct {
 
 // HostAddress represents an IP address beloning to a host.
 type HostAddress struct {
-	Address string `xml:",chardata,omitempty"`
+	Address string `xml:",chardata"`
 	IP      IPType `xml:"ip,attr"`
 }
 
