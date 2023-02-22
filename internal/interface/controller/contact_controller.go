@@ -46,31 +46,45 @@ func (controller *contactController) Check(c *gin.Context) {
 
 func (controller *contactController) Create(c *gin.Context) {
 
-	// domain := c.Query("domain")
+	contact := c.Query("contact")
+	email := c.Query("email")
+	authInfo := c.Query("authinfo")
+	phone := c.Query("phone")
+	fax := c.Query("fax")
+	fname := c.Query("fname")
+	lname := c.Query("lname")
+	name := fname + " " + lname
+	company := c.Query("company")
+	addr1 := c.Query("addr1")
+	addr2 := c.Query("addr2")
+	city := c.Query("city")
+	state := c.Query("state")
+	zip := c.Query("zip")
+	country := c.Query("country")
 
 	data := types.ContactCreateType{
 		Create: types.ContactCreate{
-			ID:    "id123",
-			Email: "reinhardjsilalahi@gmail.com",
+			ID:    contact,
+			Email: email,
 			AuthInfo: types.AuthInfo{
-				Password: "qwe123*&",
+				Password: authInfo,
 			},
 			Voice: types.E164Type{
-				Value: "+1.7035555555",
+				Value: phone,
 			},
 			Fax: types.E164Type{
-				Value: "+1.7035555556",
+				Value: fax,
 			},
 			PostalInfo: []types.PostalInfo{
 				{
-					Name:         "John Doe",
-					Organization: "Example Inc.",
+					Name:         name,
+					Organization: company,
 					Address: types.Address{
-						Street:        []string{"123 Example Dr.", "Suite 100"},
-						City:          "Dulles",
-						StateProvince: "VA",
-						PostalCode:    "20166-6503",
-						CountryCode:   "US",
+						Street:        []string{addr1, addr2},
+						City:          city,
+						StateProvince: state,
+						PostalCode:    zip,
+						CountryCode:   country,
 					},
 					Type: types.PostalInfoType(types.PostalInfoInternational),
 				},
