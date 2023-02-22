@@ -18,7 +18,7 @@ func NewDomainPresenter() presenter.DomainPresenter {
 func (p *domainPresenter) MapCheckResponse(response []byte) (responseObject model.CheckDomainResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "Domain Controller: CheckDomain xml.Unmarshal"))
+		log.Println(errors.Wrap(err, "DomainController CheckDomain: xml.Unmarshal"))
 	}
 
 	return
@@ -27,7 +27,16 @@ func (p *domainPresenter) MapCheckResponse(response []byte) (responseObject mode
 func (p *domainPresenter) MapCreateResponse(response []byte) (responseObject model.CreateDomainResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "Domain Controller: CreateDomain xml.Unmarshal"))
+		log.Println(errors.Wrap(err, "DomainController CreateDomain: xml.Unmarshal"))
+	}
+
+	return
+}
+
+func (p *domainPresenter) MapDeleteResponse(response []byte) (responseObject model.DeleteDomainResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "DomainController DeleteDomain: xml.Unmarshal"))
 	}
 
 	return
