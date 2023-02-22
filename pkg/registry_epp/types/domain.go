@@ -197,8 +197,8 @@ type NameServer struct {
 
 // HostAttribute represents attributes for a host for a domain.
 type HostAttribute struct {
-	HostName    string        `xml:"hostName"`
-	HostAddress []HostAddress `xml:"hostAddr"`
+	HostName    string         `xml:"hostName"`
+	HostAddress *[]HostAddress `xml:"hostAddr"`
 }
 
 // Contact represents a contact for a domain.
@@ -209,8 +209,8 @@ type Contact struct {
 
 // AuthInfo represents authentication information used when transferring domain.
 type AuthInfo struct {
-	Password  string `xml:"pw,omitempty"`
-	Extension string `xml:"ext,omitempty"`
+	Password  string  `xml:"pw,omitempty"`
+	Extension *string `xml:"ext,omitempty"`
 }
 
 // DomainCheckData represents the response data for a domain check command.

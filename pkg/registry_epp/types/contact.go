@@ -112,6 +112,7 @@ type ContactCreate struct {
 	Fax        E164Type     `xml:"fax,omitempty"`
 	Email      string       `xml:"email"`
 	AuthInfo   AuthInfo     `xml:"authInfo"`
+	Disclose   *Disclose    `xml:"disclose,omitempty"`
 }
 
 // ContactDelete represents a contact delete command.
