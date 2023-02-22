@@ -17,6 +17,7 @@ type hostController struct {
 type HostController interface {
 	Check(c *gin.Context)
 	Create(c *gin.Context)
+	Update(c *gin.Context)
 }
 
 func NewHostController(interactor interactor.HostInteractor) HostController {
@@ -68,6 +69,69 @@ func (controller *hostController) Create(c *gin.Context) {
 		Create: types.HostCreate{
 			Name:    hostName,
 			Address: hostAddressList,
+		},
+	}
+
+	responseString, err := controller.interactor.Create(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "HostController Create: controller.interactor.Create"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *hostController) Update(c *gin.Context) {
+
+	hostName := c.Query("dnslist")
+	ext := c.Query("ext")
+
+	if hostName == "" {
+		hostName = c.Query("host")
+	}
+
+	addIPAddressList := strings.Split(c.Query("addIP"), ",")
+	addHostAddressList := []types.HostAddress{}
+
+	removeIPAddressList := strings.Split(c.Query("removeIP"), ",")
+	removeHostAddressList := []types.HostAddress{}
+
+	for _, ipAddress := range addIPAddressList {
+		ipType := types.HostIPv4 // need to check ip type based on ip address
+		addHostAddressList = append(addHostAddressList, types.HostAddress{
+			Address: ipAddress,
+			IP:      ipType,
+		})
+	}
+
+	for _, ipAddress := range removeIPAddressList {
+		ipType := types.HostIPv4 // need to check ip type based on ip address
+		removeHostAddressList = append(removeHostAddressList, types.HostAddress{
+			Address: ipAddress,
+			IP:      ipType,
+		})
+	}
+
+	var add types.HostAddRemove
+	var rem types.HostAddRemove
+
+	if len(addHostAddressList) > 0 {
+		add = types.HostAddRemove{
+			Address: addHostAddressList,
+		}
+	}
+
+	if len(removeHostAddressList) > 0 {
+		rem = types.HostAddRemove{
+			Address: removeHostAddressList,
+		}
+	}
+
+	data := types.HostUpdateType{
+		Update: types.HostUpdate{
+			Name:   hostName,
+			Add:    &add,
+			Remove: &rem,
 		},
 	}
 
