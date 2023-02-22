@@ -123,12 +123,12 @@ type DomainCheck struct {
 
 // DomainCreate represents a domain create command.
 type DomainCreate struct {
-	Name       string     `xml:"name"`
-	Period     Period     `xml:"period,omitempty"`
-	NameServer NameServer `xml:"ns,omitempty"`
-	Registrant string     `xml:"registrant,omitempty"`
-	Contacts   []Contact  `xml:"contact,omitempty"`
-	AuthInfo   *AuthInfo  `xml:"authInfo,omitempty"`
+	Name       string      `xml:"name"`
+	Period     Period      `xml:"period,omitempty"`
+	NameServer *NameServer `xml:"ns,omitempty"`
+	Registrant string      `xml:"registrant,omitempty"`
+	Contacts   []Contact   `xml:"contact,omitempty"`
+	AuthInfo   *AuthInfo   `xml:"authInfo,omitempty"`
 }
 
 // DomainDelete represents a domain delete command.
