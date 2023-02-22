@@ -2,7 +2,6 @@ package interactor
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -17,6 +16,7 @@ type domainInteractor struct {
 
 type DomainInteractor interface {
 	Check(data interface{}, ext string, langTag string) (res string, err error)
+	Create(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewDomainInteractor(domainRepository repository.RegistrarRepository, presenter presenter.DomainPresenter) DomainInteractor {
@@ -26,19 +26,17 @@ func NewDomainInteractor(domainRepository repository.RegistrarRepository, presen
 	}
 }
 
-func (interactor *domainInteractor) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
+func (interactor *domainInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarRepository.SendCommand")
+		err = errors.Wrap(err, "DomainInteractor Check: interactor.RegistrarRepository.SendCommand")
 		return
 	}
-
-	log.Println("XML Response: \n", string(responseByte))
 
 	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Send: interactor.DomainPresenter.MapResponse")
+		err = errors.Wrap(err, "DomainInteractor Check: interactor.Presenter.MapResponse")
 		return
 	}
 
@@ -49,6 +47,28 @@ func (interactor *domainInteractor) Check(data interface{}, ext string, langTag 
 		}
 		res += fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr)
 	}
+	res = strings.TrimSuffix(res, "\n")
+
+	return
+}
+
+func (interactor *domainInteractor) Create(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.Presenter.MapCreateResponse")
+		return
+	}
+
+	res += fmt.Sprintf("Name %s\n", responseObj.ResultData.CreatedData.Name)
+	res += fmt.Sprintf("Create Date %s\n", responseObj.ResultData.CreatedData.CreatedDate)
+	res += fmt.Sprintf("Expire Date %s\n", responseObj.ResultData.CreatedData.ExpiredDate)
 	res = strings.TrimSuffix(res, "\n")
 
 	return

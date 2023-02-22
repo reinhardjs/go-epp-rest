@@ -23,3 +23,12 @@ func (p *domainPresenter) MapCheckResponse(response []byte) (responseObject mode
 
 	return
 }
+
+func (p *domainPresenter) MapCreateResponse(response []byte) (responseObject model.CreateDomainResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "Domain Controller: CreateDomain xml.Unmarshal"))
+	}
+
+	return
+}

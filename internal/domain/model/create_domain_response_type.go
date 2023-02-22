@@ -8,10 +8,11 @@ type CreateDomainResponse struct {
 }
 
 type CreateDomainResultData struct {
-	CreatedData CreateDomainData `xml:"chkData>cd"`
+	CreatedData CreateDomainData `xml:"creData>cd"`
 }
 
 type CreateDomainData struct {
-	Id          string `xml:"name"`
-	CreatedDate string `xml:"reason,omitempty"`
+	Name        string `xml:"name"`
+	CreatedDate string `xml:"crDate"`
+	ExpiredDate string `xml:"exDate"`
 }

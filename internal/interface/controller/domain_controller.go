@@ -4,10 +4,10 @@ import (
 	"log"
 	"strings"
 
-	"github.com/bombsimon/epp-go/types"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
 type domainController struct {
@@ -16,6 +16,7 @@ type domainController struct {
 
 type DomainController interface {
 	Check(c *gin.Context)
+	Create(c *gin.Context)
 }
 
 func NewDomainController(interactor interactor.DomainInteractor) DomainController {
@@ -38,6 +39,70 @@ func (controller *domainController) Check(c *gin.Context) {
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Check: controller.interactor.Check"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *domainController) Create(c *gin.Context) {
+
+	// domain := c.Query("domain")
+	// period, err := strconv.Atoi(c.Query("period"))
+	// ns := strings.Split(c.Query("ns"), ",")
+	// registrantContact := c.Query("regcon")
+	// adminContact := c.Query("admcon")
+	// techContact := c.Query("techcon")
+	// billingContact := c.Query("bilcon")
+	// authInfo := c.Query("authinfo")
+
+	// if err != nil {
+	// 	log.Println(errors.Wrap(err, "DomainController Create"))
+	// }
+
+	domain := c.Query("domain")
+	period := 1
+	ns := strings.Split("ns1.domaindiscount24.net,ns2.domaindiscount24.net", ",")
+	registrantContact := "P-JPD3259"
+	adminContact := "P-JPD3259"
+	techContact := "P-JPD3259"
+	billingContact := "P-JPD3259"
+	authInfo := "qwWQ9123^$*" // password
+
+	data := types.DomainCreateType{
+		Create: types.DomainCreate{
+			Name: domain,
+			Period: types.Period{
+				Value: period,
+				Unit:  "y", // yearly
+			},
+			NameServer: types.NameServer{
+				HostObject: ns,
+			},
+			Registrant: registrantContact,
+			Contacts: []types.Contact{
+				{
+					Name: adminContact,
+					Type: "admin",
+				},
+				{
+					Name: techContact,
+					Type: "tech",
+				},
+				{
+					Name: billingContact,
+					Type: "billing",
+				},
+			},
+			AuthInfo: &types.AuthInfo{
+				Password: authInfo,
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Create(data, "com", "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Create: controller.interactor.Create"))
 	}
 
 	c.String(200, responseString)
