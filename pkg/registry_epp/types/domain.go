@@ -197,8 +197,8 @@ type NameServer struct {
 
 // HostAttribute represents attributes for a host for a domain.
 type HostAttribute struct {
-	HostName    string         `xml:"hostName"`
-	HostAddress *[]HostAddress `xml:"hostAddr"`
+	HostName    string        `xml:"hostName"`
+	HostAddress []HostAddress `xml:"hostAddr"`
 }
 
 // Contact represents a contact for a domain.
