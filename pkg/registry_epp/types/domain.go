@@ -62,7 +62,7 @@ type DomainCreateType struct {
 
 // DomainDeleteType implements extension for delete from domain-1.0.
 type DomainDeleteType struct {
-	Delete DomainDelete `xml:"urn:ietf:params:xml:ns:domain-1.0 command>create>delete"`
+	Delete DomainDelete `xml:"urn:ietf:params:xml:ns:domain-1.0 command>delete>delete"`
 }
 
 // DomainInfoType implements extension for info from domain-1.0.

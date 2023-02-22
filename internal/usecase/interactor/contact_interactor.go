@@ -18,6 +18,7 @@ type ContactInteractor interface {
 	Check(data interface{}, ext string, langTag string) (res string, err error)
 	Create(data interface{}, ext string, langTag string) (res string, err error)
 	Update(data interface{}, ext string, langTag string) (res string, err error)
+	Delete(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter) ContactInteractor {
@@ -37,7 +38,7 @@ func (interactor *contactInteractor) Check(data interface{}, ext string, langTag
 	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Check: interactor.ContactPresenter.MapCheckResponse")
+		err = errors.Wrap(err, "ContactInteractor Check: interactor.Presenter.MapCheckResponse")
 		return
 	}
 
@@ -63,7 +64,7 @@ func (interactor *contactInteractor) Create(data interface{}, ext string, langTa
 	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Create: interactor.ContactPresenter.MapCreateResponse")
+		err = errors.Wrap(err, "ContactInteractor Create: interactor.Presenter.MapCreateResponse")
 		return
 	}
 
@@ -84,7 +85,26 @@ func (interactor *contactInteractor) Update(data interface{}, ext string, langTa
 	responseObj, err := interactor.Presenter.MapUpdateResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Update: interactor.ContactPresenter.MapCreateResponse")
+		err = errors.Wrap(err, "ContactInteractor Update: interactor.Presenter.MapCreateResponse")
+		return
+	}
+
+	res = fmt.Sprintf("%v %v", responseObj.Result[0].Code, responseObj.Result[0].Message)
+
+	return
+}
+
+func (interactor *contactInteractor) Delete(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Delete: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapDeleteResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Delete: interactor.Presenter.MapDeleteResponse")
 		return
 	}
 

@@ -18,6 +18,7 @@ type domainController struct {
 type DomainController interface {
 	Check(c *gin.Context)
 	Create(c *gin.Context)
+	Delete(c *gin.Context)
 }
 
 func NewDomainController(interactor interactor.DomainInteractor) DomainController {
@@ -96,6 +97,26 @@ func (controller *domainController) Create(c *gin.Context) {
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Create: controller.interactor.Create"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *domainController) Delete(c *gin.Context) {
+
+	domain := c.Query("domain")
+	ext := c.Query("ext")
+
+	data := types.DomainDeleteType{
+		Delete: types.DomainDelete{
+			Name: domain,
+		},
+	}
+
+	responseString, err := controller.interactor.Delete(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Delete: controller.interactor.Delete"))
 	}
 
 	c.String(200, responseString)
