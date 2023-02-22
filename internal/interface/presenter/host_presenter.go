@@ -15,7 +15,7 @@ func NewHostPresenter() presenter.HostPresenter {
 	return &hostPresenter{}
 }
 
-func (p *hostPresenter) MapResponse(response []byte) (responseObject model.CheckHostResponse, err error) {
+func (p *hostPresenter) MapCheckResponse(response []byte) (responseObject model.CheckHostResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "Domain Controller: CheckDomain xml.Unmarshal"))

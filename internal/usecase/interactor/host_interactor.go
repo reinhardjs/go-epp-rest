@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
@@ -17,7 +16,6 @@ type hostInteractor struct {
 }
 
 type HostInteractor interface {
-	Send(data interface{}) (interface{}, error)
 	Check(data interface{}, ext string, langTag string) (res string, err error)
 }
 
@@ -28,7 +26,7 @@ func NewHostInteractor(repository repository.RegistrarRepository, presenter pres
 	}
 }
 
-func (interactor *hostInteractor) Send(data interface{}) (res interface{}, err error) {
+func (interactor *hostInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Send: interactor.RegistrarRepository.SendCommand")
@@ -37,29 +35,14 @@ func (interactor *hostInteractor) Send(data interface{}) (res interface{}, err e
 
 	log.Println("XML Response: \n", string(responseByte))
 
-	genericResponseObj, err := interactor.Presenter.MapResponse(responseByte)
+	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Send: interactor.HostPresenter.MapResponse")
 		return
 	}
 
-	res = genericResponseObj
-	return
-}
-
-func (interactor *hostInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
-
-	genericResponseObj, err := interactor.Send(data)
-	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Check: interactor.Send")
-		return
-	}
-
-	// converting from generic object into model object
-	modelResponseObj := any(genericResponseObj).(model.CheckHostResponse)
-
-	for _, element := range modelResponseObj.ResultData.CheckDatas {
+	for _, element := range responseObj.ResultData.CheckDatas {
 		notStr := ""
 		if element.HostName.AvailKey == 0 {
 			notStr = "not "

@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
@@ -17,7 +16,6 @@ type contactInteractor struct {
 }
 
 type ContactInteractor interface {
-	Send(data interface{}) (interface{}, error)
 	Check(data interface{}, ext string, langTag string) (res string, err error)
 }
 
@@ -28,7 +26,7 @@ func NewContactInteractor(repository repository.RegistrarRepository, presenter p
 	}
 }
 
-func (interactor *contactInteractor) Send(data interface{}) (res interface{}, err error) {
+func (interactor *contactInteractor) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Send: interactor.RegistrarRepository.SendCommand")
@@ -37,28 +35,14 @@ func (interactor *contactInteractor) Send(data interface{}) (res interface{}, er
 
 	log.Println("XML Response: \n", string(responseByte))
 
-	genericResponseObj, err := interactor.Presenter.MapResponse(responseByte)
+	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Send: interactor.ContactPresenter.MapResponse")
 		return
 	}
 
-	res = genericResponseObj
-	return
-}
-
-func (interactor *contactInteractor) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
-	genericResponseObj, err := interactor.Send(data)
-	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Check: interactor.Send")
-		return
-	}
-
-	// converting from generic object into model object
-	modelResponseObj := any(genericResponseObj).(model.CheckContactResponse)
-
-	for _, element := range modelResponseObj.ResultData.CheckDatas {
+	for _, element := range responseObj.ResultData.CheckDatas {
 		notStr := ""
 		if element.Id.AvailKey == 0 {
 			notStr = "not "

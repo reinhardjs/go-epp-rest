@@ -15,7 +15,7 @@ func NewContactPresenter() presenter.ContactPresenter {
 	return &contactPresenter{}
 }
 
-func (p *contactPresenter) MapResponse(response []byte) (responseObject model.CheckContactResponse, err error) {
+func (p *contactPresenter) MapCheckResponse(response []byte) (responseObject model.CheckContactResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "Domain Controller: CheckDomain xml.Unmarshal"))

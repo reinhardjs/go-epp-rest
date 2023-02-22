@@ -5,5 +5,5 @@ import (
 )
 
 type ContactPresenter interface {
-	MapResponse(response []byte) (model.CheckContactResponse, error)
+	MapCheckResponse(response []byte) (model.CheckContactResponse, error)
 }
