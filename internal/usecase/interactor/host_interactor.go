@@ -18,6 +18,7 @@ type HostInteractor interface {
 	Check(data interface{}, ext string, langTag string) (res string, err error)
 	Create(data interface{}, ext string, langTag string) (res string, err error)
 	Update(data interface{}, ext string, langTag string) (res string, err error)
+	Delete(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewHostInteractor(repository repository.RegistrarRepository, presenter presenter.HostPresenter) HostInteractor {
@@ -84,7 +85,26 @@ func (interactor *hostInteractor) Update(data interface{}, ext string, langTag s
 	responseObj, err := interactor.Presenter.MapUpdateResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Update: interactor.Presenter.MapCreateResponse")
+		err = errors.Wrap(err, "HostInteractor Update: interactor.Presenter.MapUpdateResponse")
+		return
+	}
+
+	res = fmt.Sprintf("%v %v", responseObj.Result[0].Code, responseObj.Result[0].Message)
+
+	return
+}
+
+func (interactor *hostInteractor) Delete(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "HostInteractor Delete: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapDeleteResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "HostInteractor Delete: interactor.Presenter.MapDeleteResponse")
 		return
 	}
 

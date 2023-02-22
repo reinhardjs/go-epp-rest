@@ -18,6 +18,7 @@ type HostController interface {
 	Check(c *gin.Context)
 	Create(c *gin.Context)
 	Update(c *gin.Context)
+	Delete(c *gin.Context)
 }
 
 func NewHostController(interactor interactor.HostInteractor) HostController {
@@ -135,10 +136,34 @@ func (controller *hostController) Update(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, ext, "eng")
+	responseString, err := controller.interactor.Update(data, ext, "eng")
 
 	if err != nil {
-		log.Println(errors.Wrap(err, "HostController Create: controller.interactor.Create"))
+		log.Println(errors.Wrap(err, "HostController Update: controller.interactor.Update"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *hostController) Delete(c *gin.Context) {
+
+	hostName := c.Query("dnslist")
+	ext := c.Query("ext")
+
+	if hostName == "" {
+		hostName = c.Query("host")
+	}
+
+	data := types.HostDeleteType{
+		Delete: types.HostDelete{
+			Name: hostName,
+		},
+	}
+
+	responseString, err := controller.interactor.Delete(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "HostController Delete: controller.interactor.Delete"))
 	}
 
 	c.String(200, responseString)
