@@ -2,7 +2,6 @@ package interactor
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -17,6 +16,7 @@ type contactInteractor struct {
 
 type ContactInteractor interface {
 	Check(data interface{}, ext string, langTag string) (res string, err error)
+	Create(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter) ContactInteractor {
@@ -29,16 +29,14 @@ func NewContactInteractor(repository repository.RegistrarRepository, presenter p
 func (interactor *contactInteractor) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Send: interactor.RegistrarRepository.SendCommand")
+		err = errors.Wrap(err, "ContactInteractor Check: interactor.RegistrarRepository.SendCommand")
 		return
 	}
-
-	log.Println("XML Response: \n", string(responseByte))
 
 	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Send: interactor.ContactPresenter.MapResponse")
+		err = errors.Wrap(err, "ContactInteractor Check: interactor.ContactPresenter.MapCheckResponse")
 		return
 	}
 
@@ -48,6 +46,32 @@ func (interactor *contactInteractor) Check(data interface{}, ext string, langTag
 			notStr = "not "
 		}
 		res += fmt.Sprintf("Contact %s, contact %savailable\n", element.Id.Value, notStr)
+	}
+	res = strings.TrimSuffix(res, "\n")
+
+	return
+}
+
+func (interactor *contactInteractor) Create(data interface{}, ext string, langTag string) (res string, returnedErr error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Create: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Create: interactor.ContactPresenter.MapCreateResponse")
+		return
+	}
+
+	for _, element := range responseObj.ResultData.CheckDatas {
+		notStr := ""
+		if element.Name.AvailKey == 0 {
+			notStr = "not "
+		}
+		res += fmt.Sprintf("Contact %s, contact %savailable\n", element.Name.Value, notStr)
 	}
 	res = strings.TrimSuffix(res, "\n")
 
