@@ -94,7 +94,6 @@ type HostUpdate struct {
 	Name   string         `xml:"name"`
 	Add    *HostAddRemove `xml:"add,omitempty"`
 	Remove *HostAddRemove `xml:"rem,omitempty"`
-	Change string         `xml:"chg>name,omitempty"`
 }
 
 // HostCheckData represents the response for a host check command.

@@ -32,3 +32,12 @@ func (p *hostPresenter) MapCreateResponse(response []byte) (responseObject model
 
 	return
 }
+
+func (p *hostPresenter) MapUpdateResponse(response []byte) (responseObject model.UpdateHostResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "HostPresenter MapUpdateResponse: xml.Unmarshal"))
+	}
+
+	return
+}
