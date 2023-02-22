@@ -26,7 +26,7 @@ func NewContactInteractor(repository repository.RegistrarRepository, presenter p
 	}
 }
 
-func (interactor *contactInteractor) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
+func (interactor *contactInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Check: interactor.RegistrarRepository.SendCommand")
@@ -52,7 +52,7 @@ func (interactor *contactInteractor) Check(data interface{}, ext string, langTag
 	return
 }
 
-func (interactor *contactInteractor) Create(data interface{}, ext string, langTag string) (res string, returnedErr error) {
+func (interactor *contactInteractor) Create(data interface{}, ext string, langTag string) (res string, err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Create: interactor.RegistrarRepository.SendCommand")
