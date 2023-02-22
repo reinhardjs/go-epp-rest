@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
 	"gitlab.com/merekmu/go-epp-rest/internal/interface/controller"
 	"gitlab.com/merekmu/go-epp-rest/internal/interface/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/interface/repository"
@@ -11,7 +10,7 @@ import (
 func (r *registry) NewDomainController() controller.DomainController {
 	registrarInteractor := interactor.NewDomainInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
-		presenter.NewRegistrarPresenter[model.CheckDomainResponse](),
+		presenter.NewDomainPresenter(),
 	)
 
 	return controller.NewDomainController(registrarInteractor)

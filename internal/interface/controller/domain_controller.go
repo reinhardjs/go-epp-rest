@@ -2,30 +2,31 @@ package controller
 
 import (
 	"log"
+	"strconv"
 	"strings"
 
-	"github.com/bombsimon/epp-go/types"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/interface/constraints"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
-type domainController[T constraints.RegistrarResponseConstraint] struct {
-	registrarInteractor interactor.RegistrarInteractor[T]
+type domainController struct {
+	interactor interactor.DomainInteractor
 }
 
 type DomainController interface {
 	Check(c *gin.Context)
+	Create(c *gin.Context)
 }
 
-func NewDomainController[T constraints.RegistrarResponseConstraint](interactor interactor.RegistrarInteractor[T]) DomainController {
-	return &domainController[T]{
-		registrarInteractor: interactor,
+func NewDomainController(interactor interactor.DomainInteractor) DomainController {
+	return &domainController{
+		interactor: interactor,
 	}
 }
 
-func (controller *domainController[T]) Check(c *gin.Context) {
+func (controller *domainController) Check(c *gin.Context) {
 
 	domainList := strings.Split(c.Query("domainlist"), ",")
 
@@ -35,10 +36,66 @@ func (controller *domainController[T]) Check(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.registrarInteractor.Check(data, "com", "eng")
+	responseString, err := controller.interactor.Check(data, "com", "eng")
 
 	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Check: controller.registrarInteractor.Check"))
+		log.Println(errors.Wrap(err, "DomainController Check: controller.interactor.Check"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *domainController) Create(c *gin.Context) {
+
+	domain := c.Query("domain")
+	ns := strings.Split(c.Query("ns"), ",")
+	registrantContact := c.Query("regcon")
+	adminContact := c.Query("admcon")
+	techContact := c.Query("techcon")
+	billingContact := c.Query("bilcon")
+	authInfo := c.Query("authinfo")
+	period, err := strconv.Atoi(c.Query("period"))
+	ext := c.Query("ext")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Create"))
+	}
+
+	data := types.DomainCreateType{
+		Create: types.DomainCreate{
+			Name: domain,
+			Period: types.Period{
+				Value: period,
+				Unit:  "y", // yearly
+			},
+			NameServer: &types.NameServer{
+				HostObject: ns,
+			},
+			Registrant: registrantContact,
+			Contacts: []types.Contact{
+				{
+					Name: adminContact,
+					Type: "admin",
+				},
+				{
+					Name: techContact,
+					Type: "tech",
+				},
+				{
+					Name: billingContact,
+					Type: "billing",
+				},
+			},
+			AuthInfo: &types.AuthInfo{
+				Password: authInfo,
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Create(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Create: controller.interactor.Create"))
 	}
 
 	c.String(200, responseString)

@@ -2,65 +2,73 @@ package interactor
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
-	"gitlab.com/merekmu/go-epp-rest/internal/interface/constraints"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
 
-type domainInteractor[T constraints.RegistrarResponseConstraint] struct {
+type domainInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
-	RegistrarPresenter  presenter.RegistrarPresenter[T]
+	Presenter           presenter.DomainPresenter
 }
 
-func NewDomainInteractor[T constraints.RegistrarResponseConstraint](domainRepository repository.RegistrarRepository, domainPresenter presenter.RegistrarPresenter[T]) RegistrarInteractor[T] {
-	return &domainInteractor[T]{
+type DomainInteractor interface {
+	Check(data interface{}, ext string, langTag string) (res string, err error)
+	Create(data interface{}, ext string, langTag string) (res string, err error)
+}
+
+func NewDomainInteractor(domainRepository repository.RegistrarRepository, presenter presenter.DomainPresenter) DomainInteractor {
+	return &domainInteractor{
 		RegistrarRepository: domainRepository,
-		RegistrarPresenter:  domainPresenter,
+		Presenter:           presenter,
 	}
 }
 
-func (interactor *domainInteractor[T]) Send(data interface{}) (res T, err error) {
-	responseByte, err := interactor.RegistrarRepository.Check(data)
+func (interactor *domainInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarRepository.Check")
+		err = errors.Wrap(err, "DomainInteractor Check: interactor.RegistrarRepository.SendCommand")
 		return
 	}
 
-	log.Println("XML Response: \n", string(responseByte))
-
-	genericResponseObj, err := interactor.RegistrarPresenter.Check(responseByte)
+	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Send: interactor.RegistrarPresenter.Check")
+		err = errors.Wrap(err, "DomainInteractor Check: interactor.Presenter.MapResponse")
 		return
 	}
 
-	res = genericResponseObj
-	return
-}
-
-func (interactor *domainInteractor[T]) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
-	genericResponseObj, err := interactor.Send(data)
-	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Check: interactor.Send")
-		return
-	}
-
-	// converting from generic object into model object
-	modelResponseObj := any(genericResponseObj).(model.CheckDomainResponse)
-
-	for _, element := range modelResponseObj.ResultData.CheckDatas {
+	for _, element := range responseObj.ResultData.CheckDatas {
 		notStr := ""
 		if element.Name.AvailKey == 0 {
 			notStr = "not "
 		}
 		res += fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr)
 	}
+	res = strings.TrimSuffix(res, "\n")
+
+	return
+}
+
+func (interactor *domainInteractor) Create(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.Presenter.MapCreateResponse")
+		return
+	}
+
+	res += fmt.Sprintf("Name %s\n", responseObj.ResultData.CreatedData.Name)
+	res += fmt.Sprintf("Create Date %s\n", responseObj.ResultData.CreatedData.CreatedDate)
+	res += fmt.Sprintf("Expire Date %s\n", responseObj.ResultData.CreatedData.ExpiredDate)
 	res = strings.TrimSuffix(res, "\n")
 
 	return

@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
 	"gitlab.com/merekmu/go-epp-rest/internal/interface/controller"
 	"gitlab.com/merekmu/go-epp-rest/internal/interface/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/interface/repository"
@@ -11,7 +10,7 @@ import (
 func (r *registry) NewContactController() controller.ContactController {
 	registrarInteractor := interactor.NewContactInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
-		presenter.NewRegistrarPresenter[model.CheckContactResponse](),
+		presenter.NewContactPresenter(),
 	)
 
 	return controller.NewContactController(registrarInteractor)

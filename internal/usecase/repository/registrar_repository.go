@@ -1,5 +1,5 @@
 package repository
 
 type RegistrarRepository interface {
-	Check(data interface{}) ([]byte, error)
+	SendCommand(data interface{}) ([]byte, error)
 }

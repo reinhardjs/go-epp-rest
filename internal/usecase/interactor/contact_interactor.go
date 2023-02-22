@@ -2,65 +2,72 @@ package interactor
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
-	"gitlab.com/merekmu/go-epp-rest/internal/interface/constraints"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
 
-type contactInteractor[T constraints.RegistrarResponseConstraint] struct {
+type contactInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
-	RegistrarPresenter  presenter.RegistrarPresenter[T]
+	Presenter           presenter.ContactPresenter
 }
 
-func NewContactInteractor[T constraints.RegistrarResponseConstraint](repository repository.RegistrarRepository, presenter presenter.RegistrarPresenter[T]) RegistrarInteractor[T] {
-	return &contactInteractor[T]{
+type ContactInteractor interface {
+	Check(data interface{}, ext string, langTag string) (res string, err error)
+	Create(data interface{}, ext string, langTag string) (res string, err error)
+}
+
+func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter) ContactInteractor {
+	return &contactInteractor{
 		RegistrarRepository: repository,
-		RegistrarPresenter:  presenter,
+		Presenter:           presenter,
 	}
 }
 
-func (interactor *contactInteractor[T]) Send(data interface{}) (res T, err error) {
-	responseByte, err := interactor.RegistrarRepository.Check(data)
+func (interactor *contactInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Send: interactor.RegistrarRepository.Check")
+		err = errors.Wrap(err, "ContactInteractor Check: interactor.RegistrarRepository.SendCommand")
 		return
 	}
 
-	log.Println("XML Response: \n", string(responseByte))
-
-	genericResponseObj, err := interactor.RegistrarPresenter.Check(responseByte)
+	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Send: interactor.RegistrarPresenter.Check")
+		err = errors.Wrap(err, "ContactInteractor Check: interactor.ContactPresenter.MapCheckResponse")
 		return
 	}
 
-	res = genericResponseObj
-	return
-}
-
-func (interactor *contactInteractor[T]) Check(data interface{}, ext string, langTag string) (res string, returnedErr error) {
-	genericResponseObj, err := interactor.Send(data)
-	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Check: interactor.Send")
-		return
-	}
-
-	// converting from generic object into model object
-	modelResponseObj := any(genericResponseObj).(model.CheckContactResponse)
-
-	for _, element := range modelResponseObj.ResultData.CheckDatas {
+	for _, element := range responseObj.ResultData.CheckDatas {
 		notStr := ""
 		if element.Id.AvailKey == 0 {
 			notStr = "not "
 		}
 		res += fmt.Sprintf("Contact %s, contact %savailable\n", element.Id.Value, notStr)
 	}
+	res = strings.TrimSuffix(res, "\n")
+
+	return
+}
+
+func (interactor *contactInteractor) Create(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Create: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Create: interactor.ContactPresenter.MapCreateResponse")
+		return
+	}
+
+	res += fmt.Sprintf("ID %s\n", responseObj.ResultData.CreateData.Id)
+	res += fmt.Sprintf("Create Date %s\n", responseObj.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
 
 	return
