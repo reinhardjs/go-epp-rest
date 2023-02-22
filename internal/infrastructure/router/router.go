@@ -17,5 +17,8 @@ func NewRouter(appController controller.AppController) *gin.Engine {
 
 	router.GET("/contact/update", func(c *gin.Context) { appController.Contact.Update(c) })
 	router.GET("/host/update", func(c *gin.Context) { appController.Host.Update(c) })
+
+	router.GET("/contact/delete", func(c *gin.Context) { appController.Contact.Delete(c) })
+
 	return router
 }

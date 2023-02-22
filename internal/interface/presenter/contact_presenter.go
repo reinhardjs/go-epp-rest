@@ -41,3 +41,12 @@ func (p *contactPresenter) MapUpdateResponse(response []byte) (responseObject mo
 
 	return
 }
+
+func (p *contactPresenter) MapDeleteResponse(response []byte) (responseObject model.DeleteContactResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "ContactPresenter MapDeleteResponse: xml.Unmarshal"))
+	}
+
+	return
+}

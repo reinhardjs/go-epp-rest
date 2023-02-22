@@ -18,6 +18,7 @@ type ContactController interface {
 	Check(c *gin.Context)
 	Create(c *gin.Context)
 	Update(c *gin.Context)
+	Delete(c *gin.Context)
 }
 
 func NewContactController(interactor interactor.ContactInteractor) ContactController {
@@ -153,6 +154,25 @@ func (controller *contactController) Update(c *gin.Context) {
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "ContactController Update: controller.interactor.Update"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *contactController) Delete(c *gin.Context) {
+
+	contact := c.Query("contact")
+
+	data := types.ContactDeleteType{
+		Delete: types.ContactDelete{
+			Name: contact,
+		},
+	}
+
+	responseString, err := controller.interactor.Delete(data, "com", "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "ContactController Delete: controller.interactor.Delete"))
 	}
 
 	c.String(200, responseString)
