@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -46,27 +47,19 @@ func (controller *domainController) Check(c *gin.Context) {
 
 func (controller *domainController) Create(c *gin.Context) {
 
-	// domain := c.Query("domain")
-	// period, err := strconv.Atoi(c.Query("period"))
-	// ns := strings.Split(c.Query("ns"), ",")
-	// registrantContact := c.Query("regcon")
-	// adminContact := c.Query("admcon")
-	// techContact := c.Query("techcon")
-	// billingContact := c.Query("bilcon")
-	// authInfo := c.Query("authinfo")
-
-	// if err != nil {
-	// 	log.Println(errors.Wrap(err, "DomainController Create"))
-	// }
-
 	domain := c.Query("domain")
-	period := 1
-	ns := strings.Split("ns1.domaindiscount24.net,ns2.domaindiscount24.net", ",")
-	registrantContact := "P-JPD3259"
-	adminContact := "P-JPD3259"
-	techContact := "P-JPD3259"
-	billingContact := "P-JPD3259"
-	authInfo := "qwWQ9123^$*" // password
+	ns := strings.Split(c.Query("ns"), ",")
+	registrantContact := c.Query("regcon")
+	adminContact := c.Query("admcon")
+	techContact := c.Query("techcon")
+	billingContact := c.Query("bilcon")
+	authInfo := c.Query("authinfo")
+	period, err := strconv.Atoi(c.Query("period"))
+	ext := c.Query("ext")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Create"))
+	}
 
 	data := types.DomainCreateType{
 		Create: types.DomainCreate{
@@ -75,7 +68,7 @@ func (controller *domainController) Create(c *gin.Context) {
 				Value: period,
 				Unit:  "y", // yearly
 			},
-			NameServer: types.NameServer{
+			NameServer: &types.NameServer{
 				HostObject: ns,
 			},
 			Registrant: registrantContact,
@@ -99,7 +92,7 @@ func (controller *domainController) Create(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, "com", "eng")
+	responseString, err := controller.interactor.Create(data, ext, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Create: controller.interactor.Create"))

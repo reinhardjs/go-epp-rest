@@ -46,21 +46,32 @@ func (controller *hostController) Check(c *gin.Context) {
 
 func (controller *hostController) Create(c *gin.Context) {
 
-	// domain := c.Query("domain")
+	hostName := c.Query("dnslist")
+	ext := c.Query("ext")
+
+	if hostName == "" {
+		hostName = c.Query("host")
+	}
+
+	ipAddressList := strings.Split(c.Query("iplist"), ",")
+	hostAddressList := []types.HostAddress{}
+
+	for _, ipAddress := range ipAddressList {
+		ipType := types.HostIPv4 // need to check ip type based on ip address
+		hostAddressList = append(hostAddressList, types.HostAddress{
+			Address: ipAddress,
+			IP:      ipType,
+		})
+	}
 
 	data := types.HostCreateType{
 		Create: types.HostCreate{
-			Name: "ns1.example.com",
-			Address: []types.HostAddress{
-				{
-					Address: "1.1.1.1",
-					IP:      types.HostIPv4,
-				},
-			},
+			Name:    hostName,
+			Address: hostAddressList,
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, "com", "eng")
+	responseString, err := controller.interactor.Create(data, ext, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "HostController Create: controller.interactor.Create"))
