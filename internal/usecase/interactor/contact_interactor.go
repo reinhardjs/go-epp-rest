@@ -66,13 +66,8 @@ func (interactor *contactInteractor) Create(data interface{}, ext string, langTa
 		return
 	}
 
-	for _, element := range responseObj.ResultData.CheckDatas {
-		notStr := ""
-		if element.Name.AvailKey == 0 {
-			notStr = "not "
-		}
-		res += fmt.Sprintf("Contact %s, contact %savailable\n", element.Name.Value, notStr)
-	}
+	res += fmt.Sprintf("ID %s\n", responseObj.ResultData.CreateData.Id)
+	res += fmt.Sprintf("Create Date %s\n", responseObj.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
 
 	return

@@ -1,17 +1,17 @@
 package model
 
 // Response represents an EPP response.
-type CreateDomainResponse struct {
-	Result        []Result               `xml:"response>result"`
-	ResultData    CreateDomainResultData `xml:"response>resData"`
-	TransactionID TransactionID          `xml:"response>trID"`
+type CreateContactResponse struct {
+	Result        []Result                `xml:"response>result"`
+	ResultData    CreateContactResultData `xml:"response>resData"`
+	TransactionID TransactionID           `xml:"response>trID"`
 }
 
-type CreateDomainResultData struct {
-	CreatedData CreateDomainData `xml:"chkData>cd"`
+type CreateContactResultData struct {
+	CreateData CreateContactData `xml:"creData"`
 }
 
-type CreateDomainData struct {
-	Id          string `xml:"name"`
-	CreatedDate string `xml:"reason,omitempty"`
+type CreateContactData struct {
+	Id         string `xml:"id"`
+	CreateDate string `xml:"crDate"`
 }
