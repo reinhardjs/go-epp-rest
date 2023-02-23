@@ -9,8 +9,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-
-	"github.com/bombsimon/epp-go"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
 const maxQueueLength = 10_000
@@ -152,7 +151,7 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 	}
 
 	// Read the greeting.
-	greeting, err := epp.ReadMessage(c)
+	greeting, err := registry_epp.ReadMessage(c)
 	if err != nil {
 		return nil, errors.Wrap(err, "TcpConnPool openNewTcpConnection: epp.ReadMessage")
 	}
