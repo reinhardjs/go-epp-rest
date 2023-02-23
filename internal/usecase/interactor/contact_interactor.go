@@ -19,6 +19,7 @@ type ContactInteractor interface {
 	Create(data interface{}, ext string, langTag string) (res string, err error)
 	Update(data interface{}, ext string, langTag string) (res string, err error)
 	Delete(data interface{}, ext string, langTag string) (res string, err error)
+	Info(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter) ContactInteractor {
@@ -105,6 +106,25 @@ func (interactor *contactInteractor) Delete(data interface{}, ext string, langTa
 
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Delete: interactor.Presenter.MapDeleteResponse")
+		return
+	}
+
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
+
+	return
+}
+
+func (interactor *contactInteractor) Info(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Info: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapInfoResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "ContactInteractor Info: interactor.Presenter.MapInfoResponse")
 		return
 	}
 

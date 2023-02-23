@@ -50,3 +50,12 @@ func (p *contactPresenter) MapDeleteResponse(response []byte) (responseObject mo
 
 	return
 }
+
+func (p *contactPresenter) MapInfoResponse(response []byte) (responseObject model.InfoContactResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "ContactPresenter MapInfoResponse: xml.Unmarshal"))
+	}
+
+	return
+}
