@@ -122,8 +122,8 @@ type ContactDelete struct {
 
 // ContactInfo represents a contact info command.
 type ContactInfo struct {
-	Name     string   `xml:"id"`
-	AuthInfo AuthInfo `xml:"authInfo,omitempty"`
+	Name     string    `xml:"id"`
+	AuthInfo *AuthInfo `xml:"authInfo,omitempty"`
 }
 
 // ContactTransfer represents a contact transfer command.

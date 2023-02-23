@@ -50,3 +50,12 @@ func (p *hostPresenter) MapDeleteResponse(response []byte) (responseObject model
 
 	return
 }
+
+func (p *hostPresenter) MapInfoResponse(response []byte) (responseObject model.InfoHostResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "HostPresenter MapInfoResponse: xml.Unmarshal"))
+	}
+
+	return
+}
