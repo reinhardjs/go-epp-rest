@@ -26,5 +26,7 @@ func NewRouter(appController controller.AppController) *gin.Engine {
 	router.GET("/host/info", func(c *gin.Context) { appController.Host.Info((c)) })
 	router.GET("/contact/info", func(c *gin.Context) { appController.Contact.Info((c)) })
 
+	router.GET("/transfer/check", func(c *gin.Context) { appController.Transfer.Check((c)) })
+
 	return router
 }

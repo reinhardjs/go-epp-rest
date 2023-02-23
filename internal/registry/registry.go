@@ -19,8 +19,9 @@ func NewRegistry(eppClient infrastructure.EppClient) Registry {
 
 func (r *registry) NewAppController() controller.AppController {
 	return controller.AppController{
-		Domain:  r.NewDomainController(),
-		Contact: r.NewContactController(),
-		Host:    r.NewHostController(),
+		Domain:   r.NewDomainController(),
+		Contact:  r.NewContactController(),
+		Host:     r.NewHostController(),
+		Transfer: r.NewTransferController(),
 	}
 }
