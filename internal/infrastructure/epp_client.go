@@ -4,9 +4,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/bombsimon/epp-go"
-	"github.com/bombsimon/epp-go/types"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
 // Client represents an EPP client.
@@ -28,19 +28,19 @@ func NewEppClient(conn net.Conn) EppClient {
 
 // Send will send data to the server.
 func (c *eppClient) Send(data []byte) ([]byte, error) {
-	err := epp.WriteMessage(c.conn, data)
+	err := registry_epp.WriteMessage(c.conn, data)
 	if err != nil {
 		_ = c.conn.Close()
 
-		return nil, errors.Wrap(err, "EppClient Send: epp.WriteMessage")
+		return nil, errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
 	}
 
 	_ = c.conn.SetReadDeadline(time.Now().Add(2 * time.Second))
-	msg, err := epp.ReadMessage(c.conn)
+	msg, err := registry_epp.ReadMessage(c.conn)
 	if err != nil {
 		_ = c.conn.Close()
 
-		return nil, errors.Wrap(err, "EppClient Send: epp.ReadMessage")
+		return nil, errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
 	}
 
 	return msg, nil
@@ -70,9 +70,9 @@ func (c *eppClient) Login(username, password string) ([]byte, error) {
 		},
 	}
 
-	encoded, err := epp.Encode(login, epp.ClientXMLAttributes())
+	encoded, err := registry_epp.Encode(login, registry_epp.ClientXMLAttributes())
 	if err != nil {
-		return nil, errors.Wrap(err, "EppClient Send: epp.ReadMessage")
+		return nil, errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
 	}
 
 	return c.Send(encoded)

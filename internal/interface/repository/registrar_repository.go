@@ -3,10 +3,10 @@ package repository
 import (
 	"log"
 
-	"github.com/bombsimon/epp-go"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
 type registrarRepository struct {
@@ -18,9 +18,9 @@ func NewRegistrarRepository(eppClient infrastructure.EppClient) repository.Regis
 }
 
 func (r *registrarRepository) prepareCommand(data interface{}) ([]byte, error) {
-	encoded, err := epp.Encode(data, epp.ClientXMLAttributes())
+	encoded, err := registry_epp.Encode(data, registry_epp.ClientXMLAttributes())
 	if err != nil {
-		return nil, errors.Wrap(err, "registrarRepository prepareCommand: epp.Encode")
+		return nil, errors.Wrap(err, "registrarRepository prepareCommand: registry_epp.Encode")
 	}
 
 	return encoded, nil
