@@ -18,6 +18,7 @@ type DomainInteractor interface {
 	Check(data interface{}, ext string, langTag string) (res string, err error)
 	Create(data interface{}, ext string, langTag string) (res string, err error)
 	Delete(data interface{}, ext string, langTag string) (res string, err error)
+	Info(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewDomainInteractor(domainRepository repository.RegistrarRepository, presenter presenter.DomainPresenter) DomainInteractor {
@@ -89,7 +90,26 @@ func (interactor *domainInteractor) Delete(data interface{}, ext string, langTag
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result[0].Code, responseObj.Result[0].Message)
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
+
+	return
+}
+
+func (interactor *domainInteractor) Info(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Info: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapInfoResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Info: interactor.Presenter.MapInfoResponse")
+		return
+	}
+
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
 
 	return
 }

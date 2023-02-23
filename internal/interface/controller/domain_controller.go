@@ -19,6 +19,7 @@ type DomainController interface {
 	Check(c *gin.Context)
 	Create(c *gin.Context)
 	Delete(c *gin.Context)
+	Info(c *gin.Context)
 }
 
 func NewDomainController(interactor interactor.DomainInteractor) DomainController {
@@ -117,6 +118,28 @@ func (controller *domainController) Delete(c *gin.Context) {
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Delete: controller.interactor.Delete"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *domainController) Info(c *gin.Context) {
+
+	domain := c.Query("domain")
+	ext := c.Query("ext")
+
+	data := types.DomainInfoType{
+		Info: types.DomainInfo{
+			Name: types.DomainInfoName{
+				Name: domain,
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Info(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Info: controller.interactor.Info"))
 	}
 
 	c.String(200, responseString)
