@@ -89,7 +89,7 @@ func (interactor *hostInteractor) Update(data interface{}, ext string, langTag s
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result[0].Code, responseObj.Result[0].Message)
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
 
 	return
 }
@@ -108,7 +108,7 @@ func (interactor *hostInteractor) Delete(data interface{}, ext string, langTag s
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result[0].Code, responseObj.Result[0].Message)
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
 
 	return
 }

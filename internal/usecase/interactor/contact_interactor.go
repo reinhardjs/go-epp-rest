@@ -89,7 +89,7 @@ func (interactor *contactInteractor) Update(data interface{}, ext string, langTa
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result[0].Code, responseObj.Result[0].Message)
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
 
 	return
 }
@@ -108,7 +108,7 @@ func (interactor *contactInteractor) Delete(data interface{}, ext string, langTa
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result[0].Code, responseObj.Result[0].Message)
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
 
 	return
 }
