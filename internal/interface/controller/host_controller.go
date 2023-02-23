@@ -19,6 +19,7 @@ type HostController interface {
 	Create(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
+	Info(c *gin.Context)
 }
 
 func NewHostController(interactor interactor.HostInteractor) HostController {
@@ -164,6 +165,30 @@ func (controller *hostController) Delete(c *gin.Context) {
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "HostController Delete: controller.interactor.Delete"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *hostController) Info(c *gin.Context) {
+
+	hostName := c.Query("dnslist")
+	ext := c.Query("ext")
+
+	if hostName == "" {
+		hostName = c.Query("host")
+	}
+
+	data := types.HostInfoType{
+		Info: types.HostInfo{
+			Name: hostName,
+		},
+	}
+
+	responseString, err := controller.interactor.Info(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "HostController Info: controller.interactor.Info"))
 	}
 
 	c.String(200, responseString)
