@@ -1,6 +1,6 @@
 package types
 
-// TransferType represents a transfer check command.
+// TransferType represents a transfer command.
 type TransferType struct {
 	TransferParent Transfer `xml:"command>transfer"`
 }
@@ -10,14 +10,14 @@ type Transfer struct {
 	Detail    TransferDetail `xml:"urn:ietf:params:xml:ns:domain-1.0 transfer"`
 }
 
-// TransferDetail represents a transfer check request to the EPP server.
+// TransferDetail represents a transfer request detail to the EPP server.
 type TransferDetail struct {
 	Name     string    `xml:"name"`
 	AuthInfo *AuthInfo `xml:"authInfo,omitempty"`
 }
 
-// TransferCheckData represents the response for a transfer check command.
-type TransferCheckData struct {
+// TransferData represents the response for a transfer command.
+type TransferData struct {
 	Name           string `xml:"name"`
 	TransferStatus string `xml:"trStatus"`
 	ReID           string `xml:"reId"`
