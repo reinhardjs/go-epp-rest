@@ -17,6 +17,7 @@ type TransferController interface {
 	Check(c *gin.Context)
 	Request(c *gin.Context)
 	Cancel(c *gin.Context)
+	Approve(c *gin.Context)
 }
 
 func NewTransferController(interactor interactor.TransferInteractor) TransferController {
@@ -96,6 +97,33 @@ func (controller *transferController) Cancel(c *gin.Context) {
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "TransferController Cancel: controller.interactor.Cancel"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *transferController) Approve(c *gin.Context) {
+
+	domain := c.Query("domain")
+	authInfo := c.Query("authinfo")
+	ext := c.Query("ext")
+
+	data := types.TransferType{
+		TransferParent: types.Transfer{
+			Operation: "approve",
+			Detail: types.TransferDetail{
+				Name: domain,
+				AuthInfo: &types.AuthInfo{
+					Password: authInfo,
+				},
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Approve(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "TransferController Approve: controller.interactor.Approve"))
 	}
 
 	c.String(200, responseString)

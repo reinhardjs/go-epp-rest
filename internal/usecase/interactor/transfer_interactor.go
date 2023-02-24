@@ -17,6 +17,7 @@ type TransferInteractor interface {
 	Check(data interface{}, ext string, langTag string) (res string, err error)
 	Request(data interface{}, ext string, langTag string) (res string, err error)
 	Cancel(data interface{}, ext string, langTag string) (res string, err error)
+	Approve(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewTransferInteractor(repository repository.RegistrarRepository, presenter presenter.TransferPresenter) TransferInteractor {
@@ -75,6 +76,25 @@ func (interactor *transferInteractor) Cancel(data interface{}, ext string, langT
 
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapCancelResponse")
+		return
+	}
+
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
+
+	return
+}
+
+func (interactor *transferInteractor) Approve(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapApproveResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapApproveResponse")
 		return
 	}
 
