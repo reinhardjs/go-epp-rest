@@ -50,3 +50,12 @@ func (p *transferPresenter) MapApproveResponse(response []byte) (responseObject 
 
 	return
 }
+
+func (p *transferPresenter) MapRejectResponse(response []byte) (responseObject model.TransferRejectResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "TransferPresenter MapRejectResponse: xml.Unmarshal"))
+	}
+
+	return
+}

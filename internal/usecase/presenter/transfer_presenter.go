@@ -9,4 +9,5 @@ type TransferPresenter interface {
 	MapRequestResponse(response []byte) (model.TransferRequestResponse, error)
 	MapCancelResponse(response []byte) (model.TransferCancelResponse, error)
 	MapApproveResponse(response []byte) (model.TransferApproveResponse, error)
+	MapRejectResponse(response []byte) (model.TransferRejectResponse, error)
 }

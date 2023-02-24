@@ -30,6 +30,7 @@ func NewRouter(appController controller.AppController) *gin.Engine {
 	router.GET("/transfer/request", func(c *gin.Context) { appController.Transfer.Request((c)) })
 	router.GET("/transfer/cancel", func(c *gin.Context) { appController.Transfer.Cancel((c)) })
 	router.GET("/transfer/approve", func(c *gin.Context) { appController.Transfer.Approve((c)) })
+	router.GET("/transfer/reject", func(c *gin.Context) { appController.Transfer.Approve((c)) })
 
 	return router
 }
