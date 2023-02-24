@@ -16,6 +16,7 @@ type transferInteractor struct {
 type TransferInteractor interface {
 	Check(data interface{}, ext string, langTag string) (res string, err error)
 	Request(data interface{}, ext string, langTag string) (res string, err error)
+	Cancel(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewTransferInteractor(repository repository.RegistrarRepository, presenter presenter.TransferPresenter) TransferInteractor {
@@ -35,7 +36,7 @@ func (interactor *transferInteractor) Check(data interface{}, ext string, langTa
 	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "TransferInteractor Check: interactor.TransferPresenter.MapCheckResponse")
+		err = errors.Wrap(err, "TransferInteractor Check: interactor.Presenter.MapCheckResponse")
 		return
 	}
 
@@ -54,7 +55,26 @@ func (interactor *transferInteractor) Request(data interface{}, ext string, lang
 	responseObj, err := interactor.Presenter.MapRequestResponse(responseByte)
 
 	if err != nil {
-		err = errors.Wrap(err, "TransferInteractor Request: interactor.TransferPresenter.MapRequestResponse")
+		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapRequestResponse")
+		return
+	}
+
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
+
+	return
+}
+
+func (interactor *transferInteractor) Cancel(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapCancelResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapCancelResponse")
 		return
 	}
 
