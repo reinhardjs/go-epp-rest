@@ -6,4 +6,5 @@ import (
 
 type TransferPresenter interface {
 	MapCheckResponse(response []byte) (model.TransferCheckResponse, error)
+	MapRequestResponse(response []byte) (model.TransferRequestResponse, error)
 }

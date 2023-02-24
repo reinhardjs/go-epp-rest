@@ -23,3 +23,12 @@ func (p *transferPresenter) MapCheckResponse(response []byte) (responseObject mo
 
 	return
 }
+
+func (p *transferPresenter) MapRequestResponse(response []byte) (responseObject model.TransferRequestResponse, err error) {
+
+	if err := xml.Unmarshal(response, &responseObject); err != nil {
+		log.Println(errors.Wrap(err, "TransferPresenter MapRequestResponse: xml.Unmarshal"))
+	}
+
+	return
+}

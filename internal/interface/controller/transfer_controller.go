@@ -15,6 +15,7 @@ type transferController struct {
 
 type TransferController interface {
 	Check(c *gin.Context)
+	Request(c *gin.Context)
 }
 
 func NewTransferController(interactor interactor.TransferInteractor) TransferController {
@@ -40,6 +41,33 @@ func (controller *transferController) Check(c *gin.Context) {
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "TransferController Check: controller.interactor.Check"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *transferController) Request(c *gin.Context) {
+
+	domain := c.Query("domain")
+	authInfo := c.Query("authinfo")
+	ext := c.Query("ext")
+
+	data := types.TransferType{
+		TransferParent: types.Transfer{
+			Operation: "request",
+			Detail: types.TransferDetail{
+				Name: domain,
+				AuthInfo: &types.AuthInfo{
+					Password: authInfo,
+				},
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Request(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "TransferController Request: controller.interactor.Request"))
 	}
 
 	c.String(200, responseString)
