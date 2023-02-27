@@ -20,6 +20,7 @@ type DomainController interface {
 	Create(c *gin.Context)
 	Delete(c *gin.Context)
 	Info(c *gin.Context)
+	SecDNSUpdate(c *gin.Context)
 }
 
 func NewDomainController(interactor interactor.DomainInteractor) DomainController {
@@ -140,6 +141,64 @@ func (controller *domainController) Info(c *gin.Context) {
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Info: controller.interactor.Info"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *domainController) SecDNSUpdate(c *gin.Context) {
+
+	domain := c.Query("domain")
+	ext := c.Query("ext")
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name: domain,
+			},
+			Extension: &types.Extension{
+				SecDNSUpdate: &types.SecDNSUpdate{
+					Add: &types.SecDNSAddRem{
+						DSDatas: []types.DSData{
+							{
+								KeyTag:     "123",
+								Alg:        "5",
+								DigestType: "1",
+								Digest:     "ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD",
+								KeyData: &types.KeyData{
+									Flags:    "257",
+									Protocol: "3",
+									Alg:      "13",
+									PubKey:   "BIlMPw/ZKxBjstBbvZA/ENlOp71I2HxZL/ugXIkETgcABahwsOIOmRfoyZv0BhWoDNGXZ5N1D3SUFwq9+7HbqQ==",
+								},
+							},
+						},
+					},
+					// Remove: &types.SecDNSAddRem{
+					// 	DSDatas: []types.DSData{
+					// 		{
+					// 			KeyTag:     "123",
+					// 			Alg:        "5",
+					// 			DigestType: "1",
+					// 			Digest:     "ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD",
+					// 			KeyData: &types.KeyData{
+					// 				Flags:    "257",
+					// 				Protocol: "3",
+					// 				Alg:      "13",
+					// 				PubKey:   "BIlMPw/ZKxBjstBbvZA/ENlOp71I2HxZL/ugXIkETgcABahwsOIOmRfoyZv0BhWoDNGXZ5N1D3SUFwq9+7HbqQ==",
+					// 			},
+					// 		},
+					// 	},
+					// },
+				},
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.SecDNSUpdate(data, ext, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController SecDNSUpdate: controller.interactor.SecDNSUpdate"))
 	}
 
 	c.String(200, responseString)
