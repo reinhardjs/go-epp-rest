@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/model"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/responses"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 
@@ -15,7 +15,7 @@ func NewDomainPresenter() presenter.DomainPresenter {
 	return &domainPresenter{}
 }
 
-func (p *domainPresenter) MapCheckResponse(response []byte) (responseObject model.CheckDomainResponse, err error) {
+func (p *domainPresenter) MapCheckResponse(response []byte) (responseObject responses.CheckDomainResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "DomainPresenter MapCheckResponse: xml.Unmarshal"))
@@ -24,7 +24,7 @@ func (p *domainPresenter) MapCheckResponse(response []byte) (responseObject mode
 	return
 }
 
-func (p *domainPresenter) MapCreateResponse(response []byte) (responseObject model.CreateDomainResponse, err error) {
+func (p *domainPresenter) MapCreateResponse(response []byte) (responseObject responses.CreateDomainResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "DomainPresenter MapCreateResponse: xml.Unmarshal"))
@@ -33,7 +33,7 @@ func (p *domainPresenter) MapCreateResponse(response []byte) (responseObject mod
 	return
 }
 
-func (p *domainPresenter) MapDeleteResponse(response []byte) (responseObject model.DeleteDomainResponse, err error) {
+func (p *domainPresenter) MapDeleteResponse(response []byte) (responseObject responses.DeleteDomainResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "DomainPresenter MapDeleteResponse: xml.Unmarshal"))
@@ -42,7 +42,7 @@ func (p *domainPresenter) MapDeleteResponse(response []byte) (responseObject mod
 	return
 }
 
-func (p *domainPresenter) MapInfoResponse(response []byte) (responseObject model.InfoDomainResponse, err error) {
+func (p *domainPresenter) MapInfoResponse(response []byte) (responseObject responses.InfoDomainResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "DomainPresenter MapInfoResponse: xml.Unmarshal"))
@@ -51,7 +51,7 @@ func (p *domainPresenter) MapInfoResponse(response []byte) (responseObject model
 	return
 }
 
-func (p *domainPresenter) MapSecDNSUpdateResponse(response []byte) (responseObject model.SecDNSUpdateResponse, err error) {
+func (p *domainPresenter) MapSecDNSUpdateResponse(response []byte) (responseObject responses.SecDNSUpdateResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
 		log.Println(errors.Wrap(err, "DomainPresenter MapSecDNSUpdateResponse: xml.Unmarshal"))

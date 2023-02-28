@@ -1,4 +1,4 @@
-package model
+package responses
 
 // TransactionID represents transaction IDs for the client and the server.
 type TransactionID struct {
