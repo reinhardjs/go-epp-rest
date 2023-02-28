@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/queries"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -29,18 +30,19 @@ func NewTransferController(interactor interactor.TransferInteractor) TransferCon
 
 func (controller *transferController) Check(c *gin.Context) {
 
-	domain := c.Query("domain")
+	var transferCheckQuery queries.TransferCheckQuery
+	c.ShouldBindQuery(&transferCheckQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
 			Operation: "query",
 			Detail: types.TransferDetail{
-				Name: domain,
+				Name: transferCheckQuery.Domain,
 			},
 		},
 	}
 
-	responseString, err := controller.interactor.Check(data, "com", "eng")
+	responseString, err := controller.interactor.Check(data, transferCheckQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "TransferController Check: controller.interactor.Check"))
@@ -51,23 +53,22 @@ func (controller *transferController) Check(c *gin.Context) {
 
 func (controller *transferController) Request(c *gin.Context) {
 
-	domain := c.Query("domain")
-	authInfo := c.Query("authinfo")
-	ext := c.Query("ext")
+	var transferRequestQuery queries.TransferRequestQuery
+	c.ShouldBindQuery(&transferRequestQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
 			Operation: "request",
 			Detail: types.TransferDetail{
-				Name: domain,
+				Name: transferRequestQuery.Domain,
 				AuthInfo: &types.AuthInfo{
-					Password: authInfo,
+					Password: transferRequestQuery.AuthInfo,
 				},
 			},
 		},
 	}
 
-	responseString, err := controller.interactor.Request(data, ext, "eng")
+	responseString, err := controller.interactor.Request(data, transferRequestQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "TransferController Request: controller.interactor.Request"))
@@ -78,23 +79,22 @@ func (controller *transferController) Request(c *gin.Context) {
 
 func (controller *transferController) Cancel(c *gin.Context) {
 
-	domain := c.Query("domain")
-	authInfo := c.Query("authinfo")
-	ext := c.Query("ext")
+	var transferCancelQuery queries.TransferCancelQuery
+	c.ShouldBindQuery(&transferCancelQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
 			Operation: "cancel",
 			Detail: types.TransferDetail{
-				Name: domain,
+				Name: transferCancelQuery.Domain,
 				AuthInfo: &types.AuthInfo{
-					Password: authInfo,
+					Password: transferCancelQuery.AuthInfo,
 				},
 			},
 		},
 	}
 
-	responseString, err := controller.interactor.Cancel(data, ext, "eng")
+	responseString, err := controller.interactor.Cancel(data, transferCancelQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "TransferController Cancel: controller.interactor.Cancel"))
@@ -105,23 +105,22 @@ func (controller *transferController) Cancel(c *gin.Context) {
 
 func (controller *transferController) Approve(c *gin.Context) {
 
-	domain := c.Query("domain")
-	authInfo := c.Query("authinfo")
-	ext := c.Query("ext")
+	var transferApproveQuery queries.TransferApproveQuery
+	c.ShouldBindQuery(&transferApproveQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
 			Operation: "approve",
 			Detail: types.TransferDetail{
-				Name: domain,
+				Name: transferApproveQuery.Domain,
 				AuthInfo: &types.AuthInfo{
-					Password: authInfo,
+					Password: transferApproveQuery.AuthInfo,
 				},
 			},
 		},
 	}
 
-	responseString, err := controller.interactor.Approve(data, ext, "eng")
+	responseString, err := controller.interactor.Approve(data, transferApproveQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "TransferController Approve: controller.interactor.Approve"))
@@ -132,23 +131,22 @@ func (controller *transferController) Approve(c *gin.Context) {
 
 func (controller *transferController) Reject(c *gin.Context) {
 
-	domain := c.Query("domain")
-	authInfo := c.Query("authinfo")
-	ext := c.Query("ext")
+	var transferRejectQuery queries.TransferRejectQuery
+	c.ShouldBindQuery(&transferRejectQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
 			Operation: "reject",
 			Detail: types.TransferDetail{
-				Name: domain,
+				Name: transferRejectQuery.Domain,
 				AuthInfo: &types.AuthInfo{
-					Password: authInfo,
+					Password: transferRejectQuery.AuthInfo,
 				},
 			},
 		},
 	}
 
-	responseString, err := controller.interactor.Reject(data, ext, "eng")
+	responseString, err := controller.interactor.Reject(data, transferRejectQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "TransferController Reject: controller.interactor.Reject"))

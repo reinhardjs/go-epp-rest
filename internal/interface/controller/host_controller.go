@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/queries"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -30,7 +31,10 @@ func NewHostController(interactor interactor.HostInteractor) HostController {
 
 func (controller *hostController) Check(c *gin.Context) {
 
-	hostList := strings.Split(c.Query("hostlist"), ",")
+	var hostCheckQuery queries.HostCheckQuery
+	c.ShouldBindQuery(&hostCheckQuery)
+
+	hostList := strings.Split(hostCheckQuery.HostList, ",")
 
 	data := types.HostCheckType{
 		Check: types.HostCheck{
@@ -38,7 +42,7 @@ func (controller *hostController) Check(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Check(data, "com", "eng")
+	responseString, err := controller.interactor.Check(data, hostCheckQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "HostController Check: controller.interactor.Check"))
@@ -49,14 +53,16 @@ func (controller *hostController) Check(c *gin.Context) {
 
 func (controller *hostController) Create(c *gin.Context) {
 
-	hostName := c.Query("dnslist")
-	ext := c.Query("ext")
+	var hostCreateQuery queries.HostCreateQuery
+	c.ShouldBindQuery(&hostCreateQuery)
+
+	hostName := hostCreateQuery.DNSList
 
 	if hostName == "" {
-		hostName = c.Query("host")
+		hostName = hostCreateQuery.Host
 	}
 
-	ipAddressList := strings.Split(c.Query("iplist"), ",")
+	ipAddressList := strings.Split(hostCreateQuery.IPList, ",")
 	hostAddressList := []types.HostAddress{}
 
 	for _, ipAddress := range ipAddressList {
@@ -74,7 +80,7 @@ func (controller *hostController) Create(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, ext, "eng")
+	responseString, err := controller.interactor.Create(data, hostCreateQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "HostController Create: controller.interactor.Create"))
@@ -85,17 +91,19 @@ func (controller *hostController) Create(c *gin.Context) {
 
 func (controller *hostController) Update(c *gin.Context) {
 
-	hostName := c.Query("dnslist")
-	ext := c.Query("ext")
+	var hostUpdateQuery queries.HostUpdateQuery
+	c.ShouldBindQuery(&hostUpdateQuery)
+
+	hostName := hostUpdateQuery.DNSList
 
 	if hostName == "" {
-		hostName = c.Query("host")
+		hostName = hostUpdateQuery.Host
 	}
 
-	addIPAddressList := strings.Split(c.Query("addIP"), ",")
+	addIPAddressList := strings.Split(hostUpdateQuery.AddIPList, ",")
 	addHostAddressList := []types.HostAddress{}
 
-	removeIPAddressList := strings.Split(c.Query("removeIP"), ",")
+	removeIPAddressList := strings.Split(hostUpdateQuery.RemoveIPList, ",")
 	removeHostAddressList := []types.HostAddress{}
 
 	for _, ipAddress := range addIPAddressList {
@@ -137,7 +145,7 @@ func (controller *hostController) Update(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Update(data, ext, "eng")
+	responseString, err := controller.interactor.Update(data, hostUpdateQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "HostController Update: controller.interactor.Update"))
@@ -148,11 +156,13 @@ func (controller *hostController) Update(c *gin.Context) {
 
 func (controller *hostController) Delete(c *gin.Context) {
 
-	hostName := c.Query("dnslist")
-	ext := c.Query("ext")
+	var hostDeleteQuery queries.HostDeleteQuery
+	c.ShouldBindQuery(&hostDeleteQuery)
+
+	hostName := hostDeleteQuery.DNSList
 
 	if hostName == "" {
-		hostName = c.Query("host")
+		hostName = hostDeleteQuery.Host
 	}
 
 	data := types.HostDeleteType{
@@ -161,7 +171,7 @@ func (controller *hostController) Delete(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Delete(data, ext, "eng")
+	responseString, err := controller.interactor.Delete(data, hostDeleteQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "HostController Delete: controller.interactor.Delete"))
@@ -172,11 +182,13 @@ func (controller *hostController) Delete(c *gin.Context) {
 
 func (controller *hostController) Info(c *gin.Context) {
 
-	hostName := c.Query("dnslist")
-	ext := c.Query("ext")
+	var hostInfoQuery queries.HostInfoQuery
+	c.ShouldBindQuery(&hostInfoQuery)
+
+	hostName := hostInfoQuery.DNSList
 
 	if hostName == "" {
-		hostName = c.Query("host")
+		hostName = hostInfoQuery.Host
 	}
 
 	data := types.HostInfoType{
@@ -185,7 +197,7 @@ func (controller *hostController) Info(c *gin.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Info(data, ext, "eng")
+	responseString, err := controller.interactor.Info(data, hostInfoQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "HostController Info: controller.interactor.Info"))

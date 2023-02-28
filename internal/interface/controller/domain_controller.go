@@ -32,7 +32,10 @@ func NewDomainController(interactor interactor.DomainInteractor) DomainControlle
 
 func (controller *domainController) Check(c *gin.Context) {
 
-	domainList := strings.Split(c.Query("domainlist"), ",")
+	var domainCheckQuery queries.DomainCheckQuery
+	c.ShouldBindQuery(&domainCheckQuery)
+
+	domainList := strings.Split(domainCheckQuery.DomainList, ",")
 
 	data := types.DomainCheckType{
 		Check: types.DomainCheck{
@@ -51,15 +54,11 @@ func (controller *domainController) Check(c *gin.Context) {
 
 func (controller *domainController) Create(c *gin.Context) {
 
-	domain := c.Query("domain")
-	ns := strings.Split(c.Query("ns"), ",")
-	registrantContact := c.Query("regcon")
-	adminContact := c.Query("admcon")
-	techContact := c.Query("techcon")
-	billingContact := c.Query("bilcon")
-	authInfo := c.Query("authinfo")
-	period, err := strconv.Atoi(c.Query("period"))
-	ext := c.Query("ext")
+	var domainCreateQuery queries.DomainCreateQuery
+	c.ShouldBindQuery(&domainCreateQuery)
+
+	ns := strings.Split(domainCreateQuery.Nameserver, ",")
+	period, err := strconv.Atoi(domainCreateQuery.Period)
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Create"))
@@ -67,7 +66,7 @@ func (controller *domainController) Create(c *gin.Context) {
 
 	data := types.DomainCreateType{
 		Create: types.DomainCreate{
-			Name: domain,
+			Name: domainCreateQuery.Domain,
 			Period: types.Period{
 				Value: period,
 				Unit:  "y", // yearly
@@ -75,28 +74,28 @@ func (controller *domainController) Create(c *gin.Context) {
 			NameServer: &types.NameServer{
 				HostObject: ns,
 			},
-			Registrant: registrantContact,
+			Registrant: domainCreateQuery.RegistrantContact,
 			Contacts: []types.Contact{
 				{
-					Name: adminContact,
+					Name: domainCreateQuery.AdminContact,
 					Type: "admin",
 				},
 				{
-					Name: techContact,
+					Name: domainCreateQuery.TechContact,
 					Type: "tech",
 				},
 				{
-					Name: billingContact,
+					Name: domainCreateQuery.BillingContact,
 					Type: "billing",
 				},
 			},
 			AuthInfo: &types.AuthInfo{
-				Password: authInfo,
+				Password: domainCreateQuery.AuthInfo,
 			},
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, ext, "eng")
+	responseString, err := controller.interactor.Create(data, domainCreateQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Create: controller.interactor.Create"))
@@ -107,16 +106,16 @@ func (controller *domainController) Create(c *gin.Context) {
 
 func (controller *domainController) Delete(c *gin.Context) {
 
-	domain := c.Query("domain")
-	ext := c.Query("ext")
+	var domainDeleteQuery queries.DomainDeleteQuery
+	c.ShouldBindQuery(&domainDeleteQuery)
 
 	data := types.DomainDeleteType{
 		Delete: types.DomainDelete{
-			Name: domain,
+			Name: domainDeleteQuery.Domain,
 		},
 	}
 
-	responseString, err := controller.interactor.Delete(data, ext, "eng")
+	responseString, err := controller.interactor.Delete(data, domainDeleteQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Delete: controller.interactor.Delete"))
@@ -127,18 +126,18 @@ func (controller *domainController) Delete(c *gin.Context) {
 
 func (controller *domainController) Info(c *gin.Context) {
 
-	domain := c.Query("domain")
-	ext := c.Query("ext")
+	var domainInfoQuery queries.DomainInfoQuery
+	c.ShouldBindQuery(&domainInfoQuery)
 
 	data := types.DomainInfoType{
 		Info: types.DomainInfo{
 			Name: types.DomainInfoName{
-				Name: domain,
+				Name: domainInfoQuery.Domain,
 			},
 		},
 	}
 
-	responseString, err := controller.interactor.Info(data, ext, "eng")
+	responseString, err := controller.interactor.Info(data, domainInfoQuery.Extension, "eng")
 
 	if err != nil {
 		log.Println(errors.Wrap(err, "DomainController Info: controller.interactor.Info"))
