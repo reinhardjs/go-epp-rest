@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/queries"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -30,7 +31,10 @@ func NewContactController(interactor interactor.ContactInteractor) ContactContro
 
 func (controller *contactController) Check(c *gin.Context) {
 
-	contactList := strings.Split(c.Query("contactlist"), ",")
+	var contactCheckQuery queries.ContactCheckQuery
+	c.ShouldBindQuery(&contactCheckQuery)
+
+	contactList := strings.Split(contactCheckQuery.ContactList, ",")
 
 	data := types.ContactCheckType{
 		Check: types.ContactCheck{
@@ -49,45 +53,33 @@ func (controller *contactController) Check(c *gin.Context) {
 
 func (controller *contactController) Create(c *gin.Context) {
 
-	contact := c.Query("contact")
-	email := c.Query("email")
-	authInfo := c.Query("authinfo")
-	phone := c.Query("phone")
-	fax := c.Query("fax")
-	fname := c.Query("fname")
-	lname := c.Query("lname")
-	name := fname + " " + lname
-	company := c.Query("company")
-	addr1 := c.Query("addr1")
-	addr2 := c.Query("addr2")
-	city := c.Query("city")
-	state := c.Query("state")
-	zip := c.Query("zip")
-	country := c.Query("country")
+	var contactCreateQuery queries.ContactCreateQuery
+	c.ShouldBindQuery(&contactCreateQuery)
+	name := contactCreateQuery.Firstname + " " + contactCreateQuery.Lastname
 
 	data := types.ContactCreateType{
 		Create: types.ContactCreate{
-			ID:    contact,
-			Email: email,
+			ID:    contactCreateQuery.Contact,
+			Email: contactCreateQuery.Email,
 			AuthInfo: types.AuthInfo{
-				Password: authInfo,
+				Password: contactCreateQuery.AuthInfo,
 			},
 			Voice: types.E164Type{
-				Value: phone,
+				Value: contactCreateQuery.Phone,
 			},
 			Fax: types.E164Type{
-				Value: fax,
+				Value: contactCreateQuery.Fax,
 			},
 			PostalInfo: []types.PostalInfo{
 				{
 					Name:         name,
-					Organization: company,
+					Organization: contactCreateQuery.Company,
 					Address: types.Address{
-						Street:        []string{addr1, addr2},
-						City:          city,
-						StateProvince: state,
-						PostalCode:    zip,
-						CountryCode:   country,
+						Street:        []string{contactCreateQuery.Address1, contactCreateQuery.Address2},
+						City:          contactCreateQuery.City,
+						StateProvince: contactCreateQuery.State,
+						PostalCode:    contactCreateQuery.Zip,
+						CountryCode:   contactCreateQuery.Country,
 					},
 					Type: types.PostalInfoType(types.PostalInfoInternational),
 				},
@@ -106,43 +98,32 @@ func (controller *contactController) Create(c *gin.Context) {
 
 func (controller *contactController) Update(c *gin.Context) {
 
-	contact := c.Query("contact")
-	email := c.Query("email")
+	var contactUpdateQuery queries.ContactUpdateQuery
+	c.ShouldBindQuery(&contactUpdateQuery)
 	// authInfo := c.Query("authinfo")
-	phone := c.Query("phone")
-	fax := c.Query("fax")
-	fname := c.Query("fname")
-	lname := c.Query("lname")
-	name := fname + " " + lname
-	company := c.Query("company")
-	addr1 := c.Query("addr1")
-	addr2 := c.Query("addr2")
-	city := c.Query("city")
-	state := c.Query("state")
-	zip := c.Query("zip")
-	country := c.Query("country")
+	name := contactUpdateQuery.Firstname + " " + contactUpdateQuery.Lastname
 
 	data := types.ContactUpdateType{
 		Update: types.ContactUpdate{
-			Name: contact,
+			Name: contactUpdateQuery.Contact,
 			Change: &types.ContactChange{
-				Email: email,
+				Email: contactUpdateQuery.Email,
 				Voice: types.E164Type{
-					Value: phone,
+					Value: contactUpdateQuery.Phone,
 				},
 				Fax: types.E164Type{
-					Value: fax,
+					Value: contactUpdateQuery.Fax,
 				},
 				PostalInfo: []types.PostalInfo{
 					{
 						Name:         name,
-						Organization: company,
+						Organization: contactUpdateQuery.Company,
 						Address: types.Address{
-							Street:        []string{addr1, addr2},
-							City:          city,
-							StateProvince: state,
-							PostalCode:    zip,
-							CountryCode:   country,
+							Street:        []string{contactUpdateQuery.Address1, contactUpdateQuery.Address2},
+							City:          contactUpdateQuery.City,
+							StateProvince: contactUpdateQuery.State,
+							PostalCode:    contactUpdateQuery.Zip,
+							CountryCode:   contactUpdateQuery.Country,
 						},
 						Type: types.PostalInfoType(types.PostalInfoInternational),
 					},
@@ -162,11 +143,12 @@ func (controller *contactController) Update(c *gin.Context) {
 
 func (controller *contactController) Delete(c *gin.Context) {
 
-	contact := c.Query("contact")
+	var contactDeleteQuery queries.ContactDeleteQuery
+	c.ShouldBindQuery(&contactDeleteQuery)
 
 	data := types.ContactDeleteType{
 		Delete: types.ContactDelete{
-			Name: contact,
+			Name: contactDeleteQuery.Contact,
 		},
 	}
 
@@ -181,11 +163,12 @@ func (controller *contactController) Delete(c *gin.Context) {
 
 func (controller *contactController) Info(c *gin.Context) {
 
-	contact := c.Query("contact")
+	var contactInfoQuery queries.ContactInfoQuery
+	c.ShouldBindQuery(&contactInfoQuery)
 
 	data := types.ContactInfoType{
 		Info: types.ContactInfo{
-			Name: contact,
+			Name: contactInfoQuery.Contact,
 		},
 	}
 
