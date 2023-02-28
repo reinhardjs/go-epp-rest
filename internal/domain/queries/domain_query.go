@@ -1,5 +1,31 @@
 package queries
 
+type DomainCheckQuery struct {
+	DomainList string `form:"domainlist"`
+}
+
+type DomainCreateQuery struct {
+	Domain            string `form:"domain"`
+	Nameserver        string `form:"ns"`
+	RegistrantContact string `form:"regcon"`
+	AdminContact      string `form:"admcon"`
+	TechContact       string `form:"techcon"`
+	BillingContact    string `form:"bilcon"`
+	AuthInfo          string `form:"authinfo"`
+	Period            string `form:"period"`
+	Extension         string `form:"ext"`
+}
+
+type DomainDeleteQuery struct {
+	Domain    string `form:"domain"`
+	Extension string `form:"ext"`
+}
+
+type DomainInfoQuery struct {
+	Domain    string `form:"domain"`
+	Extension string `form:"ext"`
+}
+
 type SecDNSUpdateQuery struct {
 	Domain      string `form:"domain"`
 	Extension   string `form:"ext"`
