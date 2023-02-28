@@ -9,4 +9,5 @@ type DomainPresenter interface {
 	MapCreateResponse(response []byte) (model.CreateDomainResponse, error)
 	MapDeleteResponse(response []byte) (model.DeleteDomainResponse, error)
 	MapInfoResponse(response []byte) (model.InfoDomainResponse, error)
+	MapSecDNSUpdateResponse(response []byte) (model.SecDNSUpdateResponse, error)
 }

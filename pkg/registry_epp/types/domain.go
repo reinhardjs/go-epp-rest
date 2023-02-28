@@ -82,7 +82,40 @@ type DomainTransferType struct {
 
 // DomainUpdateType implements extension for update from domain-1.0.
 type DomainUpdateType struct {
-	Update DomainUpdate `xml:"urn:ietf:params:xml:ns:domain-1.0 command>update>update"`
+	Command DomainCommand `xml:"command"`
+}
+
+type DomainCommand struct {
+	Update    DomainUpdate `xml:"urn:ietf:params:xml:ns:domain-1.0 update>update"`
+	Extension *Extension   `xml:"extension"`
+}
+
+type Extension struct {
+	SecDNSUpdate *SecDNSUpdate `xml:"urn:ietf:params:xml:ns:secDNS-1.1 update"`
+}
+
+type SecDNSUpdate struct {
+	Add    *SecDNSAddRem `xml:"add"`
+	Remove *SecDNSAddRem `xml:"rem"`
+}
+type SecDNSAddRem struct {
+	All     *bool    `xml:"all"`
+	DSDatas []DSData `xml:"dsData"`
+}
+
+type DSData struct {
+	KeyTag     string   `xml:"keyTag"`
+	Alg        string   `xml:"alg"`
+	DigestType string   `xml:"digestType"`
+	Digest     string   `xml:"digest"`
+	KeyData    *KeyData `xml:"keyData"`
+}
+
+type KeyData struct {
+	Flags    string `xml:"flags"`
+	Protocol string `xml:"protocol"`
+	Alg      string `xml:"alg"`
+	PubKey   string `xml:"pubKey"`
 }
 
 // DomainChekDataType implements extension for chekData from domain-1.0.
@@ -164,10 +197,10 @@ type DomainTransfer struct {
 
 // DomainUpdate represents a domain update command.
 type DomainUpdate struct {
-	Name   string           `xml:"command>update>update>name"`
-	Add    *DomainAddRemove `xml:"command>update>update>add,omitempty"`
-	Remove *DomainAddRemove `xml:"command>update>update>rem,omitempty"`
-	Change *DomainChange    `xml:"command>update>update>chg,omitempty"`
+	Name   string           `xml:"name"`
+	Add    *DomainAddRemove `xml:"add,omitempty"`
+	Remove *DomainAddRemove `xml:"rem,omitempty"`
+	Change *DomainChange    `xml:"chg,omitempty"`
 }
 
 // DomainAddRemove ...

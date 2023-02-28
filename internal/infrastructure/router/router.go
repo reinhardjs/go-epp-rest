@@ -32,5 +32,7 @@ func NewRouter(appController controller.AppController) *gin.Engine {
 	router.GET("/transfer/approve", func(c *gin.Context) { appController.Transfer.Approve((c)) })
 	router.GET("/transfer/reject", func(c *gin.Context) { appController.Transfer.Approve((c)) })
 
+	router.GET("domain/secdnsupdate", func(c *gin.Context) { appController.Domain.SecDNSUpdate(c) })
+
 	return router
 }

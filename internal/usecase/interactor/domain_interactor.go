@@ -19,6 +19,7 @@ type DomainInteractor interface {
 	Create(data interface{}, ext string, langTag string) (res string, err error)
 	Delete(data interface{}, ext string, langTag string) (res string, err error)
 	Info(data interface{}, ext string, langTag string) (res string, err error)
+	SecDNSUpdate(data interface{}, ext string, langTag string) (res string, err error)
 }
 
 func NewDomainInteractor(domainRepository repository.RegistrarRepository, presenter presenter.DomainPresenter) DomainInteractor {
@@ -106,6 +107,25 @@ func (interactor *domainInteractor) Info(data interface{}, ext string, langTag s
 
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Info: interactor.Presenter.MapInfoResponse")
+		return
+	}
+
+	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
+
+	return
+}
+
+func (interactor *domainInteractor) SecDNSUpdate(data interface{}, ext string, langTag string) (res string, err error) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.RegistrarRepository.SecDNSUpdate")
+		return
+	}
+
+	responseObj, err := interactor.Presenter.MapSecDNSUpdateResponse(responseByte)
+
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.Presenter.MapSecDNSUpdateResponse")
 		return
 	}
 
