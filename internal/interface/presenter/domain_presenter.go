@@ -54,7 +54,7 @@ func (p *domainPresenter) MapInfoResponse(response []byte) (responseObject model
 func (p *domainPresenter) MapSecDNSUpdateResponse(response []byte) (responseObject model.SecDNSUpdateResponse, err error) {
 
 	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "DomainPresenter MapInfoResponse: xml.Unmarshal"))
+		log.Println(errors.Wrap(err, "DomainPresenter MapSecDNSUpdateResponse: xml.Unmarshal"))
 	}
 
 	return
