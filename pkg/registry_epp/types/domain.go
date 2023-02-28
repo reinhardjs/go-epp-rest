@@ -98,8 +98,8 @@ type SecDNSUpdate struct {
 	Add    *SecDNSAddRem `xml:"add"`
 	Remove *SecDNSAddRem `xml:"rem"`
 }
-
 type SecDNSAddRem struct {
+	All     *bool    `xml:"all"`
 	DSDatas []DSData `xml:"dsData"`
 }
 
