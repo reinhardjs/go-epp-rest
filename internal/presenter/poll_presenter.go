@@ -1,10 +1,8 @@
 package presenter
 
 import (
-	"encoding/xml"
-	"log"
+	"fmt"
 
-	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
@@ -15,20 +13,10 @@ func NewPollPresenter() presenter.PollPresenter {
 	return &pollPresenter{}
 }
 
-func (p *pollPresenter) Acknowledge(response []byte) (responseObject response.PollAckResponse, err error) {
-
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "PollPresenter Acknowledge: xml.Unmarshal"))
-	}
-
-	return
+func (p *pollPresenter) Acknowledge(responseObject response.PollAckResponse) string {
+	return fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 }
 
-func (p *pollPresenter) Request(response []byte) (responseObject response.PollRequestResponse, err error) {
-
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "PollPresenter Request: xml.Unmarshal"))
-	}
-
-	return
+func (p *pollPresenter) Request(responseObject response.PollRequestResponse) string {
+	return fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 }

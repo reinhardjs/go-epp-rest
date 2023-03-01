@@ -1,10 +1,8 @@
 package presenter
 
-import (
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/dto/response"
-)
+import "gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/dto/response"
 
 type PollPresenter interface {
-	Acknowledge(response []byte) (response.PollAckResponse, error)
-	Request(response []byte) (response.PollRequestResponse, error)
+	Acknowledge(responseObject response.PollAckResponse) string
+	Request(responseObject response.PollRequestResponse) string
 }

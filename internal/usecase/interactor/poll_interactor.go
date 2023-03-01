@@ -1,8 +1,6 @@
 package interactor
 
 import (
-	"fmt"
-
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -41,14 +39,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Request(responseByte)
-
-	if err != nil {
-		err = errors.Wrap(err, "PollInteractor Request: interactor.Presenter.MapRequestResponse")
-		return
-	}
-
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	responseObj, err := interactor.xmlMapper.MapXMLToModel(string(responseByte))
+	res = interactor.Presenter.Request(responseObj)
 	return
 }
