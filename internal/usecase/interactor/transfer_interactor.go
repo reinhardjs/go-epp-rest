@@ -35,7 +35,7 @@ func (interactor *transferInteractor) Check(data interface{}, ext string, langTa
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
+	responseObj, err := interactor.Presenter.Check(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Check: interactor.Presenter.MapCheckResponse")
@@ -54,7 +54,7 @@ func (interactor *transferInteractor) Request(data interface{}, ext string, lang
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapRequestResponse(responseByte)
+	responseObj, err := interactor.Presenter.Request(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapRequestResponse")
@@ -73,7 +73,7 @@ func (interactor *transferInteractor) Cancel(data interface{}, ext string, langT
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCancelResponse(responseByte)
+	responseObj, err := interactor.Presenter.Cancel(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapCancelResponse")
@@ -92,7 +92,7 @@ func (interactor *transferInteractor) Approve(data interface{}, ext string, lang
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapApproveResponse(responseByte)
+	responseObj, err := interactor.Presenter.Approve(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapApproveResponse")
@@ -111,7 +111,7 @@ func (interactor *transferInteractor) Reject(data interface{}, ext string, langT
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapRejectResponse(responseByte)
+	responseObj, err := interactor.Presenter.Reject(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapRejectResponse")

@@ -17,5 +17,5 @@ type Poll struct {
 // PollCommand represents the (attribute) data from a poll command tag.
 type PollCommand struct {
 	Operation PollOperation `xml:"op,attr"`
-	MessageID string        `xml:"msgID,attr"`
+	MessageID *string       `xml:"msgID,attr"`
 }

@@ -36,7 +36,7 @@ func (interactor *domainInteractor) Check(data interface{}, ext string, langTag 
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
+	responseObj, err := interactor.Presenter.Check(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Check: interactor.Presenter.MapResponse")
@@ -62,7 +62,7 @@ func (interactor *domainInteractor) Create(data interface{}, ext string, langTag
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
+	responseObj, err := interactor.Presenter.Create(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Create: interactor.Presenter.MapCreateResponse")
@@ -84,7 +84,7 @@ func (interactor *domainInteractor) Delete(data interface{}, ext string, langTag
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapDeleteResponse(responseByte)
+	responseObj, err := interactor.Presenter.Delete(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Delete: interactor.Presenter.MapDeleteResponse")
@@ -103,7 +103,7 @@ func (interactor *domainInteractor) Info(data interface{}, ext string, langTag s
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapInfoResponse(responseByte)
+	responseObj, err := interactor.Presenter.Info(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Info: interactor.Presenter.MapInfoResponse")
@@ -122,7 +122,7 @@ func (interactor *domainInteractor) SecDNSUpdate(data interface{}, ext string, l
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapSecDNSUpdateResponse(responseByte)
+	responseObj, err := interactor.Presenter.SecDNSUpdate(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.Presenter.MapSecDNSUpdateResponse")

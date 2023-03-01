@@ -36,7 +36,7 @@ func (interactor *hostInteractor) Check(data interface{}, ext string, langTag st
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
+	responseObj, err := interactor.Presenter.Check(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Send: interactor.HostPresenter.MapResponse")
@@ -62,7 +62,7 @@ func (interactor *hostInteractor) Create(data interface{}, ext string, langTag s
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
+	responseObj, err := interactor.Presenter.Create(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Create: interactor.Presenter.MapCreateResponse")
@@ -83,7 +83,7 @@ func (interactor *hostInteractor) Update(data interface{}, ext string, langTag s
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapUpdateResponse(responseByte)
+	responseObj, err := interactor.Presenter.Update(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Update: interactor.Presenter.MapUpdateResponse")
@@ -102,7 +102,7 @@ func (interactor *hostInteractor) Delete(data interface{}, ext string, langTag s
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapDeleteResponse(responseByte)
+	responseObj, err := interactor.Presenter.Delete(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Delete: interactor.Presenter.MapDeleteResponse")
@@ -121,7 +121,7 @@ func (interactor *hostInteractor) Info(data interface{}, ext string, langTag str
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapInfoResponse(responseByte)
+	responseObj, err := interactor.Presenter.Info(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Info: interactor.Presenter.MapInfoResponse")

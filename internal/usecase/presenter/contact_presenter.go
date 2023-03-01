@@ -1,13 +1,13 @@
 package presenter
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/responses"
+	"gitlab.com/merekmu/go-epp-rest/internal/model/dto/response"
 )
 
 type ContactPresenter interface {
-	MapCheckResponse(response []byte) (responses.CheckContactResponse, error)
-	MapCreateResponse(response []byte) (responses.CreateContactResponse, error)
-	MapUpdateResponse(response []byte) (responses.UpdateContactResponse, error)
-	MapDeleteResponse(response []byte) (responses.DeleteContactResponse, error)
-	MapInfoResponse(response []byte) (responses.InfoContactResponse, error)
+	Check(response []byte) (response.CheckContactResponse, error)
+	Create(response []byte) (response.CreateContactResponse, error)
+	Update(response []byte) (response.UpdateContactResponse, error)
+	Delete(response []byte) (response.DeleteContactResponse, error)
+	Info(response []byte) (response.InfoContactResponse, error)
 }

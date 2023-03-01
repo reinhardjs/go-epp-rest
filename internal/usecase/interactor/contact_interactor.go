@@ -36,7 +36,7 @@ func (interactor *contactInteractor) Check(data interface{}, ext string, langTag
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
+	responseObj, err := interactor.Presenter.Check(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Check: interactor.Presenter.MapCheckResponse")
@@ -62,7 +62,7 @@ func (interactor *contactInteractor) Create(data interface{}, ext string, langTa
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
+	responseObj, err := interactor.Presenter.Create(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Create: interactor.Presenter.MapCreateResponse")
@@ -83,7 +83,7 @@ func (interactor *contactInteractor) Update(data interface{}, ext string, langTa
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapUpdateResponse(responseByte)
+	responseObj, err := interactor.Presenter.Update(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Update: interactor.Presenter.MapCreateResponse")
@@ -102,7 +102,7 @@ func (interactor *contactInteractor) Delete(data interface{}, ext string, langTa
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapDeleteResponse(responseByte)
+	responseObj, err := interactor.Presenter.Delete(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Delete: interactor.Presenter.MapDeleteResponse")
@@ -121,7 +121,7 @@ func (interactor *contactInteractor) Info(data interface{}, ext string, langTag 
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapInfoResponse(responseByte)
+	responseObj, err := interactor.Presenter.Info(responseByte)
 
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Info: interactor.Presenter.MapInfoResponse")
