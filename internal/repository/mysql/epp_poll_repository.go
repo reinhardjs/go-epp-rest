@@ -2,15 +2,15 @@ package mysql
 
 import (
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
-	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
 	repository "gitlab.com/merekmu/go-epp-rest/internal/usecase/repository/mysql"
 )
 
 type eppPollRepository struct {
-	eppClient infrastructure.EppClient
+	eppClient adapter.EppClient
 }
 
-func NewEppPollRepository(eppClient infrastructure.EppClient) repository.EppPollRepository {
+func NewEppPollRepository(eppClient adapter.EppClient) repository.EppPollRepository {
 	return &eppPollRepository{eppClient}
 }
 

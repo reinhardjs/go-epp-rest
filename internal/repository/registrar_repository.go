@@ -4,16 +4,16 @@ import (
 	"log"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
 type registrarRepository struct {
-	eppClient infrastructure.EppClient
+	eppClient adapter.EppClient
 }
 
-func NewRegistrarRepository(eppClient infrastructure.EppClient) repository.RegistrarRepository {
+func NewRegistrarRepository(eppClient adapter.EppClient) repository.RegistrarRepository {
 	return &registrarRepository{eppClient}
 }
 

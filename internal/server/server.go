@@ -9,9 +9,9 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/config"
 	"gitlab.com/merekmu/go-epp-rest/constants"
-	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/mysql"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/registry"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
 	router "gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/routes"
 	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
@@ -53,7 +53,7 @@ func (s *server) Run() error {
 	if err != nil {
 		return errors.Wrap(err, "server run: tcpConnPool get")
 	}
-	eppClient := infrastructure.NewEppClient(tcpConn.Conn)
+	eppClient := adapter.NewEppClient(tcpConn.Conn)
 	response, err := eppClient.Login(username, password)
 	if err != nil {
 		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
