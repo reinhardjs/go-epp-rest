@@ -1,11 +1,11 @@
-package presentation
+package presenter
 
 import (
 	"encoding/xml"
 	"log"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/model/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
@@ -12,16 +13,18 @@ import (
 type pollInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.PollPresenter
+	xmlMapper           infrastructure.XMLMapper
 }
 
 type PollInteractor interface {
 	Poll() (res string, err error)
 }
 
-func NewPollInteractor(repository repository.RegistrarRepository, presenter presenter.PollPresenter) PollInteractor {
+func NewPollInteractor(repository repository.RegistrarRepository, presenter presenter.PollPresenter, xmlMapper infrastructure.XMLMapper) PollInteractor {
 	return &pollInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,
+		xmlMapper:           xmlMapper,
 	}
 }
 

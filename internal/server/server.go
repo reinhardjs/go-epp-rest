@@ -10,9 +10,10 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/config"
 	"gitlab.com/merekmu/go-epp-rest/constants"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/mysql"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/registry"
-	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/router"
-	"gitlab.com/merekmu/go-epp-rest/pkg/mysql"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
+	router "gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/routes"
 	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
 
@@ -64,7 +65,8 @@ func (s *server) Run() error {
 		return errors.Wrap(err, "server Run: mysql.NewMysqlConnection()")
 	}
 
-	registry := registry.NewRegistry(eppClient, mysqlConn)
+	xmlMapper := mapper.NewXMLMapper()
+	registry := registry.NewRegistry(eppClient, mysqlConn, xmlMapper)
 	router := router.NewRouter(registry.NewAppController())
 
 	log.Println("Login command result :")

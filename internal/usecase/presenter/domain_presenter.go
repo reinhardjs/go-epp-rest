@@ -1,7 +1,7 @@
 package presenter
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/model/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/dto/response"
 )
 
 type DomainPresenter interface {

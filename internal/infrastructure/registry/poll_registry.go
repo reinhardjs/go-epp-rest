@@ -7,11 +7,12 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 )
 
-func (r *registry) NewContactController() controllers.ContactController {
-	registrarInteractor := interactor.NewContactInteractor(
+func (r *registry) NewPollController() controllers.PollController {
+	pollInteractor := interactor.NewPollInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
-		presenter.NewContactPresenter(),
+		presenter.NewPollPresenter(),
+		r.xmlMapper,
 	)
 
-	return controllers.NewContactController(registrarInteractor)
+	return controllers.NewPollController(pollInteractor)
 }

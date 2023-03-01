@@ -1,8 +1,8 @@
 package mysql
 
 import (
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure"
-	entities "gitlab.com/merekmu/go-epp-rest/internal/model/domain"
 	repository "gitlab.com/merekmu/go-epp-rest/internal/usecase/repository/mysql"
 )
 

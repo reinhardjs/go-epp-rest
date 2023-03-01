@@ -2,10 +2,10 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/merekmu/go-epp-rest/internal/delivery"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/controllers"
 )
 
-func NewRouter(appController delivery.AppController) *gin.Engine {
+func NewRouter(appController controllers.AppController) *gin.Engine {
 	router := gin.Default()
 	router.GET("/domain/check", func(c *gin.Context) { appController.Domain.Check(c) })
 	router.GET("/contact/check", func(c *gin.Context) { appController.Contact.Check(c) })

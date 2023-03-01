@@ -1,17 +1,17 @@
 package registry
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/delivery"
-	"gitlab.com/merekmu/go-epp-rest/internal/presentation"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/controllers"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/repository"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 )
 
-func (r *registry) NewHostController() delivery.HostController {
+func (r *registry) NewHostController() controllers.HostController {
 	registrarInteractor := interactor.NewHostInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
-		presentation.NewHostPresenter(),
+		presenter.NewHostPresenter(),
 	)
 
-	return delivery.NewHostController(registrarInteractor)
+	return controllers.NewHostController(registrarInteractor)
 }

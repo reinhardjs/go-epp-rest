@@ -1,4 +1,4 @@
-package infrastructure
+package mapper
 
 import (
 	"encoding/xml"

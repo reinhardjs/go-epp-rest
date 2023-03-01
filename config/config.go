@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/constants"
-	"gitlab.com/merekmu/go-epp-rest/pkg/mysql"
+	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/mysql"
 )
 
 type Config struct {
