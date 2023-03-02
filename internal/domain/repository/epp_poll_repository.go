@@ -1,4 +1,4 @@
-package mysql
+package repository
 
 import "gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
 
