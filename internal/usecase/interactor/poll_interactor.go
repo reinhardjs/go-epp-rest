@@ -2,16 +2,17 @@ package interactor
 
 import (
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/internal/adapter/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
+	infrastructure "gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
 type pollInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.PollPresenter
-	xmlMapper           infrastructure.XMLMapper
+	XMLMapper           infrastructure.XMLMapper
 }
 
 type PollInteractor interface {
@@ -22,7 +23,7 @@ func NewPollInteractor(repository repository.RegistrarRepository, presenter pres
 	return &pollInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,
-		xmlMapper:           xmlMapper,
+		XMLMapper:           xmlMapper,
 	}
 }
 
@@ -39,7 +40,8 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 		return
 	}
 
-	responseObj, err := interactor.xmlMapper.MapXMLToModel(string(responseByte))
+	responseObj := &response.PollRequestResponse{}
+	err = interactor.XMLMapper.MapXMLToModel(responseByte, responseObj)
 	res = interactor.Presenter.Request(responseObj)
 	return
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 

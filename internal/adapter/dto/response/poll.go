@@ -15,6 +15,14 @@ type PollRequestResponse struct {
 	TransactionID TransactionID        `xml:"response>trID"`
 }
 
+func (response *PollRequestResponse) GetResultCode() int {
+	return response.Result.Code
+}
+
+func (response *PollRequestResponse) GetResultMessage() string {
+	return response.Result.Message
+}
+
 type MessageQueue struct {
 	Count     string `xml:"count,attr"`
 	Id        string `xml:"id,attr"`

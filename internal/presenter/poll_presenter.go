@@ -3,7 +3,6 @@ package presenter
 import (
 	"fmt"
 
-	"gitlab.com/merekmu/go-epp-rest/internal/adapter/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 
@@ -13,10 +12,10 @@ func NewPollPresenter() presenter.PollPresenter {
 	return &pollPresenter{}
 }
 
-func (p *pollPresenter) Acknowledge(responseObject response.PollAckResponse) string {
-	return fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+func (p *pollPresenter) Acknowledge(responseObject presenter.PollResponse) string {
+	return fmt.Sprintf("%v %v", responseObject.GetResultCode(), responseObject.GetResultMessage())
 }
 
-func (p *pollPresenter) Request(responseObject response.PollRequestResponse) string {
-	return fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+func (p *pollPresenter) Request(responseObject presenter.PollResponse) string {
+	return fmt.Sprintf("%v %v", responseObject.GetResultCode(), responseObject.GetResultMessage())
 }

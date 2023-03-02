@@ -3,17 +3,16 @@ package mapper
 import (
 	"encoding/xml"
 
-	"gitlab.com/merekmu/go-epp-rest/internal/adapter/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
 )
 
 type XMLMapperImpl struct{}
 
-func NewXMLMapper() infrastructure.XMLMapper {
+func NewXMLMapper() adapter.XMLMapper {
 	return &XMLMapperImpl{}
 }
 
-func (m *XMLMapperImpl) MapXMLToModel(input string) (res response.PollRequestResponse, err error) {
-	err = xml.Unmarshal([]byte(input), &res)
-	return
+func (m *XMLMapperImpl) MapXMLToModel(origin []byte, destination interface{}) error {
+	err := xml.Unmarshal(origin, &destination)
+	return err
 }

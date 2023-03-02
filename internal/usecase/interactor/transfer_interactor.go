@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
 
 type transferInteractor struct {

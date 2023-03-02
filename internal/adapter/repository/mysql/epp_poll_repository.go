@@ -3,7 +3,7 @@ package mysql
 import (
 	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
-	repository "gitlab.com/merekmu/go-epp-rest/internal/usecase/repository/mysql"
+	repository "gitlab.com/merekmu/go-epp-rest/internal/domain/repository/mysql"
 )
 
 type eppPollRepository struct {

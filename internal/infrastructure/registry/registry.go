@@ -3,7 +3,7 @@ package registry
 import (
 	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
-	usecase "gitlab.com/merekmu/go-epp-rest/internal/usecase/infrastructure"
+	usecase "gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
 	"gorm.io/gorm"
 )
 
