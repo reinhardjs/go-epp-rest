@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/dto/request"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )

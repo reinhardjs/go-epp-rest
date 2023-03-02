@@ -1,8 +1,8 @@
 package registry
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/controllers"
+	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
 	usecase "gitlab.com/merekmu/go-epp-rest/internal/usecase/infrastructure"
 	"gorm.io/gorm"
 )

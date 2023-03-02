@@ -1,7 +1,7 @@
 package presenter
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/adapter/dto/response"
 )
 
 type HostPresenter interface {

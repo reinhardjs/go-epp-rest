@@ -1,7 +1,7 @@
 package registry
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/controllers"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/repository"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"

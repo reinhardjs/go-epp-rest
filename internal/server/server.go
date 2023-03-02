@@ -9,11 +9,11 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/config"
 	"gitlab.com/merekmu/go-epp-rest/constants"
+	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/adapter/mapper"
+	router "gitlab.com/merekmu/go-epp-rest/internal/delivery/http/routes"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/mysql"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/registry"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
-	router "gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/routes"
 	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
 

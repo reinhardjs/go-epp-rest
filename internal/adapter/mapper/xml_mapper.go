@@ -3,7 +3,7 @@ package mapper
 import (
 	"encoding/xml"
 
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/adapter/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/infrastructure"
 )
 

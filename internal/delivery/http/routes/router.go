@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/delivery/http/controllers"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
 )
 
 func NewRouter(appController controllers.AppController) *gin.Engine {
