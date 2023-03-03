@@ -7,9 +7,9 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
 	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/repository"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 

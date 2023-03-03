@@ -4,9 +4,9 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/repository"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
 
 type domainInteractor struct {

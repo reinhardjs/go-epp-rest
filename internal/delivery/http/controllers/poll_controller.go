@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 )
 
 type pollController struct {

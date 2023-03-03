@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 
 type transferPresenter struct{}
