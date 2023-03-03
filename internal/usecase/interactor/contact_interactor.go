@@ -5,8 +5,9 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/repository"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 )
 
 type contactInteractor struct {
@@ -14,15 +15,7 @@ type contactInteractor struct {
 	Presenter           presenter.ContactPresenter
 }
 
-type ContactInteractor interface {
-	Check(data interface{}, ext string, langTag string) (res string, err error)
-	Create(data interface{}, ext string, langTag string) (res string, err error)
-	Update(data interface{}, ext string, langTag string) (res string, err error)
-	Delete(data interface{}, ext string, langTag string) (res string, err error)
-	Info(data interface{}, ext string, langTag string) (res string, err error)
-}
-
-func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter) ContactInteractor {
+func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter) usecase.ContactInteractor {
 	return &contactInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,

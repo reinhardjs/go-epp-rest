@@ -6,9 +6,10 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/common/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/repository"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
@@ -19,11 +20,7 @@ type pollInteractor struct {
 	XMLMapper           adapter.XMLMapper
 }
 
-type PollInteractor interface {
-	Poll() (res string, err error)
-}
-
-func NewPollInteractor(eppPollRepository repository.EppPollRepository, registrarRepository repository.RegistrarRepository, presenter presenter.PollPresenter, xmlMapper adapter.XMLMapper) PollInteractor {
+func NewPollInteractor(eppPollRepository repository.EppPollRepository, registrarRepository repository.RegistrarRepository, presenter presenter.PollPresenter, xmlMapper adapter.XMLMapper) usecase.PollInteractor {
 	return &pollInteractor{
 		EppPollRepository:   eppPollRepository,
 		RegistrarRepository: registrarRepository,

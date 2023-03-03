@@ -5,18 +5,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 )
 
 type pollController struct {
-	interactor interactor.PollInteractor
+	interactor usecase.PollInteractor
 }
 
 type PollController interface {
 	Poll(c *gin.Context)
 }
 
-func NewPollController(interactor interactor.PollInteractor) PollController {
+func NewPollController(interactor usecase.PollInteractor) PollController {
 	return &pollController{
 		interactor: interactor,
 	}

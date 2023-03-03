@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/repository"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 )
 
 type transferInteractor struct {
@@ -13,15 +14,7 @@ type transferInteractor struct {
 	Presenter           presenter.TransferPresenter
 }
 
-type TransferInteractor interface {
-	Check(data interface{}, ext string, langTag string) (res string, err error)
-	Request(data interface{}, ext string, langTag string) (res string, err error)
-	Cancel(data interface{}, ext string, langTag string) (res string, err error)
-	Approve(data interface{}, ext string, langTag string) (res string, err error)
-	Reject(data interface{}, ext string, langTag string) (res string, err error)
-}
-
-func NewTransferInteractor(repository repository.RegistrarRepository, presenter presenter.TransferPresenter) TransferInteractor {
+func NewTransferInteractor(repository repository.RegistrarRepository, presenter presenter.TransferPresenter) usecase.TransferInteractor {
 	return &transferInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,

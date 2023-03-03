@@ -5,8 +5,9 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/repository"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 )
 
 type hostInteractor struct {
@@ -14,15 +15,7 @@ type hostInteractor struct {
 	Presenter           presenter.HostPresenter
 }
 
-type HostInteractor interface {
-	Check(data interface{}, ext string, langTag string) (res string, err error)
-	Create(data interface{}, ext string, langTag string) (res string, err error)
-	Update(data interface{}, ext string, langTag string) (res string, err error)
-	Delete(data interface{}, ext string, langTag string) (res string, err error)
-	Info(data interface{}, ext string, langTag string) (res string, err error)
-}
-
-func NewHostInteractor(repository repository.RegistrarRepository, presenter presenter.HostPresenter) HostInteractor {
+func NewHostInteractor(repository repository.RegistrarRepository, presenter presenter.HostPresenter) usecase.HostInteractor {
 	return &hostInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,

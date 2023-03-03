@@ -6,12 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/common/dto/request"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
 type transferController struct {
-	interactor interactor.TransferInteractor
+	interactor usecase.TransferInteractor
 }
 
 type TransferController interface {
@@ -22,7 +22,7 @@ type TransferController interface {
 	Reject(c *gin.Context)
 }
 
-func NewTransferController(interactor interactor.TransferInteractor) TransferController {
+func NewTransferController(interactor usecase.TransferInteractor) TransferController {
 	return &transferController{
 		interactor: interactor,
 	}

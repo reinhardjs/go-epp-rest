@@ -8,12 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/common/dto/request"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
 type domainController struct {
-	interactor interactor.DomainInteractor
+	interactor usecase.DomainInteractor
 }
 
 type DomainController interface {
@@ -24,7 +24,7 @@ type DomainController interface {
 	SecDNSUpdate(c *gin.Context)
 }
 
-func NewDomainController(interactor interactor.DomainInteractor) DomainController {
+func NewDomainController(interactor usecase.DomainInteractor) DomainController {
 	return &domainController{
 		interactor: interactor,
 	}

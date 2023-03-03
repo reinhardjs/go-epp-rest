@@ -1,23 +1,22 @@
 package registry
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
-	usecase "gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
 	"gorm.io/gorm"
 )
 
 type registry struct {
 	eppClient adapter.EppClient
 	mysqlConn *gorm.DB
-	xmlMapper usecase.XMLMapper
+	xmlMapper adapter.XMLMapper
 }
 
 type Registry interface {
 	NewAppController() controllers.AppController
 }
 
-func NewRegistry(eppClient adapter.EppClient, mysqlConn *gorm.DB, xmlMapper usecase.XMLMapper) Registry {
+func NewRegistry(eppClient adapter.EppClient, mysqlConn *gorm.DB, xmlMapper adapter.XMLMapper) Registry {
 	return &registry{eppClient: eppClient, mysqlConn: mysqlConn, xmlMapper: xmlMapper}
 }
 

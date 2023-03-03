@@ -7,12 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/common/dto/request"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
 type contactController struct {
-	interactor interactor.ContactInteractor
+	interactor usecase.ContactInteractor
 }
 
 type ContactController interface {
@@ -23,7 +23,7 @@ type ContactController interface {
 	Info(c *gin.Context)
 }
 
-func NewContactController(interactor interactor.ContactInteractor) ContactController {
+func NewContactController(interactor usecase.ContactInteractor) ContactController {
 	return &contactController{
 		interactor: interactor,
 	}

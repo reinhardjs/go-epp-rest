@@ -3,7 +3,7 @@ package presenter
 import (
 	"fmt"
 
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
 )
 
 type pollPresenter struct{}

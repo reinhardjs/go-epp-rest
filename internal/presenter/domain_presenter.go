@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"gitlab.com/merekmu/go-epp-rest/internal/common/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/presenter"
 )
 
 type domainPresenter struct{}

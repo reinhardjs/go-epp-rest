@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/repository"
 	"gorm.io/gorm"
 )
 

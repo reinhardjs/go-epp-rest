@@ -7,12 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/common/dto/request"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/interactor"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
 type hostController struct {
-	interactor interactor.HostInteractor
+	interactor usecase.HostInteractor
 }
 
 type HostController interface {
@@ -23,7 +23,7 @@ type HostController interface {
 	Info(c *gin.Context)
 }
 
-func NewHostController(interactor interactor.HostInteractor) HostController {
+func NewHostController(interactor usecase.HostInteractor) HostController {
 	return &hostController{
 		interactor: interactor,
 	}

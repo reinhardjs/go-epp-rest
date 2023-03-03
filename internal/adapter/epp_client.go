@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -15,12 +16,7 @@ type eppClient struct {
 	conn net.Conn
 }
 
-type EppClient interface {
-	Send(data []byte) ([]byte, error)
-	Login(username, password string) ([]byte, error)
-}
-
-func NewEppClient(conn net.Conn) EppClient {
+func NewEppClient(conn net.Conn) adapter.EppClient {
 	return &eppClient{
 		conn: conn,
 	}
