@@ -1,5 +1,5 @@
 package adapter
 
 type XMLMapper interface {
-	MapXMLToModel(origin []byte, destination interface{}) error
+	Decode(origin []byte, destination interface{}) error
 }

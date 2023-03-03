@@ -12,7 +12,7 @@ func NewXMLMapper() adapter.XMLMapper {
 	return &XMLMapperImpl{}
 }
 
-func (m *XMLMapperImpl) MapXMLToModel(origin []byte, destination interface{}) error {
+func (m *XMLMapperImpl) Decode(origin []byte, destination interface{}) error {
 	err := xml.Unmarshal(origin, &destination)
 	return err
 }

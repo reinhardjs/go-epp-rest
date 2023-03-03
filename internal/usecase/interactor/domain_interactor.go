@@ -38,7 +38,7 @@ func (interactor *domainInteractor) Check(data interface{}, ext string, langTag 
 	}
 
 	responseDTO := &response.CheckDomainResponse{}
-	err = interactor.XMLMapper.MapXMLToModel(responseByte, responseDTO)
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
 		return
@@ -56,7 +56,7 @@ func (interactor *domainInteractor) Create(data interface{}, ext string, langTag
 	}
 
 	responseDTO := &response.CreateDomainResponse{}
-	err = interactor.XMLMapper.MapXMLToModel(responseByte, responseDTO)
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
 		return
@@ -74,7 +74,7 @@ func (interactor *domainInteractor) Delete(data interface{}, ext string, langTag
 	}
 
 	responseDTO := &response.DeleteDomainResponse{}
-	err = interactor.XMLMapper.MapXMLToModel(responseByte, responseDTO)
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
 		return
@@ -92,7 +92,7 @@ func (interactor *domainInteractor) Info(data interface{}, ext string, langTag s
 	}
 
 	responseDTO := &response.InfoDomainResponse{}
-	err = interactor.XMLMapper.MapXMLToModel(responseByte, responseDTO)
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
 		return
@@ -110,7 +110,7 @@ func (interactor *domainInteractor) SecDNSUpdate(data interface{}, ext string, l
 	}
 
 	responseDTO := &response.SecDNSUpdateResponse{}
-	err = interactor.XMLMapper.MapXMLToModel(responseByte, responseDTO)
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
 		return

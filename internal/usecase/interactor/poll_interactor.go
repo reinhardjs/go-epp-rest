@@ -40,7 +40,9 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 		},
 	}
 
-	code := -1
+	var responseDTO response.PollRequestResponse
+	var code int = -1
+
 	for code != 1300 {
 		responseByte, err := interactor.RegistrarRepository.SendCommand(pollRequestData)
 		if err != nil {
@@ -48,9 +50,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 			break
 		}
 
-		responseDTO := &response.PollRequestResponse{}
-		err = interactor.XMLMapper.MapXMLToModel(responseByte, responseDTO)
-
+		err = interactor.XMLMapper.Decode(responseByte, &responseDTO)
 		code = responseDTO.Result.Code
 
 		if responseDTO.MessageQueue != nil {
@@ -133,15 +133,16 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 			code = 1300
 			break
 		}
-
-		if code == 1300 {
-			responseDTO.Result.Code = 1000
-			responseDTO.Result.Message = "No Message"
-		}
-
-		res = interactor.Presenter.Request(&presenter.PollRequestResponseImpl{
-			DTO: responseDTO,
-		})
 	}
+
+	if code == 1300 {
+		responseDTO.Result.Code = 1000
+		responseDTO.Result.Message = "No Message"
+	}
+
+	res = interactor.Presenter.Request(&presenter.PollRequestResponseImpl{
+		DTO: &responseDTO,
+	})
+
 	return
 }
