@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/adapter/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/common/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/repository"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"

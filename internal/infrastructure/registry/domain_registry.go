@@ -11,6 +11,7 @@ func (r *registry) NewDomainController() controllers.DomainController {
 	registrarInteractor := interactor.NewDomainInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
 		presenter.NewDomainPresenter(),
+		r.xmlMapper,
 	)
 
 	return controllers.NewDomainController(registrarInteractor)
