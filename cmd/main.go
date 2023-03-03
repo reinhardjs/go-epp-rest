@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/config"
-	"gitlab.com/merekmu/go-epp-rest/internal/delivery/server"
+	"gitlab.com/merekmu/go-epp-rest/internal/server"
 )
 
 func main() {
