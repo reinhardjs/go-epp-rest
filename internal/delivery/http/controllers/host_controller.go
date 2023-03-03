@@ -4,8 +4,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
@@ -16,11 +16,11 @@ type hostController struct {
 }
 
 type HostController interface {
-	Check(c *gin.Context)
-	Create(c *gin.Context)
-	Update(c *gin.Context)
-	Delete(c *gin.Context)
-	Info(c *gin.Context)
+	Check(c infrastructure.Context)
+	Create(c infrastructure.Context)
+	Update(c infrastructure.Context)
+	Delete(c infrastructure.Context)
+	Info(c infrastructure.Context)
 }
 
 func NewHostController(interactor usecase.HostInteractor) HostController {
@@ -29,10 +29,10 @@ func NewHostController(interactor usecase.HostInteractor) HostController {
 	}
 }
 
-func (controller *hostController) Check(c *gin.Context) {
+func (controller *hostController) Check(c infrastructure.Context) {
 
 	var hostCheckQuery request.HostCheckQuery
-	c.ShouldBindQuery(&hostCheckQuery)
+	c.BindQuery(&hostCheckQuery)
 
 	hostList := strings.Split(hostCheckQuery.HostList, ",")
 
@@ -51,10 +51,10 @@ func (controller *hostController) Check(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *hostController) Create(c *gin.Context) {
+func (controller *hostController) Create(c infrastructure.Context) {
 
 	var hostCreateQuery request.HostCreateQuery
-	c.ShouldBindQuery(&hostCreateQuery)
+	c.BindQuery(&hostCreateQuery)
 
 	hostName := hostCreateQuery.DNSList
 
@@ -89,10 +89,10 @@ func (controller *hostController) Create(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *hostController) Update(c *gin.Context) {
+func (controller *hostController) Update(c infrastructure.Context) {
 
 	var hostUpdateQuery request.HostUpdateQuery
-	c.ShouldBindQuery(&hostUpdateQuery)
+	c.BindQuery(&hostUpdateQuery)
 
 	hostName := hostUpdateQuery.DNSList
 
@@ -154,10 +154,10 @@ func (controller *hostController) Update(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *hostController) Delete(c *gin.Context) {
+func (controller *hostController) Delete(c infrastructure.Context) {
 
 	var hostDeleteQuery request.HostDeleteQuery
-	c.ShouldBindQuery(&hostDeleteQuery)
+	c.BindQuery(&hostDeleteQuery)
 
 	hostName := hostDeleteQuery.DNSList
 
@@ -180,10 +180,10 @@ func (controller *hostController) Delete(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *hostController) Info(c *gin.Context) {
+func (controller *hostController) Info(c infrastructure.Context) {
 
 	var hostInfoQuery request.HostInfoQuery
-	c.ShouldBindQuery(&hostInfoQuery)
+	c.BindQuery(&hostInfoQuery)
 
 	hostName := hostInfoQuery.DNSList
 

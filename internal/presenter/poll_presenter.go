@@ -12,10 +12,15 @@ func NewPollPresenter() presenter.PollPresenter {
 	return &pollPresenter{}
 }
 
-func (p *pollPresenter) Acknowledge(responseObject presenter.PollResponse) string {
-	return fmt.Sprintf("%v %v", responseObject.GetResultCode(), responseObject.GetResultMessage())
-}
+func (p *pollPresenter) Poll(responseObject presenter.PollRequestResponseDTO) (message string) {
 
-func (p *pollPresenter) Request(responseObject presenter.PollResponse) string {
-	return fmt.Sprintf("%v %v", responseObject.GetResultCode(), responseObject.GetResultMessage())
+	if responseObject.GetResultCode() == 1301 {
+		message = fmt.Sprintf("%v %v", 1000, "Command Completed Successfully")
+	}
+
+	if responseObject.GetResultCode() == 1300 {
+		message = fmt.Sprintf("%v %v", 1000, "No Message")
+	}
+
+	return
 }

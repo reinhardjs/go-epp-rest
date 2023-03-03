@@ -3,8 +3,8 @@ package controllers
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 )
 
@@ -13,7 +13,7 @@ type pollController struct {
 }
 
 type PollController interface {
-	Poll(c *gin.Context)
+	Poll(c infrastructure.Context)
 }
 
 func NewPollController(interactor usecase.PollInteractor) PollController {
@@ -22,7 +22,7 @@ func NewPollController(interactor usecase.PollInteractor) PollController {
 	}
 }
 
-func (controller *pollController) Poll(c *gin.Context) {
+func (controller *pollController) Poll(c infrastructure.Context) {
 
 	responseString, err := controller.interactor.Poll()
 

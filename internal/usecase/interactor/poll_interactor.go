@@ -1,13 +1,10 @@
 package interactor
 
 import (
-	"time"
-
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/domain"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
@@ -17,10 +14,16 @@ type pollInteractor struct {
 	EppPollRepository   repository.EppPollRepository
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.PollPresenter
-	XMLMapper           adapter.XMLMapper
+	XMLMapper           mapper.XMLMapper
+	DtoToEntityMapper   mapper.DtoToEntity
 }
 
-func NewPollInteractor(eppPollRepository repository.EppPollRepository, registrarRepository repository.RegistrarRepository, presenter presenter.PollPresenter, xmlMapper adapter.XMLMapper) usecase.PollInteractor {
+func NewPollInteractor(
+	eppPollRepository repository.EppPollRepository,
+	registrarRepository repository.RegistrarRepository,
+	presenter presenter.PollPresenter,
+	xmlMapper mapper.XMLMapper,
+) usecase.PollInteractor {
 	return &pollInteractor{
 		EppPollRepository:   eppPollRepository,
 		RegistrarRepository: registrarRepository,
@@ -37,7 +40,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 		},
 	}
 
-	var responseDTO response.PollRequestResponse
+	var responseDTO domain.PollRequestResponseDTO
 	var code int = -1
 
 	for code != 1300 {
@@ -47,57 +50,23 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 			break
 		}
 
-		err = interactor.XMLMapper.Decode(responseByte, &responseDTO)
-		code = responseDTO.Result.Code
+		responseDTO, err = interactor.XMLMapper.ToPollRequestResponseDTO(responseByte)
+		if err != nil {
+			err = errors.Wrap(err, "PollInteractor Poll: interactor.XMLMapper.ToPollRequestResponseDTO")
+			break
+		}
 
-		if responseDTO.MessageQueue != nil {
+		code = responseDTO.GetResultCode()
+
+		if responseDTO.GetMessageQueue() != nil {
 
 			if code == 1301 {
-				// https://gosamples.dev/date-time-format-cheatsheet/
-				layoutFormat := "2006-01-02T15:04:05.999999999-0700"
 
-				queueDate, errParse := time.Parse(layoutFormat, responseDTO.MessageQueue.QueueDate)
-				if errParse != nil {
-					err = errors.Wrap(errParse, "PollInteractor Poll: QueueDate time.Parse")
-					break
-				}
+				eppPoll := interactor.DtoToEntityMapper.MapPollRequestResponseToEppPollEntity(responseDTO)
 
-				reDateTime, errParse := time.Parse(layoutFormat, responseDTO.ResultData.TransferData.RequestingDate)
-				if errParse != nil {
-					err = errors.Wrap(errParse, "PollInteractor Poll: RequestingDate time.Parse")
-					break
-				}
-
-				exDateTime, errParse := time.Parse(layoutFormat, responseDTO.ResultData.TransferData.ExpireDate)
-				if errParse != nil {
-					err = errors.Wrap(errParse, "PollInteractor Poll: ExpireDate time.Parse")
-					break
-				}
-
-				acDateTime, errParse := time.Parse(layoutFormat, responseDTO.ResultData.TransferData.ActingDate)
-				if errParse != nil {
-					err = errors.Wrap(errParse, "PollInteractor Poll: ActingDate time.Parse")
-					break
-				}
-
-				errInsert := interactor.EppPollRepository.Insert(entities.EPPPoll{
-					Registry:       "Verisign",
-					Datetime:       time.Now(),
-					MessageId:      responseDTO.MessageQueue.Id,
-					MessageCount:   responseDTO.MessageQueue.Count,
-					Message:        responseDTO.MessageQueue.Message,
-					QDate:          queueDate,
-					Domain:         responseDTO.ResultData.TransferData.Name,
-					Status:         string(responseDTO.ResultData.TransferData.TransferStatus),
-					RequestingDate: reDateTime,
-					ExpireDate:     exDateTime,
-					ActingDate:     acDateTime,
-					RequestingId:   responseDTO.ResultData.TransferData.RequestingID,
-					ActingId:       responseDTO.ResultData.TransferData.ActingID,
-				})
-
-				if errInsert != nil {
-					err = errors.Wrap(errParse, "PollInteractor Poll: EppPollRepository.Insert")
+				err = interactor.EppPollRepository.Insert(eppPoll)
+				if err != nil {
+					err = errors.Wrap(err, "PollInteractor Poll: EppPollRepository.Insert")
 					break
 				}
 
@@ -105,7 +74,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 				pollAcknowledgeData := types.Poll{
 					Poll: types.PollCommand{
 						Operation: types.PollOperationAcknowledge,
-						MessageID: &responseDTO.MessageQueue.Id,
+						MessageID: responseDTO.GetMessageQueueId(),
 					},
 				}
 				interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
@@ -116,7 +85,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 				pollAcknowledgeData := types.Poll{
 					Poll: types.PollCommand{
 						Operation: types.PollOperationAcknowledge,
-						MessageID: &responseDTO.MessageQueue.Id,
+						MessageID: responseDTO.GetMessageQueueId(),
 					},
 				}
 				interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
@@ -124,22 +93,14 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 			}
 
 			code = 1301
-			responseDTO.Result.Code = 1000
-			responseDTO.Result.Message = "Command Completed Successfully"
+			break
 		} else {
 			code = 1300
 			break
 		}
 	}
 
-	if code == 1300 {
-		responseDTO.Result.Code = 1000
-		responseDTO.Result.Message = "No Message"
-	}
-
-	res = interactor.Presenter.Request(&presenter.PollRequestResponseImpl{
-		DTO: &responseDTO,
-	})
+	res = interactor.Presenter.Poll(responseDTO.(presenter.PollRequestResponseDTO))
 
 	return
 }

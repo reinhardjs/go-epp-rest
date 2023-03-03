@@ -3,8 +3,8 @@ package controllers
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
@@ -15,11 +15,11 @@ type transferController struct {
 }
 
 type TransferController interface {
-	Check(c *gin.Context)
-	Request(c *gin.Context)
-	Cancel(c *gin.Context)
-	Approve(c *gin.Context)
-	Reject(c *gin.Context)
+	Check(c infrastructure.Context)
+	Request(c infrastructure.Context)
+	Cancel(c infrastructure.Context)
+	Approve(c infrastructure.Context)
+	Reject(c infrastructure.Context)
 }
 
 func NewTransferController(interactor usecase.TransferInteractor) TransferController {
@@ -28,10 +28,10 @@ func NewTransferController(interactor usecase.TransferInteractor) TransferContro
 	}
 }
 
-func (controller *transferController) Check(c *gin.Context) {
+func (controller *transferController) Check(c infrastructure.Context) {
 
 	var transferCheckQuery request.TransferCheckQuery
-	c.ShouldBindQuery(&transferCheckQuery)
+	c.BindQuery(&transferCheckQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -51,10 +51,10 @@ func (controller *transferController) Check(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *transferController) Request(c *gin.Context) {
+func (controller *transferController) Request(c infrastructure.Context) {
 
 	var transferRequestQuery request.TransferRequestQuery
-	c.ShouldBindQuery(&transferRequestQuery)
+	c.BindQuery(&transferRequestQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -77,10 +77,10 @@ func (controller *transferController) Request(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *transferController) Cancel(c *gin.Context) {
+func (controller *transferController) Cancel(c infrastructure.Context) {
 
 	var transferCancelQuery request.TransferCancelQuery
-	c.ShouldBindQuery(&transferCancelQuery)
+	c.BindQuery(&transferCancelQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -103,10 +103,10 @@ func (controller *transferController) Cancel(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *transferController) Approve(c *gin.Context) {
+func (controller *transferController) Approve(c infrastructure.Context) {
 
 	var transferApproveQuery request.TransferApproveQuery
-	c.ShouldBindQuery(&transferApproveQuery)
+	c.BindQuery(&transferApproveQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -129,10 +129,10 @@ func (controller *transferController) Approve(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *transferController) Reject(c *gin.Context) {
+func (controller *transferController) Reject(c infrastructure.Context) {
 
 	var transferRejectQuery request.TransferRejectQuery
-	c.ShouldBindQuery(&transferRejectQuery)
+	c.BindQuery(&transferRejectQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{

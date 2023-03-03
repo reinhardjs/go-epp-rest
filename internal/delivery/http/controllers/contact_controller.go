@@ -4,8 +4,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
@@ -16,11 +16,11 @@ type contactController struct {
 }
 
 type ContactController interface {
-	Check(c *gin.Context)
-	Create(c *gin.Context)
-	Update(c *gin.Context)
-	Delete(c *gin.Context)
-	Info(c *gin.Context)
+	Check(c infrastructure.Context)
+	Create(c infrastructure.Context)
+	Update(c infrastructure.Context)
+	Delete(c infrastructure.Context)
+	Info(c infrastructure.Context)
 }
 
 func NewContactController(interactor usecase.ContactInteractor) ContactController {
@@ -29,10 +29,10 @@ func NewContactController(interactor usecase.ContactInteractor) ContactControlle
 	}
 }
 
-func (controller *contactController) Check(c *gin.Context) {
+func (controller contactController) Check(c infrastructure.Context) {
 
 	var contactCheckQuery request.ContactCheckQuery
-	c.ShouldBindQuery(&contactCheckQuery)
+	c.BindQuery(&contactCheckQuery)
 
 	contactList := strings.Split(contactCheckQuery.ContactList, ",")
 
@@ -51,10 +51,10 @@ func (controller *contactController) Check(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *contactController) Create(c *gin.Context) {
+func (controller contactController) Create(c infrastructure.Context) {
 
 	var contactCreateQuery request.ContactCreateQuery
-	c.ShouldBindQuery(&contactCreateQuery)
+	c.BindQuery(&contactCreateQuery)
 	name := contactCreateQuery.Firstname + " " + contactCreateQuery.Lastname
 
 	data := types.ContactCreateType{
@@ -96,10 +96,10 @@ func (controller *contactController) Create(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *contactController) Update(c *gin.Context) {
+func (controller contactController) Update(c infrastructure.Context) {
 
 	var contactUpdateQuery request.ContactUpdateQuery
-	c.ShouldBindQuery(&contactUpdateQuery)
+	c.BindQuery(&contactUpdateQuery)
 	// authInfo := c.Query("authinfo")
 	name := contactUpdateQuery.Firstname + " " + contactUpdateQuery.Lastname
 
@@ -141,10 +141,10 @@ func (controller *contactController) Update(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *contactController) Delete(c *gin.Context) {
+func (controller contactController) Delete(c infrastructure.Context) {
 
 	var contactDeleteQuery request.ContactDeleteQuery
-	c.ShouldBindQuery(&contactDeleteQuery)
+	c.BindQuery(&contactDeleteQuery)
 
 	data := types.ContactDeleteType{
 		Delete: types.ContactDelete{
@@ -161,10 +161,10 @@ func (controller *contactController) Delete(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *contactController) Info(c *gin.Context) {
+func (controller contactController) Info(c infrastructure.Context) {
 
 	var contactInfoQuery request.ContactInfoQuery
-	c.ShouldBindQuery(&contactInfoQuery)
+	c.BindQuery(&contactInfoQuery)
 
 	data := types.ContactInfoType{
 		Info: types.ContactInfo{

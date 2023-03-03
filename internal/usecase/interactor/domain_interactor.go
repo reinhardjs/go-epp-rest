@@ -3,7 +3,7 @@ package interactor
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
@@ -12,10 +12,10 @@ import (
 type domainInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.DomainPresenter
-	XMLMapper           adapter.XMLMapper
+	XMLMapper           mapper.XMLMapper
 }
 
-func NewDomainInteractor(domainRepository repository.RegistrarRepository, presenter presenter.DomainPresenter, xmlMapper adapter.XMLMapper) usecase.DomainInteractor {
+func NewDomainInteractor(domainRepository repository.RegistrarRepository, presenter presenter.DomainPresenter, xmlMapper mapper.XMLMapper) usecase.DomainInteractor {
 	return &domainInteractor{
 		RegistrarRepository: domainRepository,
 		Presenter:           presenter,

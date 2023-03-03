@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
@@ -17,11 +17,11 @@ type domainController struct {
 }
 
 type DomainController interface {
-	Check(c *gin.Context)
-	Create(c *gin.Context)
-	Delete(c *gin.Context)
-	Info(c *gin.Context)
-	SecDNSUpdate(c *gin.Context)
+	Check(c infrastructure.Context)
+	Create(c infrastructure.Context)
+	Delete(c infrastructure.Context)
+	Info(c infrastructure.Context)
+	SecDNSUpdate(c infrastructure.Context)
 }
 
 func NewDomainController(interactor usecase.DomainInteractor) DomainController {
@@ -30,10 +30,10 @@ func NewDomainController(interactor usecase.DomainInteractor) DomainController {
 	}
 }
 
-func (controller *domainController) Check(c *gin.Context) {
+func (controller *domainController) Check(c infrastructure.Context) {
 
 	var domainCheckQuery request.DomainCheckQuery
-	c.ShouldBindQuery(&domainCheckQuery)
+	c.BindQuery(&domainCheckQuery)
 
 	domainList := strings.Split(domainCheckQuery.DomainList, ",")
 
@@ -52,10 +52,10 @@ func (controller *domainController) Check(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *domainController) Create(c *gin.Context) {
+func (controller *domainController) Create(c infrastructure.Context) {
 
 	var domainCreateQuery request.DomainCreateQuery
-	c.ShouldBindQuery(&domainCreateQuery)
+	c.BindQuery(&domainCreateQuery)
 
 	ns := strings.Split(domainCreateQuery.Nameserver, ",")
 	period, err := strconv.Atoi(domainCreateQuery.Period)
@@ -104,10 +104,10 @@ func (controller *domainController) Create(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *domainController) Delete(c *gin.Context) {
+func (controller *domainController) Delete(c infrastructure.Context) {
 
 	var domainDeleteQuery request.DomainDeleteQuery
-	c.ShouldBindQuery(&domainDeleteQuery)
+	c.BindQuery(&domainDeleteQuery)
 
 	data := types.DomainDeleteType{
 		Delete: types.DomainDelete{
@@ -124,10 +124,10 @@ func (controller *domainController) Delete(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *domainController) Info(c *gin.Context) {
+func (controller *domainController) Info(c infrastructure.Context) {
 
 	var domainInfoQuery request.DomainInfoQuery
-	c.ShouldBindQuery(&domainInfoQuery)
+	c.BindQuery(&domainInfoQuery)
 
 	data := types.DomainInfoType{
 		Info: types.DomainInfo{
@@ -146,14 +146,14 @@ func (controller *domainController) Info(c *gin.Context) {
 	c.String(200, responseString)
 }
 
-func (controller *domainController) SecDNSUpdate(c *gin.Context) {
+func (controller *domainController) SecDNSUpdate(c infrastructure.Context) {
 
 	AddDSDataList := []types.DSData{}
 	RemoveDSDataList := []types.DSData{}
 
 	var secDNSUpdateQuery request.SecDNSUpdateQuery
 
-	c.ShouldBindQuery(&secDNSUpdateQuery)
+	c.BindQuery(&secDNSUpdateQuery)
 
 	if len(strings.TrimSpace(secDNSUpdateQuery.DdKeytag0)) != 0 {
 		dsData := types.DSData{
