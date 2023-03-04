@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )

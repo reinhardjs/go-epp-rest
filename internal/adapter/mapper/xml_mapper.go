@@ -3,7 +3,7 @@ package mapper
 import (
 	"encoding/xml"
 
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 )
 
 type XMLMapperImpl struct{}

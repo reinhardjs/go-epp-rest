@@ -3,8 +3,8 @@ package interactor
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"

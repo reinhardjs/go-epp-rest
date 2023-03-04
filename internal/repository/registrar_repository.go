@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
-	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
