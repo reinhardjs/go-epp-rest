@@ -1,9 +1,7 @@
 package presenter
 
-type PollPresenter interface {
-	Poll(responseObject PollRequestResponseDTO) string
-}
+import "gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 
-type PollRequestResponseDTO interface {
-	GetResultCode() int
+type PollPresenter interface {
+	Poll(responseObject response.PollRequestResponse) string
 }

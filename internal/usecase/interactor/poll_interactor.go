@@ -2,9 +2,9 @@ package interactor
 
 import (
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
-	"gitlab.com/merekmu/go-epp-rest/internal/usecase/domain"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
@@ -40,7 +40,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 		},
 	}
 
-	var responseDTO domain.PollRequestResponseDTO
+	var responseDTO response.PollRequestResponse
 	var code int = -1
 
 	for code != 1300 {
@@ -50,15 +50,15 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 			break
 		}
 
-		responseDTO, err = interactor.XMLMapper.ToPollRequestResponseDTO(responseByte)
+		err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 		if err != nil {
 			err = errors.Wrap(err, "PollInteractor Poll: interactor.XMLMapper.ToPollRequestResponseDTO")
 			break
 		}
 
-		code = responseDTO.GetResultCode()
+		code = responseDTO.Result.Code
 
-		if responseDTO.GetMessageQueue() != nil {
+		if responseDTO.MessageQueue != nil {
 
 			if code == 1301 {
 
@@ -74,7 +74,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 				pollAcknowledgeData := types.Poll{
 					Poll: types.PollCommand{
 						Operation: types.PollOperationAcknowledge,
-						MessageID: responseDTO.GetMessageQueueId(),
+						MessageID: &responseDTO.MessageQueue.Id,
 					},
 				}
 				interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
@@ -85,7 +85,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 				pollAcknowledgeData := types.Poll{
 					Poll: types.PollCommand{
 						Operation: types.PollOperationAcknowledge,
-						MessageID: responseDTO.GetMessageQueueId(),
+						MessageID: &responseDTO.MessageQueue.Id,
 					},
 				}
 				interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
@@ -100,7 +100,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 		}
 	}
 
-	res = interactor.Presenter.Poll(responseDTO.(presenter.PollRequestResponseDTO))
+	res = interactor.Presenter.Poll(responseDTO)
 
 	return
 }
