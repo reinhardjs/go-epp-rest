@@ -52,7 +52,7 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 
 		err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 		if err != nil {
-			err = errors.Wrap(err, "PollInteractor Poll: interactor.XMLMapper.ToPollRequestResponseDTO")
+			err = errors.Wrap(err, "PollInteractor Poll: interactor.XMLMapper.Decode")
 			break
 		}
 
