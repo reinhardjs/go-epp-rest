@@ -5,16 +5,17 @@ import (
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/interfaces/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
 type registrarRepository struct {
 	eppClient adapter.EppClient
-	xmlMapper adapter.XMLMapper
+	xmlMapper mapper.XMLMapper
 }
 
-func NewRegistrarRepository(eppClient adapter.EppClient, xmlMapper adapter.XMLMapper) repository.RegistrarRepository {
+func NewRegistrarRepository(eppClient adapter.EppClient, xmlMapper mapper.XMLMapper) repository.RegistrarRepository {
 	return &registrarRepository{eppClient, xmlMapper}
 }
 
