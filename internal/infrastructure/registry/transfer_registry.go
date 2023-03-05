@@ -9,7 +9,7 @@ import (
 
 func (r *registry) NewTransferController() controllers.TransferController {
 	registrarInteractor := interactor.NewTransferInteractor(
-		repository.NewRegistrarRepository(r.eppClient, r.xmlMapper),
+		repository.NewRegistrarRepository(r.eppClient),
 		presenter.NewTransferPresenter(),
 	)
 

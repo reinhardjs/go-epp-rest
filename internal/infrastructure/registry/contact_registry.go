@@ -9,7 +9,7 @@ import (
 
 func (r *registry) NewContactController() controllers.ContactController {
 	registrarInteractor := interactor.NewContactInteractor(
-		repository.NewRegistrarRepository(r.eppClient, r.xmlMapper),
+		repository.NewRegistrarRepository(r.eppClient),
 		presenter.NewContactPresenter(),
 	)
 

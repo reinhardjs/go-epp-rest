@@ -9,7 +9,7 @@ import (
 
 func (r *registry) NewHostController() controllers.HostController {
 	registrarInteractor := interactor.NewHostInteractor(
-		repository.NewRegistrarRepository(r.eppClient, r.xmlMapper),
+		repository.NewRegistrarRepository(r.eppClient),
 		presenter.NewHostPresenter(),
 	)
 
