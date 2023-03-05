@@ -1,10 +1,10 @@
 package interactor
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
@@ -12,20 +12,14 @@ import (
 type domainInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.DomainPresenter
+	XMLMapper           mapper.XMLMapper
 }
 
-type DomainInteractor interface {
-	Check(data interface{}, ext string, langTag string) (res string, err error)
-	Create(data interface{}, ext string, langTag string) (res string, err error)
-	Delete(data interface{}, ext string, langTag string) (res string, err error)
-	Info(data interface{}, ext string, langTag string) (res string, err error)
-	SecDNSUpdate(data interface{}, ext string, langTag string) (res string, err error)
-}
-
-func NewDomainInteractor(domainRepository repository.RegistrarRepository, presenter presenter.DomainPresenter) DomainInteractor {
+func NewDomainInteractor(domainRepository repository.RegistrarRepository, presenter presenter.DomainPresenter, xmlMapper mapper.XMLMapper) usecase.DomainInteractor {
 	return &domainInteractor{
 		RegistrarRepository: domainRepository,
 		Presenter:           presenter,
+		XMLMapper:           xmlMapper,
 	}
 }
 
@@ -36,22 +30,14 @@ func (interactor *domainInteractor) Check(data interface{}, ext string, langTag 
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCheckResponse(responseByte)
+	responseDTO := &response.CheckDomainResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Check: interactor.Presenter.MapResponse")
 		return
 	}
 
-	for _, element := range responseObj.ResultData.CheckDatas {
-		notStr := ""
-		if element.Name.AvailKey == 0 {
-			notStr = "not "
-		}
-		res += fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr)
-	}
-	res = strings.TrimSuffix(res, "\n")
-
+	res = interactor.Presenter.Check(*responseDTO)
 	return
 }
 
@@ -62,74 +48,67 @@ func (interactor *domainInteractor) Create(data interface{}, ext string, langTag
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapCreateResponse(responseByte)
+	responseDTO := &response.CreateDomainResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Create: interactor.Presenter.MapCreateResponse")
 		return
 	}
 
-	res += fmt.Sprintf("Name %s\n", responseObj.ResultData.CreatedData.Name)
-	res += fmt.Sprintf("Create Date %s\n", responseObj.ResultData.CreatedData.CreatedDate)
-	res += fmt.Sprintf("Expire Date %s\n", responseObj.ResultData.CreatedData.ExpiredDate)
-	res = strings.TrimSuffix(res, "\n")
-
+	res = interactor.Presenter.Create(*responseDTO)
 	return
 }
 
 func (interactor *domainInteractor) Delete(data interface{}, ext string, langTag string) (res string, err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Delete: interactor.RegistrarRepository.SendCommand")
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapDeleteResponse(responseByte)
+	responseDTO := &response.DeleteDomainResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Delete: interactor.Presenter.MapDeleteResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Delete(*responseDTO)
 	return
 }
 
 func (interactor *domainInteractor) Info(data interface{}, ext string, langTag string) (res string, err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Info: interactor.RegistrarRepository.SendCommand")
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapInfoResponse(responseByte)
+	responseDTO := &response.InfoDomainResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Info: interactor.Presenter.MapInfoResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Info(*responseDTO)
 	return
 }
 
 func (interactor *domainInteractor) SecDNSUpdate(data interface{}, ext string, langTag string) (res string, err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.RegistrarRepository.SecDNSUpdate")
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
 		return
 	}
 
-	responseObj, err := interactor.Presenter.MapSecDNSUpdateResponse(responseByte)
+	responseDTO := &response.SecDNSUpdateResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.Presenter.MapSecDNSUpdateResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.SecDNSUpdate(*responseDTO)
 	return
 }

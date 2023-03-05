@@ -1,13 +1,13 @@
 package presenter
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/responses"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 )
 
 type TransferPresenter interface {
-	MapCheckResponse(response []byte) (responses.TransferCheckResponse, error)
-	MapRequestResponse(response []byte) (responses.TransferRequestResponse, error)
-	MapCancelResponse(response []byte) (responses.TransferCancelResponse, error)
-	MapApproveResponse(response []byte) (responses.TransferApproveResponse, error)
-	MapRejectResponse(response []byte) (responses.TransferRejectResponse, error)
+	Check(response.TransferCheckResponse) string
+	Request(response.TransferRequestResponse) string
+	Cancel(response.TransferCancelResponse) string
+	Approve(response.TransferApproveResponse) string
+	Reject(response.TransferRejectResponse) string
 }

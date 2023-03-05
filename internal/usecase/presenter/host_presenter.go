@@ -1,13 +1,13 @@
 package presenter
 
 import (
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/responses"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 )
 
 type HostPresenter interface {
-	MapCheckResponse(response []byte) (responses.CheckHostResponse, error)
-	MapCreateResponse(response []byte) (responses.CreateHostResponse, error)
-	MapUpdateResponse(response []byte) (responses.UpdateHostResponse, error)
-	MapDeleteResponse(response []byte) (responses.DeleteHostResponse, error)
-	MapInfoResponse(response []byte) (responses.InfoHostResponse, error)
+	Check(response.CheckHostResponse) string
+	Create(response.CreateHostResponse) string
+	Update(response.UpdateHostResponse) string
+	Delete(response.DeleteHostResponse) string
+	Info(response.InfoHostResponse) string
 }

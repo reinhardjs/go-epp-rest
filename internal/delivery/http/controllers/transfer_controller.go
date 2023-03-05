@@ -1,0 +1,156 @@
+package controllers
+
+import (
+	"log"
+
+	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
+)
+
+type transferController struct {
+	interactor usecase.TransferInteractor
+}
+
+type TransferController interface {
+	Check(c infrastructure.Context)
+	Request(c infrastructure.Context)
+	Cancel(c infrastructure.Context)
+	Approve(c infrastructure.Context)
+	Reject(c infrastructure.Context)
+}
+
+func NewTransferController(interactor usecase.TransferInteractor) TransferController {
+	return &transferController{
+		interactor: interactor,
+	}
+}
+
+func (controller *transferController) Check(c infrastructure.Context) {
+
+	var transferCheckQuery request.TransferCheckQuery
+	c.BindQuery(&transferCheckQuery)
+
+	data := types.TransferType{
+		TransferParent: types.Transfer{
+			Operation: "query",
+			Detail: types.TransferDetail{
+				Name: transferCheckQuery.Domain,
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Check(data, transferCheckQuery.Extension, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "TransferController Check: controller.interactor.Check"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *transferController) Request(c infrastructure.Context) {
+
+	var transferRequestQuery request.TransferRequestQuery
+	c.BindQuery(&transferRequestQuery)
+
+	data := types.TransferType{
+		TransferParent: types.Transfer{
+			Operation: "request",
+			Detail: types.TransferDetail{
+				Name: transferRequestQuery.Domain,
+				AuthInfo: &types.AuthInfo{
+					Password: transferRequestQuery.AuthInfo,
+				},
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Request(data, transferRequestQuery.Extension, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "TransferController Request: controller.interactor.Request"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *transferController) Cancel(c infrastructure.Context) {
+
+	var transferCancelQuery request.TransferCancelQuery
+	c.BindQuery(&transferCancelQuery)
+
+	data := types.TransferType{
+		TransferParent: types.Transfer{
+			Operation: "cancel",
+			Detail: types.TransferDetail{
+				Name: transferCancelQuery.Domain,
+				AuthInfo: &types.AuthInfo{
+					Password: transferCancelQuery.AuthInfo,
+				},
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Cancel(data, transferCancelQuery.Extension, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "TransferController Cancel: controller.interactor.Cancel"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *transferController) Approve(c infrastructure.Context) {
+
+	var transferApproveQuery request.TransferApproveQuery
+	c.BindQuery(&transferApproveQuery)
+
+	data := types.TransferType{
+		TransferParent: types.Transfer{
+			Operation: "approve",
+			Detail: types.TransferDetail{
+				Name: transferApproveQuery.Domain,
+				AuthInfo: &types.AuthInfo{
+					Password: transferApproveQuery.AuthInfo,
+				},
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Approve(data, transferApproveQuery.Extension, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "TransferController Approve: controller.interactor.Approve"))
+	}
+
+	c.String(200, responseString)
+}
+
+func (controller *transferController) Reject(c infrastructure.Context) {
+
+	var transferRejectQuery request.TransferRejectQuery
+	c.BindQuery(&transferRejectQuery)
+
+	data := types.TransferType{
+		TransferParent: types.Transfer{
+			Operation: "reject",
+			Detail: types.TransferDetail{
+				Name: transferRejectQuery.Domain,
+				AuthInfo: &types.AuthInfo{
+					Password: transferRejectQuery.AuthInfo,
+				},
+			},
+		},
+	}
+
+	responseString, err := controller.interactor.Reject(data, transferRejectQuery.Extension, "eng")
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "TransferController Reject: controller.interactor.Reject"))
+	}
+
+	c.String(200, responseString)
+}
