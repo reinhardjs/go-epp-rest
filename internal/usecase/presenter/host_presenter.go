@@ -5,9 +5,9 @@ import (
 )
 
 type HostPresenter interface {
-	Check(response []byte) (response.CheckHostResponse, error)
-	Create(response []byte) (response.CreateHostResponse, error)
-	Update(response []byte) (response.UpdateHostResponse, error)
-	Delete(response []byte) (response.DeleteHostResponse, error)
-	Info(response []byte) (response.InfoHostResponse, error)
+	Check(response.CheckHostResponse) string
+	Create(response.CreateHostResponse) string
+	Update(response.UpdateHostResponse) string
+	Delete(response.DeleteHostResponse) string
+	Info(response.InfoHostResponse) string
 }

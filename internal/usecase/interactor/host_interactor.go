@@ -1,10 +1,8 @@
 package interactor
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -14,14 +12,14 @@ import (
 type hostInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.HostPresenter
-	xmlMapper           mapper.XMLMapper
+	XMLMapper           mapper.XMLMapper
 }
 
 func NewHostInteractor(repository repository.RegistrarRepository, presenter presenter.HostPresenter, xmlMapper mapper.XMLMapper) usecase.HostInteractor {
 	return &hostInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,
-		xmlMapper:           xmlMapper,
+		XMLMapper:           xmlMapper,
 	}
 }
 
@@ -32,22 +30,14 @@ func (interactor *hostInteractor) Check(data interface{}, ext string, langTag st
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Check(responseByte)
+	responseDTO := &response.CheckHostResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Send: interactor.HostPresenter.MapResponse")
 		return
 	}
 
-	for _, element := range responseObj.ResultData.CheckDatas {
-		notStr := ""
-		if element.HostName.AvailKey == 0 {
-			notStr = "not "
-		}
-		res += fmt.Sprintf("Host %s, host %savailable\n", element.HostName.Value, notStr)
-	}
-	res = strings.TrimSuffix(res, "\n")
-
+	res = interactor.Presenter.Check(*responseDTO)
 	return
 }
 
@@ -58,17 +48,14 @@ func (interactor *hostInteractor) Create(data interface{}, ext string, langTag s
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Create(responseByte)
+	responseDTO := &response.CreateHostResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Create: interactor.Presenter.MapCreateResponse")
 		return
 	}
 
-	res += fmt.Sprintf("Name %s\n", responseObj.ResultData.CreateData.Name)
-	res += fmt.Sprintf("Create Date %s\n", responseObj.ResultData.CreateData.CreateDate)
-	res = strings.TrimSuffix(res, "\n")
-
+	res = interactor.Presenter.Create(*responseDTO)
 	return
 }
 
@@ -79,15 +66,14 @@ func (interactor *hostInteractor) Update(data interface{}, ext string, langTag s
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Update(responseByte)
+	responseDTO := &response.UpdateHostResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Update: interactor.Presenter.MapUpdateResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Update(*responseDTO)
 	return
 }
 
@@ -98,15 +84,14 @@ func (interactor *hostInteractor) Delete(data interface{}, ext string, langTag s
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Delete(responseByte)
+	responseDTO := &response.DeleteHostResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Delete: interactor.Presenter.MapDeleteResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Delete(*responseDTO)
 	return
 }
 
@@ -117,14 +102,13 @@ func (interactor *hostInteractor) Info(data interface{}, ext string, langTag str
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Info(responseByte)
+	responseDTO := &response.InfoHostResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Info: interactor.Presenter.MapInfoResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Info(*responseDTO)
 	return
 }

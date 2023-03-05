@@ -1,10 +1,9 @@
 package presenter
 
 import (
-	"encoding/xml"
-	"log"
+	"fmt"
+	"strings"
 
-	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
@@ -15,47 +14,46 @@ func NewHostPresenter() presenter.HostPresenter {
 	return &hostPresenter{}
 }
 
-func (p *hostPresenter) Check(response []byte) (responseObject response.CheckHostResponse, err error) {
+func (p *hostPresenter) Check(responseObject response.CheckHostResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "HostPresenter Check: xml.Unmarshal"))
+	for _, element := range responseObject.ResultData.CheckDatas {
+		notStr := ""
+		if element.HostName.AvailKey == 0 {
+			notStr = "not "
+		}
+		res += fmt.Sprintf("Host %s, host %savailable\n", element.HostName.Value, notStr)
 	}
+	res = strings.TrimSuffix(res, "\n")
 
 	return
 }
 
-func (p *hostPresenter) Create(response []byte) (responseObject response.CreateHostResponse, err error) {
+func (p *hostPresenter) Create(responseObject response.CreateHostResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "HostPresenter Create: xml.Unmarshal"))
-	}
-
-	return
-}
-
-func (p *hostPresenter) Update(response []byte) (responseObject response.UpdateHostResponse, err error) {
-
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "HostPresenter Update: xml.Unmarshal"))
-	}
+	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
+	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
+	res = strings.TrimSuffix(res, "\n")
 
 	return
 }
 
-func (p *hostPresenter) Delete(response []byte) (responseObject response.DeleteHostResponse, err error) {
+func (p *hostPresenter) Update(responseObject response.UpdateHostResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "HostPresenter Delete: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }
 
-func (p *hostPresenter) Info(response []byte) (responseObject response.InfoHostResponse, err error) {
+func (p *hostPresenter) Delete(responseObject response.DeleteHostResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "HostPresenter Info: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+
+	return
+}
+
+func (p *hostPresenter) Info(responseObject response.InfoHostResponse) (res string) {
+
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }
