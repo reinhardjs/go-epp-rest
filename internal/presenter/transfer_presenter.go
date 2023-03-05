@@ -1,10 +1,8 @@
 package presenter
 
 import (
-	"encoding/xml"
-	"log"
+	"fmt"
 
-	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
@@ -15,47 +13,37 @@ func NewTransferPresenter() presenter.TransferPresenter {
 	return &transferPresenter{}
 }
 
-func (p *transferPresenter) Check(response []byte) (responseObject response.TransferCheckResponse, err error) {
+func (p *transferPresenter) Check(responseObject response.TransferCheckResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "TransferPresenter Check: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }
 
-func (p *transferPresenter) Request(response []byte) (responseObject response.TransferRequestResponse, err error) {
+func (p *transferPresenter) Request(responseObject response.TransferRequestResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "TransferPresenter Request: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }
 
-func (p *transferPresenter) Cancel(response []byte) (responseObject response.TransferCancelResponse, err error) {
+func (p *transferPresenter) Cancel(responseObject response.TransferCancelResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "TransferPresenter Cancel: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }
 
-func (p *transferPresenter) Approve(response []byte) (responseObject response.TransferApproveResponse, err error) {
+func (p *transferPresenter) Approve(responseObject response.TransferApproveResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "TransferPresenter Approve: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }
 
-func (p *transferPresenter) Reject(response []byte) (responseObject response.TransferRejectResponse, err error) {
+func (p *transferPresenter) Reject(responseObject response.TransferRejectResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "TransferPresenter Reject: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }

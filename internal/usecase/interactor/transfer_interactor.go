@@ -1,9 +1,8 @@
 package interactor
 
 import (
-	"fmt"
-
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -31,15 +30,14 @@ func (interactor *transferInteractor) Check(data interface{}, ext string, langTa
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Check(responseByte)
+	responseDTO := &response.TransferCheckResponse{}
+	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "TransferInteractor Check: interactor.Presenter.MapCheckResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Check(*responseDTO)
 	return
 }
 
@@ -50,15 +48,14 @@ func (interactor *transferInteractor) Request(data interface{}, ext string, lang
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Request(responseByte)
+	responseDTO := &response.TransferRequestResponse{}
+	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapRequestResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Request(*responseDTO)
 	return
 }
 
@@ -69,15 +66,14 @@ func (interactor *transferInteractor) Cancel(data interface{}, ext string, langT
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Cancel(responseByte)
+	responseDTO := &response.TransferCancelResponse{}
+	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapCancelResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Cancel(*responseDTO)
 	return
 }
 
@@ -88,15 +84,14 @@ func (interactor *transferInteractor) Approve(data interface{}, ext string, lang
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Approve(responseByte)
+	responseDTO := &response.TransferApproveResponse{}
+	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapApproveResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Approve(*responseDTO)
 	return
 }
 
@@ -107,14 +102,13 @@ func (interactor *transferInteractor) Reject(data interface{}, ext string, langT
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Reject(responseByte)
+	responseDTO := &response.TransferRejectResponse{}
+	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "TransferInteractor Request: interactor.Presenter.MapRejectResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Reject(*responseDTO)
 	return
 }
