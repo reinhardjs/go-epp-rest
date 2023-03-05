@@ -11,6 +11,7 @@ func (r *registry) NewContactController() controllers.ContactController {
 	registrarInteractor := interactor.NewContactInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
 		presenter.NewContactPresenter(),
+		r.xmlMapper,
 	)
 
 	return controllers.NewContactController(registrarInteractor)

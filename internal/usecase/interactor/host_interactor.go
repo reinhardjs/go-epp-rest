@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
@@ -13,12 +14,14 @@ import (
 type hostInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.HostPresenter
+	xmlMapper           mapper.XMLMapper
 }
 
-func NewHostInteractor(repository repository.RegistrarRepository, presenter presenter.HostPresenter) usecase.HostInteractor {
+func NewHostInteractor(repository repository.RegistrarRepository, presenter presenter.HostPresenter, xmlMapper mapper.XMLMapper) usecase.HostInteractor {
 	return &hostInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,
+		xmlMapper:           xmlMapper,
 	}
 }
 

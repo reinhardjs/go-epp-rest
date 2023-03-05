@@ -5,6 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/repository"
 )
@@ -12,12 +13,14 @@ import (
 type transferInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.TransferPresenter
+	xmlMapper           mapper.XMLMapper
 }
 
-func NewTransferInteractor(repository repository.RegistrarRepository, presenter presenter.TransferPresenter) usecase.TransferInteractor {
+func NewTransferInteractor(repository repository.RegistrarRepository, presenter presenter.TransferPresenter, xmlMapper mapper.XMLMapper) usecase.TransferInteractor {
 	return &transferInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,
+		xmlMapper:           xmlMapper,
 	}
 }
 

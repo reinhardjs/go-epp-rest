@@ -11,6 +11,7 @@ func (r *registry) NewHostController() controllers.HostController {
 	registrarInteractor := interactor.NewHostInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
 		presenter.NewHostPresenter(),
+		r.xmlMapper,
 	)
 
 	return controllers.NewHostController(registrarInteractor)

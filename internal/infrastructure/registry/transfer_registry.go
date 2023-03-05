@@ -11,6 +11,7 @@ func (r *registry) NewTransferController() controllers.TransferController {
 	registrarInteractor := interactor.NewTransferInteractor(
 		repository.NewRegistrarRepository(r.eppClient),
 		presenter.NewTransferPresenter(),
+		r.xmlMapper,
 	)
 
 	return controllers.NewTransferController(registrarInteractor)
