@@ -1,10 +1,9 @@
 package presenter
 
 import (
-	"encoding/xml"
-	"log"
+	"fmt"
+	"strings"
 
-	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
@@ -15,47 +14,46 @@ func NewContactPresenter() presenter.ContactPresenter {
 	return &contactPresenter{}
 }
 
-func (p *contactPresenter) Check(response []byte) (responseObject response.CheckContactResponse, err error) {
+func (p *contactPresenter) Check(responseObject response.CheckContactResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "ContactPresenter Check: xml.Unmarshal"))
+	for _, element := range responseObject.ResultData.CheckDatas {
+		notStr := ""
+		if element.Id.AvailKey == 0 {
+			notStr = "not "
+		}
+		res += fmt.Sprintf("Contact %s, contact %savailable\n", element.Id.Value, notStr)
 	}
+	res = strings.TrimSuffix(res, "\n")
 
 	return
 }
 
-func (p *contactPresenter) Create(response []byte) (responseObject response.CreateContactResponse, err error) {
+func (p *contactPresenter) Create(responseObject response.CreateContactResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "ContactPresenter Create: xml.Unmarshal"))
-	}
-
-	return
-}
-
-func (p *contactPresenter) Update(response []byte) (responseObject response.UpdateContactResponse, err error) {
-
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "ContactPresenter Update: xml.Unmarshal"))
-	}
+	res += fmt.Sprintf("ID %s\n", responseObject.ResultData.CreateData.Id)
+	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
+	res = strings.TrimSuffix(res, "\n")
 
 	return
 }
 
-func (p *contactPresenter) Delete(response []byte) (responseObject response.DeleteContactResponse, err error) {
+func (p *contactPresenter) Update(responseObject response.UpdateContactResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "ContactPresenter Delete: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }
 
-func (p *contactPresenter) Info(response []byte) (responseObject response.InfoContactResponse, err error) {
+func (p *contactPresenter) Delete(responseObject response.DeleteContactResponse) (res string) {
 
-	if err := xml.Unmarshal(response, &responseObject); err != nil {
-		log.Println(errors.Wrap(err, "ContactPresenter Info: xml.Unmarshal"))
-	}
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+
+	return
+}
+
+func (p *contactPresenter) Info(responseObject response.InfoContactResponse) (res string) {
+
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	return
 }

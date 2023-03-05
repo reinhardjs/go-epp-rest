@@ -1,10 +1,8 @@
 package interactor
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -14,14 +12,14 @@ import (
 type contactInteractor struct {
 	RegistrarRepository repository.RegistrarRepository
 	Presenter           presenter.ContactPresenter
-	xmlMapper           mapper.XMLMapper
+	XMLMapper           mapper.XMLMapper
 }
 
 func NewContactInteractor(repository repository.RegistrarRepository, presenter presenter.ContactPresenter, xmlMapper mapper.XMLMapper) usecase.ContactInteractor {
 	return &contactInteractor{
 		RegistrarRepository: repository,
 		Presenter:           presenter,
-		xmlMapper:           xmlMapper,
+		XMLMapper:           xmlMapper,
 	}
 }
 
@@ -32,22 +30,14 @@ func (interactor *contactInteractor) Check(data interface{}, ext string, langTag
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Check(responseByte)
+	responseDTO := &response.CheckContactResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Check: interactor.Presenter.MapCheckResponse")
 		return
 	}
 
-	for _, element := range responseObj.ResultData.CheckDatas {
-		notStr := ""
-		if element.Id.AvailKey == 0 {
-			notStr = "not "
-		}
-		res += fmt.Sprintf("Contact %s, contact %savailable\n", element.Id.Value, notStr)
-	}
-	res = strings.TrimSuffix(res, "\n")
-
+	res = interactor.Presenter.Check(*responseDTO)
 	return
 }
 
@@ -58,17 +48,14 @@ func (interactor *contactInteractor) Create(data interface{}, ext string, langTa
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Create(responseByte)
+	responseDTO := &response.CreateContactResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Create: interactor.Presenter.MapCreateResponse")
 		return
 	}
 
-	res += fmt.Sprintf("ID %s\n", responseObj.ResultData.CreateData.Id)
-	res += fmt.Sprintf("Create Date %s\n", responseObj.ResultData.CreateData.CreateDate)
-	res = strings.TrimSuffix(res, "\n")
-
+	res = interactor.Presenter.Create(*responseDTO)
 	return
 }
 
@@ -79,15 +66,14 @@ func (interactor *contactInteractor) Update(data interface{}, ext string, langTa
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Update(responseByte)
+	responseDTO := &response.UpdateContactResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Update: interactor.Presenter.MapCreateResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Update(*responseDTO)
 	return
 }
 
@@ -98,15 +84,14 @@ func (interactor *contactInteractor) Delete(data interface{}, ext string, langTa
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Delete(responseByte)
+	responseDTO := &response.DeleteContactResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Delete: interactor.Presenter.MapDeleteResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Delete(*responseDTO)
 	return
 }
 
@@ -117,14 +102,13 @@ func (interactor *contactInteractor) Info(data interface{}, ext string, langTag 
 		return
 	}
 
-	responseObj, err := interactor.Presenter.Info(responseByte)
+	responseDTO := &response.InfoContactResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(err, "ContactInteractor Info: interactor.Presenter.MapInfoResponse")
 		return
 	}
 
-	res = fmt.Sprintf("%v %v", responseObj.Result.Code, responseObj.Result.Message)
-
+	res = interactor.Presenter.Info(*responseDTO)
 	return
 }

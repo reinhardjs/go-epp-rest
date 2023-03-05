@@ -5,9 +5,9 @@ import (
 )
 
 type ContactPresenter interface {
-	Check(response []byte) (response.CheckContactResponse, error)
-	Create(response []byte) (response.CreateContactResponse, error)
-	Update(response []byte) (response.UpdateContactResponse, error)
-	Delete(response []byte) (response.DeleteContactResponse, error)
-	Info(response []byte) (response.InfoContactResponse, error)
+	Check(response.CheckContactResponse) string
+	Create(response.CreateContactResponse) string
+	Update(response.UpdateContactResponse) string
+	Delete(response.DeleteContactResponse) string
+	Info(response.InfoContactResponse) string
 }
