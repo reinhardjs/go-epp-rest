@@ -2,12 +2,13 @@ package presenter
 
 import (
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 )
 
 type TransferPresenter interface {
-	Check(response.TransferCheckResponse) string
-	Request(response.TransferRequestResponse) string
-	Cancel(response.TransferCancelResponse) string
-	Approve(response.TransferApproveResponse) string
-	Reject(response.TransferRejectResponse) string
+	CheckSuccess(ctx infrastructure.Context, obj response.TransferCheckResponse)
+	RequestSuccess(ctx infrastructure.Context, obj response.TransferRequestResponse)
+	CancelSuccess(ctx infrastructure.Context, obj response.TransferCancelResponse)
+	ApproveSuccess(ctx infrastructure.Context, obj response.TransferApproveResponse)
+	RejectSuccess(ctx infrastructure.Context, obj response.TransferRejectResponse)
 }

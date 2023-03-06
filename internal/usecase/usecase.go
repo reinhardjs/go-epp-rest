@@ -1,37 +1,39 @@
 package usecase
 
+import "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
+
 type TransferInteractor interface {
-	Check(data interface{}, ext string, langTag string) (res string, err error)
-	Request(data interface{}, ext string, langTag string) (res string, err error)
-	Cancel(data interface{}, ext string, langTag string) (res string, err error)
-	Approve(data interface{}, ext string, langTag string) (res string, err error)
-	Reject(data interface{}, ext string, langTag string) (res string, err error)
+	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Request(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Cancel(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Approve(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Reject(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 }
 
 type HostInteractor interface {
-	Check(data interface{}, ext string, langTag string) (res string, err error)
-	Create(data interface{}, ext string, langTag string) (res string, err error)
-	Update(data interface{}, ext string, langTag string) (res string, err error)
-	Delete(data interface{}, ext string, langTag string) (res string, err error)
-	Info(data interface{}, ext string, langTag string) (res string, err error)
+	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Create(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Update(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 }
 
 type DomainInteractor interface {
-	Check(data interface{}, ext string, langTag string) (res string, err error)
-	Create(data interface{}, ext string, langTag string) (res string, err error)
-	Delete(data interface{}, ext string, langTag string) (res string, err error)
-	Info(data interface{}, ext string, langTag string) (res string, err error)
-	SecDNSUpdate(data interface{}, ext string, langTag string) (res string, err error)
+	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Create(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	SecDNSUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 }
 
 type ContactInteractor interface {
-	Check(data interface{}, ext string, langTag string) (res string, err error)
-	Create(data interface{}, ext string, langTag string) (res string, err error)
-	Update(data interface{}, ext string, langTag string) (res string, err error)
-	Delete(data interface{}, ext string, langTag string) (res string, err error)
-	Info(data interface{}, ext string, langTag string) (res string, err error)
+	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Create(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Update(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 }
 
 type PollInteractor interface {
-	Poll() (res string, err error)
+	Poll(ctx infrastructure.Context)
 }

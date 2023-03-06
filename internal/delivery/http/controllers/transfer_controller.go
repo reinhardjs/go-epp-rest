@@ -1,9 +1,6 @@
 package controllers
 
 import (
-	"log"
-
-	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
@@ -28,10 +25,10 @@ func NewTransferController(interactor usecase.TransferInteractor) TransferContro
 	}
 }
 
-func (controller *transferController) Check(c infrastructure.Context) {
+func (controller *transferController) Check(ctx infrastructure.Context) {
 
 	var transferCheckQuery request.TransferCheckQuery
-	c.BindQuery(&transferCheckQuery)
+	ctx.BindQuery(&transferCheckQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -42,19 +39,13 @@ func (controller *transferController) Check(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Check(data, transferCheckQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "TransferController Check: controller.interactor.Check"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Check(ctx, data, transferCheckQuery.Extension, "eng")
 }
 
-func (controller *transferController) Request(c infrastructure.Context) {
+func (controller *transferController) Request(ctx infrastructure.Context) {
 
 	var transferRequestQuery request.TransferRequestQuery
-	c.BindQuery(&transferRequestQuery)
+	ctx.BindQuery(&transferRequestQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -68,19 +59,13 @@ func (controller *transferController) Request(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Request(data, transferRequestQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "TransferController Request: controller.interactor.Request"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Request(ctx, data, transferRequestQuery.Extension, "eng")
 }
 
-func (controller *transferController) Cancel(c infrastructure.Context) {
+func (controller *transferController) Cancel(ctx infrastructure.Context) {
 
 	var transferCancelQuery request.TransferCancelQuery
-	c.BindQuery(&transferCancelQuery)
+	ctx.BindQuery(&transferCancelQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -94,19 +79,13 @@ func (controller *transferController) Cancel(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Cancel(data, transferCancelQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "TransferController Cancel: controller.interactor.Cancel"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Cancel(ctx, data, transferCancelQuery.Extension, "eng")
 }
 
-func (controller *transferController) Approve(c infrastructure.Context) {
+func (controller *transferController) Approve(ctx infrastructure.Context) {
 
 	var transferApproveQuery request.TransferApproveQuery
-	c.BindQuery(&transferApproveQuery)
+	ctx.BindQuery(&transferApproveQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -120,19 +99,13 @@ func (controller *transferController) Approve(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Approve(data, transferApproveQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "TransferController Approve: controller.interactor.Approve"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Approve(ctx, data, transferApproveQuery.Extension, "eng")
 }
 
-func (controller *transferController) Reject(c infrastructure.Context) {
+func (controller *transferController) Reject(ctx infrastructure.Context) {
 
 	var transferRejectQuery request.TransferRejectQuery
-	c.BindQuery(&transferRejectQuery)
+	ctx.BindQuery(&transferRejectQuery)
 
 	data := types.TransferType{
 		TransferParent: types.Transfer{
@@ -146,11 +119,5 @@ func (controller *transferController) Reject(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Reject(data, transferRejectQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "TransferController Reject: controller.interactor.Reject"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Reject(ctx, data, transferRejectQuery.Extension, "eng")
 }

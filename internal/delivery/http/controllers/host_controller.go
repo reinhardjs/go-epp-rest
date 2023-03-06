@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"log"
 	"strings"
 
-	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
@@ -29,10 +27,10 @@ func NewHostController(interactor usecase.HostInteractor) HostController {
 	}
 }
 
-func (controller *hostController) Check(c infrastructure.Context) {
+func (controller *hostController) Check(ctx infrastructure.Context) {
 
 	var hostCheckQuery request.HostCheckQuery
-	c.BindQuery(&hostCheckQuery)
+	ctx.BindQuery(&hostCheckQuery)
 
 	hostList := strings.Split(hostCheckQuery.HostList, ",")
 
@@ -42,19 +40,13 @@ func (controller *hostController) Check(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Check(data, hostCheckQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "HostController Check: controller.interactor.Check"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Check(ctx, data, hostCheckQuery.Extension, "eng")
 }
 
-func (controller *hostController) Create(c infrastructure.Context) {
+func (controller *hostController) Create(ctx infrastructure.Context) {
 
 	var hostCreateQuery request.HostCreateQuery
-	c.BindQuery(&hostCreateQuery)
+	ctx.BindQuery(&hostCreateQuery)
 
 	hostName := hostCreateQuery.DNSList
 
@@ -80,19 +72,13 @@ func (controller *hostController) Create(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, hostCreateQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "HostController Create: controller.interactor.Create"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Create(ctx, data, hostCreateQuery.Extension, "eng")
 }
 
-func (controller *hostController) Update(c infrastructure.Context) {
+func (controller *hostController) Update(ctx infrastructure.Context) {
 
 	var hostUpdateQuery request.HostUpdateQuery
-	c.BindQuery(&hostUpdateQuery)
+	ctx.BindQuery(&hostUpdateQuery)
 
 	hostName := hostUpdateQuery.DNSList
 
@@ -145,19 +131,13 @@ func (controller *hostController) Update(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Update(data, hostUpdateQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "HostController Update: controller.interactor.Update"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Update(ctx, data, hostUpdateQuery.Extension, "eng")
 }
 
-func (controller *hostController) Delete(c infrastructure.Context) {
+func (controller *hostController) Delete(ctx infrastructure.Context) {
 
 	var hostDeleteQuery request.HostDeleteQuery
-	c.BindQuery(&hostDeleteQuery)
+	ctx.BindQuery(&hostDeleteQuery)
 
 	hostName := hostDeleteQuery.DNSList
 
@@ -171,19 +151,13 @@ func (controller *hostController) Delete(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Delete(data, hostDeleteQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "HostController Delete: controller.interactor.Delete"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Delete(ctx, data, hostDeleteQuery.Extension, "eng")
 }
 
-func (controller *hostController) Info(c infrastructure.Context) {
+func (controller *hostController) Info(ctx infrastructure.Context) {
 
 	var hostInfoQuery request.HostInfoQuery
-	c.BindQuery(&hostInfoQuery)
+	ctx.BindQuery(&hostInfoQuery)
 
 	hostName := hostInfoQuery.DNSList
 
@@ -197,11 +171,5 @@ func (controller *hostController) Info(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Info(data, hostInfoQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "HostController Info: controller.interactor.Info"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Info(ctx, data, hostInfoQuery.Extension, "eng")
 }

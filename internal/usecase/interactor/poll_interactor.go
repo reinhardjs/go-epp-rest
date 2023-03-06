@@ -3,6 +3,7 @@ package interactor
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -32,8 +33,7 @@ func NewPollInteractor(
 	}
 }
 
-func (interactor *pollInteractor) Poll() (res string, err error) {
-
+func (interactor *pollInteractor) Poll(ctx infrastructure.Context) {
 	pollRequestData := types.Poll{
 		Poll: types.PollCommand{
 			Operation: types.PollOperationRequest,
@@ -100,7 +100,5 @@ func (interactor *pollInteractor) Poll() (res string, err error) {
 		}
 	}
 
-	res = interactor.Presenter.Poll(responseDTO)
-
-	return
+	interactor.Presenter.PollSuccess(ctx, responseDTO)
 }

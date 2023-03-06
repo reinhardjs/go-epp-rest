@@ -3,6 +3,7 @@ package interactor
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -23,7 +24,7 @@ func NewTransferInteractor(repository repository.RegistrarRepository, presenter 
 	}
 }
 
-func (interactor *transferInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *transferInteractor) Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Check: interactor.RegistrarRepository.SendCommand")
@@ -37,11 +38,10 @@ func (interactor *transferInteractor) Check(data interface{}, ext string, langTa
 		return
 	}
 
-	res = interactor.Presenter.Check(*responseDTO)
-	return
+	interactor.Presenter.CheckSuccess(ctx, *responseDTO)
 }
 
-func (interactor *transferInteractor) Request(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *transferInteractor) Request(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
@@ -55,11 +55,10 @@ func (interactor *transferInteractor) Request(data interface{}, ext string, lang
 		return
 	}
 
-	res = interactor.Presenter.Request(*responseDTO)
-	return
+	interactor.Presenter.RequestSuccess(ctx, *responseDTO)
 }
 
-func (interactor *transferInteractor) Cancel(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *transferInteractor) Cancel(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
@@ -73,11 +72,10 @@ func (interactor *transferInteractor) Cancel(data interface{}, ext string, langT
 		return
 	}
 
-	res = interactor.Presenter.Cancel(*responseDTO)
-	return
+	interactor.Presenter.CancelSuccess(ctx, *responseDTO)
 }
 
-func (interactor *transferInteractor) Approve(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *transferInteractor) Approve(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
@@ -91,11 +89,10 @@ func (interactor *transferInteractor) Approve(data interface{}, ext string, lang
 		return
 	}
 
-	res = interactor.Presenter.Approve(*responseDTO)
-	return
+	interactor.Presenter.ApproveSuccess(ctx, *responseDTO)
 }
 
-func (interactor *transferInteractor) Reject(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *transferInteractor) Reject(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
@@ -109,6 +106,5 @@ func (interactor *transferInteractor) Reject(data interface{}, ext string, langT
 		return
 	}
 
-	res = interactor.Presenter.Reject(*responseDTO)
-	return
+	interactor.Presenter.RejectSuccess(ctx, *responseDTO)
 }

@@ -3,6 +3,7 @@ package interactor
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -23,7 +24,7 @@ func NewContactInteractor(repository repository.RegistrarRepository, presenter p
 	}
 }
 
-func (interactor *contactInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *contactInteractor) Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Check: interactor.RegistrarRepository.SendCommand")
@@ -37,11 +38,10 @@ func (interactor *contactInteractor) Check(data interface{}, ext string, langTag
 		return
 	}
 
-	res = interactor.Presenter.Check(*responseDTO)
-	return
+	interactor.Presenter.CheckSuccess(ctx, *responseDTO)
 }
 
-func (interactor *contactInteractor) Create(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *contactInteractor) Create(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Create: interactor.RegistrarRepository.SendCommand")
@@ -55,11 +55,10 @@ func (interactor *contactInteractor) Create(data interface{}, ext string, langTa
 		return
 	}
 
-	res = interactor.Presenter.Create(*responseDTO)
-	return
+	interactor.Presenter.CreateSuccess(ctx, *responseDTO)
 }
 
-func (interactor *contactInteractor) Update(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *contactInteractor) Update(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Update: interactor.RegistrarRepository.SendCommand")
@@ -73,11 +72,10 @@ func (interactor *contactInteractor) Update(data interface{}, ext string, langTa
 		return
 	}
 
-	res = interactor.Presenter.Update(*responseDTO)
-	return
+	interactor.Presenter.UpdateSuccess(ctx, *responseDTO)
 }
 
-func (interactor *contactInteractor) Delete(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *contactInteractor) Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Delete: interactor.RegistrarRepository.SendCommand")
@@ -91,11 +89,10 @@ func (interactor *contactInteractor) Delete(data interface{}, ext string, langTa
 		return
 	}
 
-	res = interactor.Presenter.Delete(*responseDTO)
-	return
+	interactor.Presenter.DeleteSuccess(ctx, *responseDTO)
 }
 
-func (interactor *contactInteractor) Info(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *contactInteractor) Info(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "ContactInteractor Info: interactor.RegistrarRepository.SendCommand")
@@ -109,6 +106,5 @@ func (interactor *contactInteractor) Info(data interface{}, ext string, langTag 
 		return
 	}
 
-	res = interactor.Presenter.Info(*responseDTO)
-	return
+	interactor.Presenter.InfoSuccess(ctx, *responseDTO)
 }
