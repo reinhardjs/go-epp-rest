@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"log"
 	"strings"
 
-	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
@@ -29,10 +27,10 @@ func NewContactController(interactor usecase.ContactInteractor) ContactControlle
 	}
 }
 
-func (controller contactController) Check(c infrastructure.Context) {
+func (controller contactController) Check(ctx infrastructure.Context) {
 
 	var contactCheckQuery request.ContactCheckQuery
-	c.BindQuery(&contactCheckQuery)
+	ctx.BindQuery(&contactCheckQuery)
 
 	contactList := strings.Split(contactCheckQuery.ContactList, ",")
 
@@ -42,19 +40,13 @@ func (controller contactController) Check(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Check(data, "com", "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "ContactController Check: controller.interactor.Check"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Check(ctx, data, "com", "eng")
 }
 
-func (controller contactController) Create(c infrastructure.Context) {
+func (controller contactController) Create(ctx infrastructure.Context) {
 
 	var contactCreateQuery request.ContactCreateQuery
-	c.BindQuery(&contactCreateQuery)
+	ctx.BindQuery(&contactCreateQuery)
 	name := contactCreateQuery.Firstname + " " + contactCreateQuery.Lastname
 
 	data := types.ContactCreateType{
@@ -87,19 +79,13 @@ func (controller contactController) Create(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, "com", "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "ContactController Create: controller.interactor.Create"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Create(ctx, data, "com", "eng")
 }
 
-func (controller contactController) Update(c infrastructure.Context) {
+func (controller contactController) Update(ctx infrastructure.Context) {
 
 	var contactUpdateQuery request.ContactUpdateQuery
-	c.BindQuery(&contactUpdateQuery)
+	ctx.BindQuery(&contactUpdateQuery)
 	// authInfo := c.Query("authinfo")
 	name := contactUpdateQuery.Firstname + " " + contactUpdateQuery.Lastname
 
@@ -132,19 +118,13 @@ func (controller contactController) Update(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, "com", "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "ContactController Update: controller.interactor.Update"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Create(ctx, data, "com", "eng")
 }
 
-func (controller contactController) Delete(c infrastructure.Context) {
+func (controller contactController) Delete(ctx infrastructure.Context) {
 
 	var contactDeleteQuery request.ContactDeleteQuery
-	c.BindQuery(&contactDeleteQuery)
+	ctx.BindQuery(&contactDeleteQuery)
 
 	data := types.ContactDeleteType{
 		Delete: types.ContactDelete{
@@ -152,19 +132,13 @@ func (controller contactController) Delete(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Delete(data, "com", "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "ContactController Delete: controller.interactor.Delete"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Delete(ctx, data, "com", "eng")
 }
 
-func (controller contactController) Info(c infrastructure.Context) {
+func (controller contactController) Info(ctx infrastructure.Context) {
 
 	var contactInfoQuery request.ContactInfoQuery
-	c.BindQuery(&contactInfoQuery)
+	ctx.BindQuery(&contactInfoQuery)
 
 	data := types.ContactInfoType{
 		Info: types.ContactInfo{
@@ -172,11 +146,5 @@ func (controller contactController) Info(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Info(data, "com", "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "ContactController Info: controller.interactor.Info"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Info(ctx, data, "com", "eng")
 }

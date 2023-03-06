@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 
@@ -14,7 +15,8 @@ func NewHostPresenter() presenter.HostPresenter {
 	return &hostPresenter{}
 }
 
-func (p *hostPresenter) Check(responseObject response.CheckHostResponse) (res string) {
+func (p *hostPresenter) CheckSuccess(ctx infrastructure.Context, responseObject response.CheckHostResponse) {
+	var res string
 
 	for _, element := range responseObject.ResultData.CheckDatas {
 		notStr := ""
@@ -25,35 +27,39 @@ func (p *hostPresenter) Check(responseObject response.CheckHostResponse) (res st
 	}
 	res = strings.TrimSuffix(res, "\n")
 
-	return
+	ctx.String(200, res)
 }
 
-func (p *hostPresenter) Create(responseObject response.CreateHostResponse) (res string) {
+func (p *hostPresenter) CreateSuccess(ctx infrastructure.Context, responseObject response.CreateHostResponse) {
+	var res string
 
 	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
 	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
 
-	return
+	ctx.String(200, res)
 }
 
-func (p *hostPresenter) Update(responseObject response.UpdateHostResponse) (res string) {
+func (p *hostPresenter) UpdateSuccess(ctx infrastructure.Context, responseObject response.UpdateHostResponse) {
+	var res string
 
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
-	return
+	ctx.String(200, res)
 }
 
-func (p *hostPresenter) Delete(responseObject response.DeleteHostResponse) (res string) {
+func (p *hostPresenter) DeleteSuccess(ctx infrastructure.Context, responseObject response.DeleteHostResponse) {
+	var res string
 
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
-	return
+	ctx.String(200, res)
 }
 
-func (p *hostPresenter) Info(responseObject response.InfoHostResponse) (res string) {
+func (p *hostPresenter) InfoSuccess(ctx infrastructure.Context, responseObject response.InfoHostResponse) {
+	var res string
 
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
-	return
+	ctx.String(200, res)
 }

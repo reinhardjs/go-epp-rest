@@ -3,6 +3,7 @@ package interactor
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -23,7 +24,7 @@ func NewDomainInteractor(domainRepository repository.RegistrarRepository, presen
 	}
 }
 
-func (interactor *domainInteractor) Check(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *domainInteractor) Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Check: interactor.RegistrarRepository.SendCommand")
@@ -37,11 +38,10 @@ func (interactor *domainInteractor) Check(data interface{}, ext string, langTag 
 		return
 	}
 
-	res = interactor.Presenter.Check(*responseDTO)
-	return
+	interactor.Presenter.CheckSuccess(ctx, *responseDTO)
 }
 
-func (interactor *domainInteractor) Create(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *domainInteractor) Create(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
@@ -55,11 +55,10 @@ func (interactor *domainInteractor) Create(data interface{}, ext string, langTag
 		return
 	}
 
-	res = interactor.Presenter.Create(*responseDTO)
-	return
+	interactor.Presenter.CreateSuccess(ctx, *responseDTO)
 }
 
-func (interactor *domainInteractor) Delete(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *domainInteractor) Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
@@ -73,11 +72,10 @@ func (interactor *domainInteractor) Delete(data interface{}, ext string, langTag
 		return
 	}
 
-	res = interactor.Presenter.Delete(*responseDTO)
-	return
+	interactor.Presenter.DeleteSuccess(ctx, *responseDTO)
 }
 
-func (interactor *domainInteractor) Info(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *domainInteractor) Info(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
@@ -91,11 +89,10 @@ func (interactor *domainInteractor) Info(data interface{}, ext string, langTag s
 		return
 	}
 
-	res = interactor.Presenter.Info(*responseDTO)
-	return
+	interactor.Presenter.InfoSuccess(ctx, *responseDTO)
 }
 
-func (interactor *domainInteractor) SecDNSUpdate(data interface{}, ext string, langTag string) (res string, err error) {
+func (interactor *domainInteractor) SecDNSUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
@@ -109,6 +106,5 @@ func (interactor *domainInteractor) SecDNSUpdate(data interface{}, ext string, l
 		return
 	}
 
-	res = interactor.Presenter.SecDNSUpdate(*responseDTO)
-	return
+	interactor.Presenter.SecDNSUpdateSuccess(ctx, *responseDTO)
 }

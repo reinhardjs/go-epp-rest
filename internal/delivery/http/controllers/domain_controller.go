@@ -30,10 +30,10 @@ func NewDomainController(interactor usecase.DomainInteractor) DomainController {
 	}
 }
 
-func (controller *domainController) Check(c infrastructure.Context) {
+func (controller *domainController) Check(ctx infrastructure.Context) {
 
 	var domainCheckQuery request.DomainCheckQuery
-	c.BindQuery(&domainCheckQuery)
+	ctx.BindQuery(&domainCheckQuery)
 
 	domainList := strings.Split(domainCheckQuery.DomainList, ",")
 
@@ -43,19 +43,13 @@ func (controller *domainController) Check(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Check(data, "com", "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Check: controller.interactor.Check"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Check(ctx, data, "com", "eng")
 }
 
-func (controller *domainController) Create(c infrastructure.Context) {
+func (controller *domainController) Create(ctx infrastructure.Context) {
 
 	var domainCreateQuery request.DomainCreateQuery
-	c.BindQuery(&domainCreateQuery)
+	ctx.BindQuery(&domainCreateQuery)
 
 	ns := strings.Split(domainCreateQuery.Nameserver, ",")
 	period, err := strconv.Atoi(domainCreateQuery.Period)
@@ -95,19 +89,13 @@ func (controller *domainController) Create(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Create(data, domainCreateQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Create: controller.interactor.Create"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Create(ctx, data, domainCreateQuery.Extension, "eng")
 }
 
-func (controller *domainController) Delete(c infrastructure.Context) {
+func (controller *domainController) Delete(ctx infrastructure.Context) {
 
 	var domainDeleteQuery request.DomainDeleteQuery
-	c.BindQuery(&domainDeleteQuery)
+	ctx.BindQuery(&domainDeleteQuery)
 
 	data := types.DomainDeleteType{
 		Delete: types.DomainDelete{
@@ -115,19 +103,13 @@ func (controller *domainController) Delete(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Delete(data, domainDeleteQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Delete: controller.interactor.Delete"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Delete(ctx, data, domainDeleteQuery.Extension, "eng")
 }
 
-func (controller *domainController) Info(c infrastructure.Context) {
+func (controller *domainController) Info(ctx infrastructure.Context) {
 
 	var domainInfoQuery request.DomainInfoQuery
-	c.BindQuery(&domainInfoQuery)
+	ctx.BindQuery(&domainInfoQuery)
 
 	data := types.DomainInfoType{
 		Info: types.DomainInfo{
@@ -137,23 +119,17 @@ func (controller *domainController) Info(c infrastructure.Context) {
 		},
 	}
 
-	responseString, err := controller.interactor.Info(data, domainInfoQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Info: controller.interactor.Info"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.Info(ctx, data, domainInfoQuery.Extension, "eng")
 }
 
-func (controller *domainController) SecDNSUpdate(c infrastructure.Context) {
+func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 
 	AddDSDataList := []types.DSData{}
 	RemoveDSDataList := []types.DSData{}
 
 	var secDNSUpdateQuery request.SecDNSUpdateQuery
 
-	c.BindQuery(&secDNSUpdateQuery)
+	ctx.BindQuery(&secDNSUpdateQuery)
 
 	if len(strings.TrimSpace(secDNSUpdateQuery.DdKeytag0)) != 0 {
 		dsData := types.DSData{
@@ -273,11 +249,5 @@ func (controller *domainController) SecDNSUpdate(c infrastructure.Context) {
 		}
 	}
 
-	responseString, err := controller.interactor.SecDNSUpdate(data, secDNSUpdateQuery.Extension, "eng")
-
-	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController SecDNSUpdate: controller.interactor.SecDNSUpdate"))
-	}
-
-	c.String(200, responseString)
+	controller.interactor.SecDNSUpdate(ctx, data, secDNSUpdateQuery.Extension, "eng")
 }

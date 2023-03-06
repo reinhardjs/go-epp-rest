@@ -1,7 +1,10 @@
 package presenter
 
-import "gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+import (
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
+)
 
 type PollPresenter interface {
-	Poll(responseObject response.PollRequestResponse) string
+	PollSuccess(ctx infrastructure.Context, obj response.PollRequestResponse)
 }

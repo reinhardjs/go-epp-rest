@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
 
@@ -14,9 +15,10 @@ func NewContactPresenter() presenter.ContactPresenter {
 	return &contactPresenter{}
 }
 
-func (p *contactPresenter) Check(responseObject response.CheckContactResponse) (res string) {
+func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response.CheckContactResponse) {
+	var res string
 
-	for _, element := range responseObject.ResultData.CheckDatas {
+	for _, element := range obj.ResultData.CheckDatas {
 		notStr := ""
 		if element.Id.AvailKey == 0 {
 			notStr = "not "
@@ -25,35 +27,39 @@ func (p *contactPresenter) Check(responseObject response.CheckContactResponse) (
 	}
 	res = strings.TrimSuffix(res, "\n")
 
-	return
+	ctx.String(200, res)
 }
 
-func (p *contactPresenter) Create(responseObject response.CreateContactResponse) (res string) {
+func (p *contactPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateContactResponse) {
+	var res string
 
-	res += fmt.Sprintf("ID %s\n", responseObject.ResultData.CreateData.Id)
-	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
+	res += fmt.Sprintf("ID %s\n", obj.ResultData.CreateData.Id)
+	res += fmt.Sprintf("Create Date %s\n", obj.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
 
-	return
+	ctx.String(200, res)
 }
 
-func (p *contactPresenter) Update(responseObject response.UpdateContactResponse) (res string) {
+func (p *contactPresenter) UpdateSuccess(ctx infrastructure.Context, obj response.UpdateContactResponse) {
+	var res string
 
-	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
 
-	return
+	ctx.String(200, res)
 }
 
-func (p *contactPresenter) Delete(responseObject response.DeleteContactResponse) (res string) {
+func (p *contactPresenter) DeleteSuccess(ctx infrastructure.Context, obj response.DeleteContactResponse) {
+	var res string
 
-	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
 
-	return
+	ctx.String(200, res)
 }
 
-func (p *contactPresenter) Info(responseObject response.InfoContactResponse) (res string) {
+func (p *contactPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoContactResponse) {
+	var res string
 
-	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
 
-	return
+	ctx.String(200, res)
 }
