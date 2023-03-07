@@ -72,3 +72,11 @@ func (p *domainPresenter) ContactUpdateSuccess(ctx infrastructure.Context, obj r
 
 	ctx.String(200, res)
 }
+
+func (p *domainPresenter) StatusUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse) {
+	var res string
+
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+
+	ctx.String(200, res)
+}
