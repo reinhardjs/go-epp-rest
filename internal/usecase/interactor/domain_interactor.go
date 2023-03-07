@@ -125,3 +125,20 @@ func (interactor *domainInteractor) ContactUpdate(ctx infrastructure.Context, da
 
 	interactor.Presenter.ContactUpdateSuccess(ctx, *responseDTO)
 }
+
+func (interactor *domainInteractor) StatusUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor StatusUpdate: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseDTO := &response.DomainUpdateResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.StatusUpdateSuccess(ctx, *responseDTO)
+}
