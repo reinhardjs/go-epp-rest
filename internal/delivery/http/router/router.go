@@ -13,6 +13,7 @@ func NewRouter(appController controllers.AppController) *gin.Engine {
 	router.GET("/domain/info", func(c *gin.Context) { appController.Domain.Info((c)) })
 	router.GET("/domain/secdnsupdate", func(c *gin.Context) { appController.Domain.SecDNSUpdate(c) })
 	router.GET("/domain/contact/update", func(c *gin.Context) { appController.Domain.ContactUpdate(c) })
+	router.GET("/domain/status/update", func(c *gin.Context) { appController.Domain.StatusUpdate(c) })
 
 	router.GET("/host/check", func(c *gin.Context) { appController.Host.Check(c) })
 	router.GET("/host/create", func(c *gin.Context) { appController.Host.Create(c) })
