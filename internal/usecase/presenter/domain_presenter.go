@@ -13,4 +13,5 @@ type DomainPresenter interface {
 	SecDNSUpdateSuccess(ctx infrastructure.Context, obj response.SecDNSUpdateResponse)
 	ContactUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse)
 	StatusUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse)
+	AuthInfoUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse)
 }

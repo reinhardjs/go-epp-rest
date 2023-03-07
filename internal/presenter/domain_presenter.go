@@ -80,3 +80,11 @@ func (p *domainPresenter) StatusUpdateSuccess(ctx infrastructure.Context, obj re
 
 	ctx.String(200, res)
 }
+
+func (p *domainPresenter) AuthInfoUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse) {
+	var res string
+
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+
+	ctx.String(200, res)
+}
