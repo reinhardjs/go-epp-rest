@@ -85,3 +85,9 @@ type DomainStatusUpdateQuery struct {
 	Status    string `form:"status"`
 	Extension string `form:"ext"`
 }
+
+type DomainAuthInfoUpdateQuery struct {
+	Domain    string `form:"domain"`
+	AuthInfo  string `form:"authinfo"`
+	Extension string `form:"ext"`
+}
