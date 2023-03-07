@@ -24,6 +24,7 @@ type DomainInteractor interface {
 	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	SecDNSUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	ContactUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 }
 
 type ContactInteractor interface {
