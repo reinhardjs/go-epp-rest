@@ -23,6 +23,7 @@ type DomainController interface {
 	Info(c infrastructure.Context)
 	SecDNSUpdate(c infrastructure.Context)
 	ContactUpdate(c infrastructure.Context)
+	StatusUpdate(c infrastructure.Context)
 }
 
 func NewDomainController(interactor usecase.DomainInteractor) DomainController {
@@ -328,4 +329,70 @@ func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
 	}
 
 	controller.interactor.ContactUpdate(ctx, data, domainContactUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
+
+	var domainStatusUpdateQuery request.DomainStatusUpdateQuery
+	ctx.BindQuery(&domainStatusUpdateQuery)
+
+	var addData, remData types.DomainAddRemove
+
+	var addStatuses, remStatuses []types.DomainStatus
+	addStatuses = []types.DomainStatus{}
+	remStatuses = []types.DomainStatus{}
+
+	if domainStatusUpdateQuery.Status == "ok" {
+		remStatuses = append(remStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientUpdateProhibited,
+		})
+		remStatuses = append(remStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientDeleteProhibited,
+		})
+		remStatuses = append(remStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientTransferProhibited,
+		})
+	} else if domainStatusUpdateQuery.Status == "clienthold" || domainStatusUpdateQuery.Status == "hold" {
+		addStatuses = append(addStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientHold,
+		})
+	} else if domainStatusUpdateQuery.Status == "unhold" {
+		remStatuses = append(remStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientHold,
+		})
+	} else {
+		addStatuses = append(addStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientUpdateProhibited,
+		})
+		addStatuses = append(addStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientDeleteProhibited,
+		})
+		addStatuses = append(addStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientTransferProhibited,
+		})
+	}
+
+	if len(addStatuses) > 0 {
+		addData = types.DomainAddRemove{
+			Status: addStatuses,
+		}
+	}
+
+	if len(remStatuses) > 0 {
+		remData = types.DomainAddRemove{
+			Status: remStatuses,
+		}
+	}
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name:   domainStatusUpdateQuery.Domain,
+				Add:    &addData,
+				Remove: &remData,
+			},
+		},
+	}
+
+	controller.interactor.StatusUpdate(ctx, data, domainStatusUpdateQuery.Extension, "eng")
 }
