@@ -64,3 +64,11 @@ func (p *domainPresenter) SecDNSUpdateSuccess(ctx infrastructure.Context, obj re
 
 	ctx.String(200, res)
 }
+
+func (p *domainPresenter) ContactUpdateSuccess(ctx infrastructure.Context, obj response.DomainContactUpdateResponse) {
+	var res string
+
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+
+	ctx.String(200, res)
+}
