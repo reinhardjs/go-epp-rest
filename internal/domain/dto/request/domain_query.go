@@ -67,3 +67,15 @@ type SecDNSUpdateQuery struct {
 	XkdAlgorithm1  string `form:"xkd_algorithm1"`
 	XkdPublicKey1  string `form:"xkd_publickey1"`
 }
+
+type DomainContactUpdateQuery struct {
+	Domain               string `form:"domain"`
+	RegistrantContact    string `form:"regcon"`
+	AdminContact         string `form:"admcon"`
+	TechContact          string `form:"techcon"`
+	BillingContact       string `form:"bilcon"`
+	DeleteAdminContact   string `form:"xadmcon"`
+	DeleteTechContact    string `form:"xtechcon"`
+	DeleteBillingContact string `form:"xbilcon"`
+	Extension            string `form:"ext"`
+}
