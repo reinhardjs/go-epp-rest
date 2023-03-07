@@ -26,6 +26,7 @@ type DomainInteractor interface {
 	SecDNSUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	ContactUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	StatusUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	AuthInfoUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 }
 
 type ContactInteractor interface {

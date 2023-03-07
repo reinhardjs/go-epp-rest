@@ -142,3 +142,20 @@ func (interactor *domainInteractor) StatusUpdate(ctx infrastructure.Context, dat
 
 	interactor.Presenter.StatusUpdateSuccess(ctx, *responseDTO)
 }
+
+func (interactor *domainInteractor) AuthInfoUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor AuthInfoUpdate: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseDTO := &response.DomainUpdateResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.AuthInfoUpdateSuccess(ctx, *responseDTO)
+}
