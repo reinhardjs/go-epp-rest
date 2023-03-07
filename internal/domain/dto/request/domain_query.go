@@ -79,3 +79,9 @@ type DomainContactUpdateQuery struct {
 	DeleteBillingContact string `form:"xbilcon"`
 	Extension            string `form:"ext"`
 }
+
+type DomainStatusUpdateQuery struct {
+	Domain    string `form:"domain"`
+	Status    string `form:"status"`
+	Extension string `form:"ext"`
+}
