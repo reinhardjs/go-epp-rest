@@ -116,7 +116,7 @@ func (interactor *domainInteractor) ContactUpdate(ctx infrastructure.Context, da
 		return
 	}
 
-	responseDTO := &response.DomainContactUpdateResponse{}
+	responseDTO := &response.DomainUpdateResponse{}
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {

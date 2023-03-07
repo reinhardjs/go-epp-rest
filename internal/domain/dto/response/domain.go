@@ -68,8 +68,8 @@ type SecDNSUpdateResultData struct {
 	types.DomainInfoData `xml:"urn:ietf:params:xml:ns:domain-1.0 infData"`
 }
 
-// Domain Contact Update
-type DomainContactUpdateResponse struct {
+// Domain Update
+type DomainUpdateResponse struct {
 	Result        Result        `xml:"response>result"`
 	TransactionID TransactionID `xml:"response>trID"`
 }
