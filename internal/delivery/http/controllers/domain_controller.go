@@ -24,6 +24,7 @@ type DomainController interface {
 	SecDNSUpdate(c infrastructure.Context)
 	ContactUpdate(c infrastructure.Context)
 	StatusUpdate(c infrastructure.Context)
+	AuthInfoUpdate(c infrastructure.Context)
 }
 
 func NewDomainController(interactor usecase.DomainInteractor) DomainController {
@@ -395,4 +396,27 @@ func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
 	}
 
 	controller.interactor.StatusUpdate(ctx, data, domainStatusUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
+
+	var domainAuthInfoUpdateQuery request.DomainAuthInfoUpdateQuery
+	ctx.BindQuery(&domainAuthInfoUpdateQuery)
+
+	var chgData types.DomainChange = types.DomainChange{
+		AuthInfo: &types.AuthInfo{
+			Password: domainAuthInfoUpdateQuery.AuthInfo,
+		},
+	}
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name:   domainAuthInfoUpdateQuery.Domain,
+				Change: &chgData,
+			},
+		},
+	}
+
+	controller.interactor.AuthInfoUpdate(ctx, data, domainAuthInfoUpdateQuery.Extension, "eng")
 }
