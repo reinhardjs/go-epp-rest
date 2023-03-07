@@ -22,6 +22,7 @@ type DomainController interface {
 	Delete(c infrastructure.Context)
 	Info(c infrastructure.Context)
 	SecDNSUpdate(c infrastructure.Context)
+	ContactUpdate(c infrastructure.Context)
 }
 
 func NewDomainController(interactor usecase.DomainInteractor) DomainController {
@@ -250,4 +251,81 @@ func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 	}
 
 	controller.interactor.SecDNSUpdate(ctx, data, secDNSUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
+
+	var domainContactUpdateQuery request.DomainContactUpdateQuery
+	ctx.BindQuery(&domainContactUpdateQuery)
+
+	var addData, remData types.DomainAddRemove
+	var chgData types.DomainChange
+
+	var addContacts, remContacts []types.Contact
+	addContacts = []types.Contact{}
+	remContacts = []types.Contact{}
+
+	if domainContactUpdateQuery.AdminContact != domainContactUpdateQuery.DeleteAdminContact {
+		addContacts = append(addContacts, types.Contact{
+			Name: domainContactUpdateQuery.AdminContact,
+			Type: "admin",
+		})
+		remContacts = append(remContacts, types.Contact{
+			Name: domainContactUpdateQuery.DeleteAdminContact,
+			Type: "admin",
+		})
+	}
+
+	if domainContactUpdateQuery.TechContact != domainContactUpdateQuery.DeleteTechContact {
+		addContacts = append(addContacts, types.Contact{
+			Name: domainContactUpdateQuery.TechContact,
+			Type: "tech",
+		})
+		remContacts = append(remContacts, types.Contact{
+			Name: domainContactUpdateQuery.DeleteTechContact,
+			Type: "tech",
+		})
+	}
+
+	if domainContactUpdateQuery.BillingContact != domainContactUpdateQuery.DeleteBillingContact {
+		addContacts = append(addContacts, types.Contact{
+			Name: domainContactUpdateQuery.BillingContact,
+			Type: "billing",
+		})
+		remContacts = append(remContacts, types.Contact{
+			Name: domainContactUpdateQuery.DeleteBillingContact,
+			Type: "billing",
+		})
+	}
+
+	if len(addContacts) > 0 {
+		addData = types.DomainAddRemove{
+			Contact: addContacts,
+		}
+	}
+
+	if len(remContacts) > 0 {
+		remData = types.DomainAddRemove{
+			Contact: remContacts,
+		}
+	}
+
+	if domainContactUpdateQuery.RegistrantContact != "" {
+		chgData = types.DomainChange{
+			Registrant: domainContactUpdateQuery.RegistrantContact,
+		}
+	}
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name:   domainContactUpdateQuery.Domain,
+				Add:    &addData,
+				Remove: &remData,
+				Change: &chgData,
+			},
+		},
+	}
+
+	controller.interactor.ContactUpdate(ctx, data, domainContactUpdateQuery.Extension, "eng")
 }
