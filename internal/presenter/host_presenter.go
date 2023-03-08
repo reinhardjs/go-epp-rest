@@ -20,7 +20,7 @@ func (p *hostPresenter) CheckSuccess(ctx infrastructure.Context, responseObject 
 
 	for _, element := range responseObject.ResultData.CheckDatas {
 		notStr := ""
-		if element.HostName.AvailKey == 0 {
+		if element.HostName.Available == 0 {
 			notStr = "not "
 		}
 		res += fmt.Sprintf("Host %s, host %savailable\n", element.HostName.Value, notStr)
