@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -54,7 +55,15 @@ func (controller *domainController) Create(ctx infrastructure.Context) {
 	var domainCreateQuery request.DomainCreateQuery
 	ctx.BindQuery(&domainCreateQuery)
 
-	ns := strings.Split(domainCreateQuery.Nameserver, ",")
+	ns := []string{}
+	for i := 1; i <= 13; i++ {
+		nameServer := ctx.Query(fmt.Sprintf("ns%v", i))
+
+		if nameServer != "" {
+			ns = append(ns, nameServer)
+		}
+	}
+
 	period, err := strconv.Atoi(domainCreateQuery.Period)
 
 	if err != nil {

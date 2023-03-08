@@ -5,8 +5,8 @@ type DomainCheckQuery struct {
 }
 
 type DomainCreateQuery struct {
-	Domain            string `form:"domain"`
-	Nameserver        string `form:"ns"`
+	Domain string `form:"domain"`
+	// Nameserver        string `form:"ns"`
 	RegistrantContact string `form:"regcon"`
 	AdminContact      string `form:"admcon"`
 	TechContact       string `form:"techcon"`
