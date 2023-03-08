@@ -33,10 +33,7 @@ func (p *domainPresenter) CheckSuccess(ctx infrastructure.Context, obj response.
 func (p *domainPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateDomainResponse) {
 	var res string
 
-	res += fmt.Sprintf("Name %s\n", obj.ResultData.CreatedData.Name)
-	res += fmt.Sprintf("Create Date %s\n", obj.ResultData.CreatedData.CreatedDate)
-	res += fmt.Sprintf("Expire Date %s\n", obj.ResultData.CreatedData.ExpiredDate)
-	res = strings.TrimSuffix(res, "\n")
+	res = fmt.Sprintf("%v %s", obj.Result.Code, obj.ResultData.CreatedData.ExpiredDate)
 
 	ctx.String(200, res)
 }
