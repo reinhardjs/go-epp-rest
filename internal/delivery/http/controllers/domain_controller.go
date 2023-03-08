@@ -27,6 +27,7 @@ type DomainController interface {
 	ContactUpdate(c infrastructure.Context)
 	StatusUpdate(c infrastructure.Context)
 	AuthInfoUpdate(c infrastructure.Context)
+	NameserverUpdate(c infrastructure.Context)
 }
 
 func NewDomainController(interactor usecase.DomainInteractor) DomainController {
@@ -429,4 +430,60 @@ func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
 	}
 
 	controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainAuthInfoUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) NameserverUpdate(ctx infrastructure.Context) {
+
+	var domainNameserverUpdateQuery request.DomainNameserverUpdateQuery
+	ctx.BindQuery(&domainNameserverUpdateQuery)
+
+	var addData, remData types.DomainAddRemove
+	var addNameserverWrapper, remNameserverWrapper types.NameServer
+	addNameservers := []string{}
+	remNameservers := []string{}
+
+	for i := 1; i <= 13; i++ {
+		ns := ctx.Query(fmt.Sprintf("ns%v", i))
+		xns := ctx.Query(fmt.Sprintf("xns%v", i))
+
+		if ns != "" {
+			addNameservers = append(addNameservers, ns)
+		}
+
+		if xns != "" {
+			remNameservers = append(remNameservers, ns)
+		}
+	}
+
+	addNameserverWrapper = types.NameServer{
+		HostObject: addNameservers,
+	}
+
+	remNameserverWrapper = types.NameServer{
+		HostObject: remNameservers,
+	}
+
+	if len(addNameserverWrapper.HostObject) > 0 {
+		addData = types.DomainAddRemove{
+			NameServer: &addNameserverWrapper,
+		}
+	}
+
+	if len(remNameserverWrapper.HostObject) > 0 {
+		remData = types.DomainAddRemove{
+			NameServer: &remNameserverWrapper,
+		}
+	}
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name:   domainNameserverUpdateQuery.Domain,
+				Add:    &addData,
+				Remove: &remData,
+			},
+		},
+	}
+
+	controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainNameserverUpdateQuery.Extension, "eng")
 }
