@@ -63,3 +63,13 @@ func (p *hostPresenter) InfoSuccess(ctx infrastructure.Context, responseObject r
 
 	ctx.String(200, res)
 }
+
+func (p *hostPresenter) CheckAndCreateSuccess(ctx infrastructure.Context, responseObject response.CreateHostResponse) {
+	var res string
+
+	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
+	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
+	res = strings.TrimSuffix(res, "\n")
+
+	ctx.String(200, res)
+}

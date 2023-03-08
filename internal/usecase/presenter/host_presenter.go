@@ -11,4 +11,5 @@ type HostPresenter interface {
 	UpdateSuccess(ctx infrastructure.Context, obj response.UpdateHostResponse)
 	DeleteSuccess(ctx infrastructure.Context, obj response.DeleteHostResponse)
 	InfoSuccess(ctx infrastructure.Context, obj response.InfoHostResponse)
+	CheckAndCreateSuccess(ctx infrastructure.Context, obj response.CreateHostResponse)
 }
