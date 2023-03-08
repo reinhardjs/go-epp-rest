@@ -21,6 +21,7 @@ type HostController interface {
 	Delete(c infrastructure.Context)
 	Info(c infrastructure.Context)
 	Change(c infrastructure.Context)
+	CheckAndCreate(c infrastructure.Context)
 }
 
 func NewHostController(interactor usecase.HostInteractor) HostController {
@@ -201,4 +202,31 @@ func (controller *hostController) Change(ctx infrastructure.Context) {
 	}
 
 	controller.interactor.Change(ctx.(presenter_infrastructure.Context), data, hostChangeQuery.Extension, "eng")
+}
+
+func (controller *hostController) CheckAndCreate(ctx infrastructure.Context) {
+	var hostCreateQuery request.HostCheckAndCreateQuery
+	ctx.BindQuery(&hostCreateQuery)
+
+	hostName := hostCreateQuery.Host
+
+	ipAddressList := strings.Split(hostCreateQuery.IPList, ",")
+	hostAddressList := []types.HostAddress{}
+
+	for _, ipAddress := range ipAddressList {
+		ipType := types.HostIPv4 // need to check ip type based on ip address
+		hostAddressList = append(hostAddressList, types.HostAddress{
+			Address: ipAddress,
+			IP:      ipType,
+		})
+	}
+
+	data := types.HostCreateType{
+		Create: types.HostCreate{
+			Name:    hostName,
+			Address: hostAddressList,
+		},
+	}
+
+	controller.interactor.CheckAndCreate(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
 }
