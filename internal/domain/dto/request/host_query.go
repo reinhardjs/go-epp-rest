@@ -39,6 +39,7 @@ type HostChangeQuery struct {
 }
 
 type HostCheckAndCreateQuery struct {
-	Host   string `form:"ns1"`
-	IPList string `form:"iplist"`
+	Host      string `form:"ns1"`
+	IPList    string `form:"iplist"`
+	Extension string `form:"ext"`
 }
