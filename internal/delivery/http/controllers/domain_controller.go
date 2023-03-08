@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
@@ -490,14 +491,18 @@ func (controller *domainController) NameserverUpdate(ctx infrastructure.Context)
 }
 
 func (controller *domainController) Renew(ctx infrastructure.Context) {
-
 	var domainRenewQuery request.DomainRenewQuery
 	ctx.BindQuery(&domainRenewQuery)
 
 	period, err := strconv.Atoi(domainRenewQuery.Period)
-
 	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Create: strconv.Atoi"))
+		log.Println(errors.Wrap(err, "DomainController Renew: strconv.Atoi"))
+	}
+
+	layoutFormat := "2006-01-02T15:04:05"
+	currentExpireDate, err := time.Parse(layoutFormat, fmt.Sprintf("%vT23:59:59", domainRenewQuery.CurrentExpireDate))
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Renew: time.Parse"))
 	}
 
 	data := types.DomainRenewType{
@@ -507,6 +512,7 @@ func (controller *domainController) Renew(ctx infrastructure.Context) {
 				Value: period,
 				Unit:  "y", //yearly
 			},
+			ExpireDate: currentExpireDate,
 		},
 	}
 
