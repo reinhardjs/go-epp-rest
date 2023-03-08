@@ -1,6 +1,9 @@
 package usecase
 
-import "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
+import (
+	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
+)
 
 type TransferInteractor interface {
 	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string)
@@ -16,6 +19,7 @@ type HostInteractor interface {
 	Update(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Change(ctx infrastructure.Context, data types.HostUpdateType, ext string, langTag string)
 }
 
 type DomainInteractor interface {
