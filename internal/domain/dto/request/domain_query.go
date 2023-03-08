@@ -97,3 +97,10 @@ type DomainNameserverUpdateQuery struct {
 	AuthInfo  string `form:"authinfo"`
 	Extension string `form:"ext"`
 }
+
+type DomainRenewQuery struct {
+	Domain            string `form:"domain"`
+	CurrentExpireDate string `form:"expire"`
+	Period            string `form:"period"`
+	Extension         string `form:"ext"`
+}

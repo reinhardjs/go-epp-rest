@@ -28,6 +28,7 @@ type DomainController interface {
 	StatusUpdate(c infrastructure.Context)
 	AuthInfoUpdate(c infrastructure.Context)
 	NameserverUpdate(c infrastructure.Context)
+	Renew(c infrastructure.Context)
 }
 
 func NewDomainController(interactor usecase.DomainInteractor) DomainController {
@@ -486,4 +487,28 @@ func (controller *domainController) NameserverUpdate(ctx infrastructure.Context)
 	}
 
 	controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainNameserverUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) Renew(ctx infrastructure.Context) {
+
+	var domainRenewQuery request.DomainRenewQuery
+	ctx.BindQuery(&domainRenewQuery)
+
+	period, err := strconv.Atoi(domainRenewQuery.Period)
+
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Create: strconv.Atoi"))
+	}
+
+	data := types.DomainRenewType{
+		Renew: types.DomainRenew{
+			Name: domainRenewQuery.Domain,
+			Period: types.Period{
+				Value: period,
+				Unit:  "y", //yearly
+			},
+		},
+	}
+
+	controller.interactor.Renew(ctx.(presenter_infrastructure.Context), data, domainRenewQuery.Extension, "eng")
 }
