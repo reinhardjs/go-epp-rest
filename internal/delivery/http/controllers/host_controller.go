@@ -5,6 +5,7 @@ import (
 
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
+	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -40,7 +41,7 @@ func (controller *hostController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Check(ctx, data, hostCheckQuery.Extension, "eng")
+	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, hostCheckQuery.Extension, "eng")
 }
 
 func (controller *hostController) Create(ctx infrastructure.Context) {
@@ -72,7 +73,7 @@ func (controller *hostController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx, data, hostCreateQuery.Extension, "eng")
+	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
 }
 
 func (controller *hostController) Update(ctx infrastructure.Context) {
@@ -131,7 +132,7 @@ func (controller *hostController) Update(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Update(ctx, data, hostUpdateQuery.Extension, "eng")
+	controller.interactor.Update(ctx.(presenter_infrastructure.Context), data, hostUpdateQuery.Extension, "eng")
 }
 
 func (controller *hostController) Delete(ctx infrastructure.Context) {
@@ -151,7 +152,7 @@ func (controller *hostController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Delete(ctx, data, hostDeleteQuery.Extension, "eng")
+	controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, hostDeleteQuery.Extension, "eng")
 }
 
 func (controller *hostController) Info(ctx infrastructure.Context) {
@@ -171,5 +172,5 @@ func (controller *hostController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Info(ctx, data, hostInfoQuery.Extension, "eng")
+	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, hostInfoQuery.Extension, "eng")
 }

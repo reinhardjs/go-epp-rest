@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
+	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -47,7 +48,7 @@ func (controller *domainController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Check(ctx, data, "com", "eng")
+	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, "com", "eng")
 }
 
 func (controller *domainController) Create(ctx infrastructure.Context) {
@@ -101,7 +102,7 @@ func (controller *domainController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx, data, domainCreateQuery.Extension, "eng")
+	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, domainCreateQuery.Extension, "eng")
 }
 
 func (controller *domainController) Delete(ctx infrastructure.Context) {
@@ -115,7 +116,7 @@ func (controller *domainController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Delete(ctx, data, domainDeleteQuery.Extension, "eng")
+	controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, domainDeleteQuery.Extension, "eng")
 }
 
 func (controller *domainController) Info(ctx infrastructure.Context) {
@@ -131,7 +132,7 @@ func (controller *domainController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Info(ctx, data, domainInfoQuery.Extension, "eng")
+	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
 }
 
 func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
@@ -261,7 +262,7 @@ func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 		}
 	}
 
-	controller.interactor.SecDNSUpdate(ctx, data, secDNSUpdateQuery.Extension, "eng")
+	controller.interactor.SecDNSUpdate(ctx.(presenter_infrastructure.Context), data, secDNSUpdateQuery.Extension, "eng")
 }
 
 func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
@@ -338,7 +339,7 @@ func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.ContactUpdate(ctx, data, domainContactUpdateQuery.Extension, "eng")
+	controller.interactor.ContactUpdate(ctx.(presenter_infrastructure.Context), data, domainContactUpdateQuery.Extension, "eng")
 }
 
 func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
@@ -404,7 +405,7 @@ func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.StatusUpdate(ctx, data, domainStatusUpdateQuery.Extension, "eng")
+	controller.interactor.StatusUpdate(ctx.(presenter_infrastructure.Context), data, domainStatusUpdateQuery.Extension, "eng")
 }
 
 func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
@@ -427,5 +428,5 @@ func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.AuthInfoUpdate(ctx, data, domainAuthInfoUpdateQuery.Extension, "eng")
+	controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainAuthInfoUpdateQuery.Extension, "eng")
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
+	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -39,7 +40,7 @@ func (controller *transferController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Check(ctx, data, transferCheckQuery.Extension, "eng")
+	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, transferCheckQuery.Extension, "eng")
 }
 
 func (controller *transferController) Request(ctx infrastructure.Context) {
@@ -59,7 +60,7 @@ func (controller *transferController) Request(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Request(ctx, data, transferRequestQuery.Extension, "eng")
+	controller.interactor.Request(ctx.(presenter_infrastructure.Context), data, transferRequestQuery.Extension, "eng")
 }
 
 func (controller *transferController) Cancel(ctx infrastructure.Context) {
@@ -79,7 +80,7 @@ func (controller *transferController) Cancel(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Cancel(ctx, data, transferCancelQuery.Extension, "eng")
+	controller.interactor.Cancel(ctx.(presenter_infrastructure.Context), data, transferCancelQuery.Extension, "eng")
 }
 
 func (controller *transferController) Approve(ctx infrastructure.Context) {
@@ -99,7 +100,7 @@ func (controller *transferController) Approve(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Approve(ctx, data, transferApproveQuery.Extension, "eng")
+	controller.interactor.Approve(ctx.(presenter_infrastructure.Context), data, transferApproveQuery.Extension, "eng")
 }
 
 func (controller *transferController) Reject(ctx infrastructure.Context) {
@@ -119,5 +120,5 @@ func (controller *transferController) Reject(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Reject(ctx, data, transferRejectQuery.Extension, "eng")
+	controller.interactor.Reject(ctx.(presenter_infrastructure.Context), data, transferRejectQuery.Extension, "eng")
 }

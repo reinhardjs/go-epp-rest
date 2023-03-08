@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
+	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 )
 
@@ -20,5 +21,5 @@ func NewPollController(interactor usecase.PollInteractor) PollController {
 }
 
 func (controller *pollController) Poll(ctx infrastructure.Context) {
-	controller.interactor.Poll(ctx)
+	controller.interactor.Poll(ctx.(presenter_infrastructure.Context))
 }
