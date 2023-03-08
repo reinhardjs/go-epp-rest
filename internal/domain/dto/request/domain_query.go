@@ -91,3 +91,7 @@ type DomainAuthInfoUpdateQuery struct {
 	AuthInfo  string `form:"authinfo"`
 	Extension string `form:"ext"`
 }
+
+type DomainNameserverUpdateQuery struct {
+	Domain string `form:"domain"`
+}
