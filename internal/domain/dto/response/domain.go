@@ -73,3 +73,19 @@ type DomainUpdateResponse struct {
 	Result        Result        `xml:"response>result"`
 	TransactionID TransactionID `xml:"response>trID"`
 }
+
+// Domain Renew
+type RenewDomainResponse struct {
+	Result        Result                `xml:"response>result"`
+	ResultData    RenewDomainResultData `xml:"response>resData"`
+	TransactionID TransactionID         `xml:"response>trID"`
+}
+
+type RenewDomainResultData struct {
+	RenewedData RenewDomainData `xml:"renData>cd"`
+}
+
+type RenewDomainData struct {
+	Name        string `xml:"name"`
+	ExpiredDate string `xml:"exDate"`
+}
