@@ -1,4 +1,4 @@
-package wrapper
+package adapter
 
 import "github.com/gin-gonic/gin"
 
