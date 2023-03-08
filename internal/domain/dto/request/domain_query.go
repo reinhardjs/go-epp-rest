@@ -93,5 +93,7 @@ type DomainAuthInfoUpdateQuery struct {
 }
 
 type DomainNameserverUpdateQuery struct {
-	Domain string `form:"domain"`
+	Domain    string `form:"domain"`
+	AuthInfo  string `form:"authinfo"`
+	Extension string `form:"ext"`
 }
