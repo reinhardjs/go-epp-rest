@@ -16,6 +16,7 @@ func NewRouter(appController controllers.AppController) *gin.Engine {
 	router.GET("/domain/status/update", func(c *gin.Context) { appController.Domain.StatusUpdate(c) })
 	router.GET("/domain/authinfo/update", func(c *gin.Context) { appController.Domain.AuthInfoUpdate(c) })
 	router.GET("/domain/nameserver/update", func(c *gin.Context) { appController.Domain.NameserverUpdate(c) })
+	router.GET("/domain/renew", func(c *gin.Context) { appController.Domain.Renew(c) })
 
 	router.GET("/host/check", func(c *gin.Context) { appController.Host.Check(c) })
 	router.GET("/host/create", func(c *gin.Context) { appController.Host.Create(c) })
