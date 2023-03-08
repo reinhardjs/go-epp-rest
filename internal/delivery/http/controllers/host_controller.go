@@ -184,7 +184,15 @@ func (controller *hostController) Change(ctx infrastructure.Context) {
 
 	data := types.HostUpdateType{
 		Update: types.HostUpdate{
-			Name:   hostName,
+			Name: hostName,
+			Add: &types.HostAddRemove{
+				Address: []types.HostAddress{
+					{
+						Address: "190.1.1.1",
+						IP:      types.HostIPv4,
+					},
+				},
+			},
 			Remove: &types.HostAddRemove{}, // filled on hostinteractor's Change, from host info response
 			Change: &types.HostChange{
 				Name: hostChangeQuery.NewHost,
