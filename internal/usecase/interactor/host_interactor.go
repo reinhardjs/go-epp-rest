@@ -149,3 +149,51 @@ func (interactor *hostInteractor) Change(ctx infrastructure.Context, data types.
 
 	interactor.Presenter.UpdateSuccess(ctx, *responseDTO)
 }
+
+func (interactor *hostInteractor) CheckAndCreate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+
+	checkData := types.HostCheckType{
+		Check: types.HostCheck{
+			Names: []string{
+				data.(types.HostCreateType).Create.Name,
+			},
+		},
+	}
+
+	responseByte, err := interactor.RegistrarRepository.SendCommand(checkData)
+	if err != nil {
+		err = errors.Wrap(err, "HostInteractor Create: interactor.RegistrarRepository.SendCommand (host check)")
+		return
+	}
+
+	checkHostResponseDTO := &response.CheckHostResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, checkHostResponseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "HostInteractor Create: interactor.XMLMapper.Decode (CheckHostResponse)")
+		return
+	}
+
+	if checkHostResponseDTO.ResultData.CheckDatas[0].HostName.Available == 0 {
+		// not available to be created
+		return
+	}
+
+	responseByte, err = interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "HostInteractor Create: interactor.RegistrarRepository.SendCommand (host create)")
+		return
+	}
+
+	responseDTO := &response.CreateHostResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "HostInteractor Create: interactor.XMLMapper.Decode (CreateHostResponse)")
+		return
+	}
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.CheckAndCreateSuccess(ctx, *responseDTO)
+}

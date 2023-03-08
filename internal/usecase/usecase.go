@@ -20,6 +20,7 @@ type HostInteractor interface {
 	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	Change(ctx infrastructure.Context, data types.HostUpdateType, ext string, langTag string)
+	CheckAndCreate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 }
 
 type DomainInteractor interface {
