@@ -67,3 +67,25 @@ type SecDNSUpdateResponse struct {
 type SecDNSUpdateResultData struct {
 	types.DomainInfoData `xml:"urn:ietf:params:xml:ns:domain-1.0 infData"`
 }
+
+// Domain Update
+type DomainUpdateResponse struct {
+	Result        Result        `xml:"response>result"`
+	TransactionID TransactionID `xml:"response>trID"`
+}
+
+// Domain Renew
+type RenewDomainResponse struct {
+	Result        Result                `xml:"response>result"`
+	ResultData    RenewDomainResultData `xml:"response>resData"`
+	TransactionID TransactionID         `xml:"response>trID"`
+}
+
+type RenewDomainResultData struct {
+	RenewedData RenewDomainData `xml:"renData>cd"`
+}
+
+type RenewDomainData struct {
+	Name        string `xml:"name"`
+	ExpiredDate string `xml:"exDate"`
+}

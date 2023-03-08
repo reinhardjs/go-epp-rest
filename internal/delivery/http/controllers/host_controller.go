@@ -5,6 +5,7 @@ import (
 
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
+	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -19,6 +20,8 @@ type HostController interface {
 	Update(c infrastructure.Context)
 	Delete(c infrastructure.Context)
 	Info(c infrastructure.Context)
+	Change(c infrastructure.Context)
+	CheckAndCreate(c infrastructure.Context)
 }
 
 func NewHostController(interactor usecase.HostInteractor) HostController {
@@ -32,15 +35,15 @@ func (controller *hostController) Check(ctx infrastructure.Context) {
 	var hostCheckQuery request.HostCheckQuery
 	ctx.BindQuery(&hostCheckQuery)
 
-	hostList := strings.Split(hostCheckQuery.HostList, ",")
-
 	data := types.HostCheckType{
 		Check: types.HostCheck{
-			Names: hostList,
+			Names: []string{
+				hostCheckQuery.Host,
+			},
 		},
 	}
 
-	controller.interactor.Check(ctx, data, hostCheckQuery.Extension, "eng")
+	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, hostCheckQuery.Extension, "eng")
 }
 
 func (controller *hostController) Create(ctx infrastructure.Context) {
@@ -72,7 +75,7 @@ func (controller *hostController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx, data, hostCreateQuery.Extension, "eng")
+	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
 }
 
 func (controller *hostController) Update(ctx infrastructure.Context) {
@@ -131,7 +134,7 @@ func (controller *hostController) Update(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Update(ctx, data, hostUpdateQuery.Extension, "eng")
+	controller.interactor.Update(ctx.(presenter_infrastructure.Context), data, hostUpdateQuery.Extension, "eng")
 }
 
 func (controller *hostController) Delete(ctx infrastructure.Context) {
@@ -151,7 +154,7 @@ func (controller *hostController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Delete(ctx, data, hostDeleteQuery.Extension, "eng")
+	controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, hostDeleteQuery.Extension, "eng")
 }
 
 func (controller *hostController) Info(ctx infrastructure.Context) {
@@ -171,5 +174,59 @@ func (controller *hostController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Info(ctx, data, hostInfoQuery.Extension, "eng")
+	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, hostInfoQuery.Extension, "eng")
+}
+
+func (controller *hostController) Change(ctx infrastructure.Context) {
+	var hostChangeQuery request.HostChangeQuery
+	ctx.BindQuery(&hostChangeQuery)
+
+	hostName := hostChangeQuery.Host
+
+	data := types.HostUpdateType{
+		Update: types.HostUpdate{
+			Name: hostName,
+			Add: &types.HostAddRemove{
+				Address: []types.HostAddress{
+					{
+						Address: "190.1.1.1",
+						IP:      types.HostIPv4,
+					},
+				},
+			},
+			Remove: &types.HostAddRemove{}, // filled on hostinteractor's Change, from host info response
+			Change: &types.HostChange{
+				Name: hostChangeQuery.NewHost,
+			},
+		},
+	}
+
+	controller.interactor.Change(ctx.(presenter_infrastructure.Context), data, hostChangeQuery.Extension, "eng")
+}
+
+func (controller *hostController) CheckAndCreate(ctx infrastructure.Context) {
+	var hostCreateQuery request.HostCheckAndCreateQuery
+	ctx.BindQuery(&hostCreateQuery)
+
+	hostName := hostCreateQuery.Host
+
+	ipAddressList := strings.Split(hostCreateQuery.IPList, ",")
+	hostAddressList := []types.HostAddress{}
+
+	for _, ipAddress := range ipAddressList {
+		ipType := types.HostIPv4 // need to check ip type based on ip address
+		hostAddressList = append(hostAddressList, types.HostAddress{
+			Address: ipAddress,
+			IP:      ipType,
+		})
+	}
+
+	data := types.HostCreateType{
+		Create: types.HostCreate{
+			Name:    hostName,
+			Address: hostAddressList,
+		},
+	}
+
+	controller.interactor.CheckAndCreate(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
 }

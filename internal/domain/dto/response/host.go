@@ -19,8 +19,8 @@ type CheckHostData struct {
 }
 
 type HostName struct {
-	AvailKey int    `xml:"avail,attr"`
-	Value    string `xml:",chardata"`
+	Available int    `xml:"avail,attr"`
+	Value     string `xml:",chardata"`
 }
 
 // Host Create

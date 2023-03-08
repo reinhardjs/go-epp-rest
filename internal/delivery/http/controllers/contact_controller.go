@@ -5,6 +5,7 @@ import (
 
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
+	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -40,7 +41,7 @@ func (controller contactController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Check(ctx, data, "com", "eng")
+	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, "com", "eng")
 }
 
 func (controller contactController) Create(ctx infrastructure.Context) {
@@ -79,7 +80,7 @@ func (controller contactController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx, data, "com", "eng")
+	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, "com", "eng")
 }
 
 func (controller contactController) Update(ctx infrastructure.Context) {
@@ -118,7 +119,7 @@ func (controller contactController) Update(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx, data, "com", "eng")
+	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, "com", "eng")
 }
 
 func (controller contactController) Delete(ctx infrastructure.Context) {
@@ -132,7 +133,7 @@ func (controller contactController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Delete(ctx, data, "com", "eng")
+	controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, "com", "eng")
 }
 
 func (controller contactController) Info(ctx infrastructure.Context) {
@@ -146,5 +147,5 @@ func (controller contactController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Info(ctx, data, "com", "eng")
+	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, "com", "eng")
 }

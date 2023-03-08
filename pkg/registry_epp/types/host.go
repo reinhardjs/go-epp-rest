@@ -94,6 +94,7 @@ type HostUpdate struct {
 	Name   string         `xml:"name"`
 	Add    *HostAddRemove `xml:"add,omitempty"`
 	Remove *HostAddRemove `xml:"rem,omitempty"`
+	Change *HostChange    `xml:"chg,omitempty"`
 }
 
 // HostCheckData represents the response for a host check command.
@@ -125,6 +126,12 @@ type HostInfoData struct {
 // domain.
 type HostAddRemove struct {
 	Address []HostAddress `xml:"addr,omitempty"`
+}
+
+// HostChange represents data that can be changed while updating a
+// host.
+type HostChange struct {
+	Name string `xml:"name,omitempty"`
 }
 
 // HostAddress represents an IP address beloning to a host.

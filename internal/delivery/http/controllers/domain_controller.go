@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
+	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -22,6 +25,11 @@ type DomainController interface {
 	Delete(c infrastructure.Context)
 	Info(c infrastructure.Context)
 	SecDNSUpdate(c infrastructure.Context)
+	ContactUpdate(c infrastructure.Context)
+	StatusUpdate(c infrastructure.Context)
+	AuthInfoUpdate(c infrastructure.Context)
+	NameserverUpdate(c infrastructure.Context)
+	Renew(c infrastructure.Context)
 }
 
 func NewDomainController(interactor usecase.DomainInteractor) DomainController {
@@ -43,7 +51,7 @@ func (controller *domainController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Check(ctx, data, "com", "eng")
+	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, "com", "eng")
 }
 
 func (controller *domainController) Create(ctx infrastructure.Context) {
@@ -51,7 +59,15 @@ func (controller *domainController) Create(ctx infrastructure.Context) {
 	var domainCreateQuery request.DomainCreateQuery
 	ctx.BindQuery(&domainCreateQuery)
 
-	ns := strings.Split(domainCreateQuery.Nameserver, ",")
+	ns := []string{}
+	for i := 1; i <= 13; i++ {
+		nameServer := ctx.Query(fmt.Sprintf("ns%v", i))
+
+		if nameServer != "" {
+			ns = append(ns, nameServer)
+		}
+	}
+
 	period, err := strconv.Atoi(domainCreateQuery.Period)
 
 	if err != nil {
@@ -89,7 +105,7 @@ func (controller *domainController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx, data, domainCreateQuery.Extension, "eng")
+	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, domainCreateQuery.Extension, "eng")
 }
 
 func (controller *domainController) Delete(ctx infrastructure.Context) {
@@ -103,7 +119,7 @@ func (controller *domainController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Delete(ctx, data, domainDeleteQuery.Extension, "eng")
+	controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, domainDeleteQuery.Extension, "eng")
 }
 
 func (controller *domainController) Info(ctx infrastructure.Context) {
@@ -119,7 +135,7 @@ func (controller *domainController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Info(ctx, data, domainInfoQuery.Extension, "eng")
+	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
 }
 
 func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
@@ -249,5 +265,256 @@ func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 		}
 	}
 
-	controller.interactor.SecDNSUpdate(ctx, data, secDNSUpdateQuery.Extension, "eng")
+	controller.interactor.SecDNSUpdate(ctx.(presenter_infrastructure.Context), data, secDNSUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
+
+	var domainContactUpdateQuery request.DomainContactUpdateQuery
+	ctx.BindQuery(&domainContactUpdateQuery)
+
+	var addData, remData types.DomainAddRemove
+	var chgData types.DomainChange
+
+	var addContacts, remContacts []types.Contact
+	addContacts = []types.Contact{}
+	remContacts = []types.Contact{}
+
+	if domainContactUpdateQuery.AdminContact != domainContactUpdateQuery.DeleteAdminContact {
+		addContacts = append(addContacts, types.Contact{
+			Name: domainContactUpdateQuery.AdminContact,
+			Type: "admin",
+		})
+		remContacts = append(remContacts, types.Contact{
+			Name: domainContactUpdateQuery.DeleteAdminContact,
+			Type: "admin",
+		})
+	}
+
+	if domainContactUpdateQuery.TechContact != domainContactUpdateQuery.DeleteTechContact {
+		addContacts = append(addContacts, types.Contact{
+			Name: domainContactUpdateQuery.TechContact,
+			Type: "tech",
+		})
+		remContacts = append(remContacts, types.Contact{
+			Name: domainContactUpdateQuery.DeleteTechContact,
+			Type: "tech",
+		})
+	}
+
+	if domainContactUpdateQuery.BillingContact != domainContactUpdateQuery.DeleteBillingContact {
+		addContacts = append(addContacts, types.Contact{
+			Name: domainContactUpdateQuery.BillingContact,
+			Type: "billing",
+		})
+		remContacts = append(remContacts, types.Contact{
+			Name: domainContactUpdateQuery.DeleteBillingContact,
+			Type: "billing",
+		})
+	}
+
+	if len(addContacts) > 0 {
+		addData = types.DomainAddRemove{
+			Contact: addContacts,
+		}
+	}
+
+	if len(remContacts) > 0 {
+		remData = types.DomainAddRemove{
+			Contact: remContacts,
+		}
+	}
+
+	if domainContactUpdateQuery.RegistrantContact != "" {
+		chgData = types.DomainChange{
+			Registrant: domainContactUpdateQuery.RegistrantContact,
+		}
+	}
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name:   domainContactUpdateQuery.Domain,
+				Add:    &addData,
+				Remove: &remData,
+				Change: &chgData,
+			},
+		},
+	}
+
+	controller.interactor.ContactUpdate(ctx.(presenter_infrastructure.Context), data, domainContactUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
+
+	var domainStatusUpdateQuery request.DomainStatusUpdateQuery
+	ctx.BindQuery(&domainStatusUpdateQuery)
+
+	var addData, remData types.DomainAddRemove
+
+	var addStatuses, remStatuses []types.DomainStatus
+	addStatuses = []types.DomainStatus{}
+	remStatuses = []types.DomainStatus{}
+
+	if domainStatusUpdateQuery.Status == "ok" {
+		remStatuses = append(remStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientUpdateProhibited,
+		})
+		remStatuses = append(remStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientDeleteProhibited,
+		})
+		remStatuses = append(remStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientTransferProhibited,
+		})
+	} else if domainStatusUpdateQuery.Status == "clienthold" || domainStatusUpdateQuery.Status == "hold" {
+		addStatuses = append(addStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientHold,
+		})
+	} else if domainStatusUpdateQuery.Status == "unhold" {
+		remStatuses = append(remStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientHold,
+		})
+	} else {
+		addStatuses = append(addStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientUpdateProhibited,
+		})
+		addStatuses = append(addStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientDeleteProhibited,
+		})
+		addStatuses = append(addStatuses, types.DomainStatus{
+			DomainStatusType: types.DomainStatusClientTransferProhibited,
+		})
+	}
+
+	if len(addStatuses) > 0 {
+		addData = types.DomainAddRemove{
+			Status: addStatuses,
+		}
+	}
+
+	if len(remStatuses) > 0 {
+		remData = types.DomainAddRemove{
+			Status: remStatuses,
+		}
+	}
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name:   domainStatusUpdateQuery.Domain,
+				Add:    &addData,
+				Remove: &remData,
+			},
+		},
+	}
+
+	controller.interactor.StatusUpdate(ctx.(presenter_infrastructure.Context), data, domainStatusUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
+
+	var domainAuthInfoUpdateQuery request.DomainAuthInfoUpdateQuery
+	ctx.BindQuery(&domainAuthInfoUpdateQuery)
+
+	var chgData types.DomainChange = types.DomainChange{
+		AuthInfo: &types.AuthInfo{
+			Password: domainAuthInfoUpdateQuery.AuthInfo,
+		},
+	}
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name:   domainAuthInfoUpdateQuery.Domain,
+				Change: &chgData,
+			},
+		},
+	}
+
+	controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainAuthInfoUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) NameserverUpdate(ctx infrastructure.Context) {
+
+	var domainNameserverUpdateQuery request.DomainNameserverUpdateQuery
+	ctx.BindQuery(&domainNameserverUpdateQuery)
+
+	var addData, remData types.DomainAddRemove
+	var addNameserverWrapper, remNameserverWrapper types.NameServer
+	addNameservers := []string{}
+	remNameservers := []string{}
+
+	for i := 1; i <= 13; i++ {
+		ns := ctx.Query(fmt.Sprintf("ns%v", i))
+		xns := ctx.Query(fmt.Sprintf("xns%v", i))
+
+		if ns != "" {
+			addNameservers = append(addNameservers, ns)
+		}
+
+		if xns != "" {
+			remNameservers = append(remNameservers, ns)
+		}
+	}
+
+	addNameserverWrapper = types.NameServer{
+		HostObject: addNameservers,
+	}
+
+	remNameserverWrapper = types.NameServer{
+		HostObject: remNameservers,
+	}
+
+	if len(addNameserverWrapper.HostObject) > 0 {
+		addData = types.DomainAddRemove{
+			NameServer: &addNameserverWrapper,
+		}
+	}
+
+	if len(remNameserverWrapper.HostObject) > 0 {
+		remData = types.DomainAddRemove{
+			NameServer: &remNameserverWrapper,
+		}
+	}
+
+	data := types.DomainUpdateType{
+		Command: types.DomainCommand{
+			Update: types.DomainUpdate{
+				Name:   domainNameserverUpdateQuery.Domain,
+				Add:    &addData,
+				Remove: &remData,
+			},
+		},
+	}
+
+	controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainNameserverUpdateQuery.Extension, "eng")
+}
+
+func (controller *domainController) Renew(ctx infrastructure.Context) {
+	var domainRenewQuery request.DomainRenewQuery
+	ctx.BindQuery(&domainRenewQuery)
+
+	period, err := strconv.Atoi(domainRenewQuery.Period)
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Renew: strconv.Atoi"))
+	}
+
+	layoutFormat := "2006-01-02T15:04:05"
+	currentExpireDate, err := time.Parse(layoutFormat, fmt.Sprintf("%vT23:59:59", domainRenewQuery.CurrentExpireDate))
+	if err != nil {
+		log.Println(errors.Wrap(err, "DomainController Renew: time.Parse"))
+	}
+
+	data := types.DomainRenewType{
+		Renew: types.DomainRenew{
+			Name: domainRenewQuery.Domain,
+			Period: types.Period{
+				Value: period,
+				Unit:  "y", //yearly
+			},
+			ExpireDate: currentExpireDate,
+		},
+	}
+
+	controller.interactor.Renew(ctx.(presenter_infrastructure.Context), data, domainRenewQuery.Extension, "eng")
 }

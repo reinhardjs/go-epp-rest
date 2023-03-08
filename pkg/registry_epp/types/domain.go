@@ -205,7 +205,7 @@ type DomainUpdate struct {
 
 // DomainAddRemove ...
 type DomainAddRemove struct {
-	NameServer NameServer     `xml:"ns,omitempty"`
+	NameServer *NameServer    `xml:"ns,omitempty"`
 	Contact    []Contact      `xml:"contact,omitempty"`
 	Status     []DomainStatus `xml:"status,omitempty"`
 }

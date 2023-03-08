@@ -33,10 +33,7 @@ func (p *domainPresenter) CheckSuccess(ctx infrastructure.Context, obj response.
 func (p *domainPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateDomainResponse) {
 	var res string
 
-	res += fmt.Sprintf("Name %s\n", obj.ResultData.CreatedData.Name)
-	res += fmt.Sprintf("Create Date %s\n", obj.ResultData.CreatedData.CreatedDate)
-	res += fmt.Sprintf("Expire Date %s\n", obj.ResultData.CreatedData.ExpiredDate)
-	res = strings.TrimSuffix(res, "\n")
+	res = fmt.Sprintf("%v %s", obj.Result.Code, obj.ResultData.CreatedData.ExpiredDate)
 
 	ctx.String(200, res)
 }
@@ -61,6 +58,50 @@ func (p *domainPresenter) SecDNSUpdateSuccess(ctx infrastructure.Context, obj re
 	var res string
 
 	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+
+	ctx.String(200, res)
+}
+
+func (p *domainPresenter) ContactUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse) {
+	var res string
+
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+
+	ctx.String(200, res)
+}
+
+func (p *domainPresenter) StatusUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse) {
+	var res string
+
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+
+	ctx.String(200, res)
+}
+
+func (p *domainPresenter) AuthInfoUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse) {
+	var res string
+
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+
+	ctx.String(200, res)
+}
+
+func (p *domainPresenter) NameserverUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse) {
+	var res string
+
+	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+
+	ctx.String(200, res)
+}
+
+func (p *domainPresenter) RenewSuccess(ctx infrastructure.Context, obj response.RenewDomainResponse) {
+	var res string
+
+	if obj.Result.Code == 1000 {
+		res = fmt.Sprintf("%v %v", obj.Result.Code, obj.ResultData.RenewedData.ExpiredDate)
+	} else {
+		res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+	}
 
 	ctx.String(200, res)
 }

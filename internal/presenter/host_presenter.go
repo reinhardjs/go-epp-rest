@@ -20,12 +20,13 @@ func (p *hostPresenter) CheckSuccess(ctx infrastructure.Context, responseObject 
 
 	for _, element := range responseObject.ResultData.CheckDatas {
 		notStr := ""
-		if element.HostName.AvailKey == 0 {
+		if element.HostName.Available == 0 {
 			notStr = "not "
 		}
-		res += fmt.Sprintf("Host %s, host %savailable\n", element.HostName.Value, notStr)
+		res += fmt.Sprintf("Host %s is %savailable\n", element.HostName.Value, notStr)
 	}
 	res = strings.TrimSuffix(res, "\n")
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, res)
 
 	ctx.String(200, res)
 }
@@ -60,6 +61,16 @@ func (p *hostPresenter) InfoSuccess(ctx infrastructure.Context, responseObject r
 	var res string
 
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+
+	ctx.String(200, res)
+}
+
+func (p *hostPresenter) CheckAndCreateSuccess(ctx infrastructure.Context, responseObject response.CreateHostResponse) {
+	var res string
+
+	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
+	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
+	res = strings.TrimSuffix(res, "\n")
 
 	ctx.String(200, res)
 }

@@ -95,7 +95,7 @@ func (interactor *domainInteractor) Info(ctx infrastructure.Context, data interf
 func (interactor *domainInteractor) SecDNSUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
+		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.RegistrarRepository.SendCommand")
 		return
 	}
 
@@ -107,4 +107,89 @@ func (interactor *domainInteractor) SecDNSUpdate(ctx infrastructure.Context, dat
 	}
 
 	interactor.Presenter.SecDNSUpdateSuccess(ctx, *responseDTO)
+}
+
+func (interactor *domainInteractor) ContactUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor ContactUpdate: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseDTO := &response.DomainUpdateResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.ContactUpdateSuccess(ctx, *responseDTO)
+}
+
+func (interactor *domainInteractor) StatusUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor StatusUpdate: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseDTO := &response.DomainUpdateResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.StatusUpdateSuccess(ctx, *responseDTO)
+}
+
+func (interactor *domainInteractor) AuthInfoUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor AuthInfoUpdate: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseDTO := &response.DomainUpdateResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.AuthInfoUpdateSuccess(ctx, *responseDTO)
+}
+
+func (interactor *domainInteractor) NameserverUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor NameserverUpdate: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseDTO := &response.DomainUpdateResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.NameserverUpdateSuccess(ctx, *responseDTO)
+}
+
+func (interactor *domainInteractor) Renew(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Renew: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseDTO := &response.RenewDomainResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.RenewSuccess(ctx, *responseDTO)
 }
