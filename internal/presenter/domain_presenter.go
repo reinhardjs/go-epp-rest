@@ -96,3 +96,15 @@ func (p *domainPresenter) NameserverUpdateSuccess(ctx infrastructure.Context, ob
 
 	ctx.String(200, res)
 }
+
+func (p *domainPresenter) RenewSuccess(ctx infrastructure.Context, obj response.RenewDomainResponse) {
+	var res string
+
+	if obj.Result.Code == 1000 {
+		res = fmt.Sprintf("%v %v", obj.Result.Code, obj.ResultData.RenewedData.ExpiredDate)
+	} else {
+		res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+	}
+
+	ctx.String(200, res)
+}

@@ -15,4 +15,5 @@ type DomainPresenter interface {
 	StatusUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse)
 	AuthInfoUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse)
 	NameserverUpdateSuccess(ctx infrastructure.Context, obj response.DomainUpdateResponse)
+	RenewSuccess(ctx infrastructure.Context, obj response.RenewDomainResponse)
 }
