@@ -20,6 +20,7 @@ type HostController interface {
 	Update(c infrastructure.Context)
 	Delete(c infrastructure.Context)
 	Info(c infrastructure.Context)
+	Change(c infrastructure.Context)
 }
 
 func NewHostController(interactor usecase.HostInteractor) HostController {
@@ -173,4 +174,23 @@ func (controller *hostController) Info(ctx infrastructure.Context) {
 	}
 
 	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, hostInfoQuery.Extension, "eng")
+}
+
+func (controller *hostController) Change(ctx infrastructure.Context) {
+	var hostChangeQuery request.HostChangeQuery
+	ctx.BindQuery(&hostChangeQuery)
+
+	hostName := hostChangeQuery.Host
+
+	data := types.HostUpdateType{
+		Update: types.HostUpdate{
+			Name:   hostName,
+			Remove: &types.HostAddRemove{}, // filled on hostinteractor's Change, from host info response
+			Change: &types.HostChange{
+				Name: hostChangeQuery.NewHost,
+			},
+		},
+	}
+
+	controller.interactor.Change(ctx.(presenter_infrastructure.Context), data, hostChangeQuery.Extension, "eng")
 }

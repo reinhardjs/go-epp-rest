@@ -31,3 +31,9 @@ type HostInfoQuery struct {
 	Host      string `form:"host"`
 	Extension string `form:"ext"`
 }
+
+type HostChangeQuery struct {
+	Host      string `form:"host"`
+	NewHost   string `form:"newhost"`
+	Extension string `form:"ext"`
+}
