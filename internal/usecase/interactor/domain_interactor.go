@@ -176,3 +176,20 @@ func (interactor *domainInteractor) NameserverUpdate(ctx infrastructure.Context,
 
 	interactor.Presenter.NameserverUpdateSuccess(ctx, *responseDTO)
 }
+
+func (interactor *domainInteractor) Renew(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Renew: interactor.RegistrarRepository.SendCommand")
+		return
+	}
+
+	responseDTO := &response.RenewDomainResponse{}
+	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
+
+	if err != nil {
+		return
+	}
+
+	interactor.Presenter.RenewSuccess(ctx, *responseDTO)
+}

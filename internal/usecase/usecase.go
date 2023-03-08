@@ -33,6 +33,7 @@ type DomainInteractor interface {
 	StatusUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	AuthInfoUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 	NameserverUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Renew(ctx infrastructure.Context, data interface{}, ext string, langTag string)
 }
 
 type ContactInteractor interface {
