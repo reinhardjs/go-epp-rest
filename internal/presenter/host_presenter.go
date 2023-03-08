@@ -23,9 +23,10 @@ func (p *hostPresenter) CheckSuccess(ctx infrastructure.Context, responseObject 
 		if element.HostName.Available == 0 {
 			notStr = "not "
 		}
-		res += fmt.Sprintf("Host %s, host %savailable\n", element.HostName.Value, notStr)
+		res += fmt.Sprintf("Host %s is %savailable\n", element.HostName.Value, notStr)
 	}
 	res = strings.TrimSuffix(res, "\n")
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, res)
 
 	ctx.String(200, res)
 }

@@ -34,11 +34,11 @@ func (controller *hostController) Check(ctx infrastructure.Context) {
 	var hostCheckQuery request.HostCheckQuery
 	ctx.BindQuery(&hostCheckQuery)
 
-	hostList := strings.Split(hostCheckQuery.HostList, ",")
-
 	data := types.HostCheckType{
 		Check: types.HostCheck{
-			Names: hostList,
+			Names: []string{
+				hostCheckQuery.Host,
+			},
 		},
 	}
 
