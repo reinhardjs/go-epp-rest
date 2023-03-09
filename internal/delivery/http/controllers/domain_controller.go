@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -51,7 +50,11 @@ func (controller *domainController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	err := controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController Check")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) Create(ctx infrastructure.Context) {
@@ -69,9 +72,9 @@ func (controller *domainController) Create(ctx infrastructure.Context) {
 	}
 
 	period, err := strconv.Atoi(domainCreateQuery.Period)
-
 	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Create"))
+		err = errors.Wrap(err, "DomainController Check: strconv.Atoi")
+		ctx.AbortWithError(200, err)
 	}
 
 	data := types.DomainCreateType{
@@ -105,7 +108,11 @@ func (controller *domainController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, domainCreateQuery.Extension, "eng")
+	err = controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, domainCreateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController Create")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) Delete(ctx infrastructure.Context) {
@@ -119,7 +126,11 @@ func (controller *domainController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, domainDeleteQuery.Extension, "eng")
+	err := controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, domainDeleteQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController Delete")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) Info(ctx infrastructure.Context) {
@@ -135,7 +146,11 @@ func (controller *domainController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
+	err := controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController Info")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
@@ -265,7 +280,11 @@ func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 		}
 	}
 
-	controller.interactor.SecDNSUpdate(ctx.(presenter_infrastructure.Context), data, secDNSUpdateQuery.Extension, "eng")
+	err := controller.interactor.SecDNSUpdate(ctx.(presenter_infrastructure.Context), data, secDNSUpdateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController SecDNSUpdate")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
@@ -342,7 +361,11 @@ func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.ContactUpdate(ctx.(presenter_infrastructure.Context), data, domainContactUpdateQuery.Extension, "eng")
+	err := controller.interactor.ContactUpdate(ctx.(presenter_infrastructure.Context), data, domainContactUpdateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController ContactUpdate")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
@@ -408,7 +431,11 @@ func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.StatusUpdate(ctx.(presenter_infrastructure.Context), data, domainStatusUpdateQuery.Extension, "eng")
+	err := controller.interactor.StatusUpdate(ctx.(presenter_infrastructure.Context), data, domainStatusUpdateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController StatusUpdate")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
@@ -431,7 +458,11 @@ func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainAuthInfoUpdateQuery.Extension, "eng")
+	err := controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainAuthInfoUpdateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController AuthInfoUpdate")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) NameserverUpdate(ctx infrastructure.Context) {
@@ -487,7 +518,11 @@ func (controller *domainController) NameserverUpdate(ctx infrastructure.Context)
 		},
 	}
 
-	controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainNameserverUpdateQuery.Extension, "eng")
+	err := controller.interactor.NameserverUpdate(ctx.(presenter_infrastructure.Context), data, domainNameserverUpdateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController NameserverUpdate")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) Renew(ctx infrastructure.Context) {
@@ -496,13 +531,15 @@ func (controller *domainController) Renew(ctx infrastructure.Context) {
 
 	period, err := strconv.Atoi(domainRenewQuery.Period)
 	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Renew: strconv.Atoi"))
+		err = errors.Wrap(err, "DomainController Renew: strconv.Atoi")
+		ctx.AbortWithError(200, err)
 	}
 
 	layoutFormat := "2006-01-02T15:04:05"
 	currentExpireDate, err := time.Parse(layoutFormat, fmt.Sprintf("%vT23:59:59", domainRenewQuery.CurrentExpireDate))
 	if err != nil {
-		log.Println(errors.Wrap(err, "DomainController Renew: time.Parse"))
+		err = errors.Wrap(err, "DomainController Renew: time.Parse")
+		ctx.AbortWithError(200, err)
 	}
 
 	data := types.DomainRenewType{
@@ -516,5 +553,9 @@ func (controller *domainController) Renew(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Renew(ctx.(presenter_infrastructure.Context), data, domainRenewQuery.Extension, "eng")
+	err = controller.interactor.Renew(ctx.(presenter_infrastructure.Context), data, domainRenewQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController Renew")
+		ctx.AbortWithError(200, err)
+	}
 }
