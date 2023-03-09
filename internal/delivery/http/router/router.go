@@ -4,10 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
+	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/error_handlers"
 )
 
 func NewRouter(appController controllers.AppController) *gin.Engine {
 	router := gin.Default()
+
+	// Use error handler middleware
+	router.Use(error_handlers.ClientErrorHandler)                     // Error related to client error
+	router.Use(gin.CustomRecovery(error_handlers.ServerErrorHandler)) // Error related to server error resulted from like panic/exception, etc..
 
 	router.GET("/domain/check", func(c *gin.Context) { appController.Domain.Check(&adapter.ContextAdapter{Context: c}) })
 	router.GET("/domain/create", func(c *gin.Context) { appController.Domain.Create(&adapter.ContextAdapter{Context: c}) })
