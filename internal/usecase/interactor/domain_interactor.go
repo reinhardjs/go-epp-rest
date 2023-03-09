@@ -40,12 +40,6 @@ func (interactor *domainInteractor) Check(ctx infrastructure.Context, data inter
 		return
 	}
 
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor Check: epp command error")
-		return
-	}
-
 	err = interactor.Presenter.CheckSuccess(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Check")
@@ -66,12 +60,6 @@ func (interactor *domainInteractor) Create(ctx infrastructure.Context, data inte
 
 	if err != nil {
 		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor Create: interactor.XMLMapper.Decode (CreateDomainResponse)")
-		return
-	}
-
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor Create: epp command error")
 		return
 	}
 
@@ -98,12 +86,6 @@ func (interactor *domainInteractor) Delete(ctx infrastructure.Context, data inte
 		return
 	}
 
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor Delete: epp command error")
-		return
-	}
-
 	err = interactor.Presenter.DeleteSuccess(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Delete")
@@ -124,12 +106,6 @@ func (interactor *domainInteractor) Info(ctx infrastructure.Context, data interf
 
 	if err != nil {
 		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor Info: interactor.XMLMapper.Decode (InfoDomainResponse)")
-		return
-	}
-
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor Info: epp command error")
 		return
 	}
 
@@ -156,12 +132,6 @@ func (interactor *domainInteractor) SecDNSUpdate(ctx infrastructure.Context, dat
 		return
 	}
 
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor SecDNSUpdate: epp command error")
-		return
-	}
-
 	err = interactor.Presenter.SecDNSUpdateSuccess(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate")
@@ -182,12 +152,6 @@ func (interactor *domainInteractor) ContactUpdate(ctx infrastructure.Context, da
 
 	if err != nil {
 		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor ContactUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
-		return
-	}
-
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor ContactUpdate: epp command error")
 		return
 	}
 
@@ -214,12 +178,6 @@ func (interactor *domainInteractor) StatusUpdate(ctx infrastructure.Context, dat
 		return
 	}
 
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor StatusUpdate: epp command error")
-		return
-	}
-
 	err = interactor.Presenter.StatusUpdateSuccess(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor StatusUpdate")
@@ -240,12 +198,6 @@ func (interactor *domainInteractor) AuthInfoUpdate(ctx infrastructure.Context, d
 
 	if err != nil {
 		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor AuthInfoUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
-		return
-	}
-
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor AuthInfoUpdate: epp command error")
 		return
 	}
 
@@ -272,12 +224,6 @@ func (interactor *domainInteractor) NameserverUpdate(ctx infrastructure.Context,
 		return
 	}
 
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor NameserverUpdate: epp command error")
-		return
-	}
-
 	err = interactor.Presenter.NameserverUpdateSuccess(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor NameserverUpdate")
@@ -298,12 +244,6 @@ func (interactor *domainInteractor) Renew(ctx infrastructure.Context, data inter
 
 	if err != nil {
 		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor Renew: interactor.XMLMapper.Decode (DomainUpdateResponse)")
-		return
-	}
-
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "DomainInteractor Renew: epp command error")
 		return
 	}
 

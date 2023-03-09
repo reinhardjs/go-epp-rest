@@ -41,12 +41,6 @@ func (interactor *hostInteractor) Check(ctx infrastructure.Context, data interfa
 		return
 	}
 
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "HostInteractor Check: epp command error")
-		return
-	}
-
 	err = interactor.Presenter.Check(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Check")
@@ -67,12 +61,6 @@ func (interactor *hostInteractor) Create(ctx infrastructure.Context, data interf
 
 	if err != nil {
 		err = errors.Wrap(&error_types.InteractorError{Original: err}, "HostInteractor Create: interactor.XMLMapper.Decode (CreateHostResponse)")
-		return
-	}
-
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "HostInteractor Create: epp command error")
 		return
 	}
 
@@ -99,12 +87,6 @@ func (interactor *hostInteractor) Update(ctx infrastructure.Context, data interf
 		return
 	}
 
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "HostInteractor Update: epp command error")
-		return
-	}
-
 	err = interactor.Presenter.Update(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Update")
@@ -128,12 +110,6 @@ func (interactor *hostInteractor) Delete(ctx infrastructure.Context, data interf
 		return
 	}
 
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "HostInteractor Delete: epp command error")
-		return
-	}
-
 	err = interactor.Presenter.Delete(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "HostInteractor Delete")
@@ -154,12 +130,6 @@ func (interactor *hostInteractor) Info(ctx infrastructure.Context, data interfac
 
 	if err != nil {
 		err = errors.Wrap(&error_types.InteractorError{Original: err}, "HostInteractor Info: interactor.XMLMapper.Decode (InfoHostResponse)")
-		return
-	}
-
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "HostInteractor Info: epp command error")
 		return
 	}
 
@@ -201,12 +171,6 @@ func (interactor *hostInteractor) Change(ctx infrastructure.Context, data types.
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 	if err != nil {
 		err = errors.Wrap(&error_types.InteractorError{Original: err}, "HostInteractor Change: interactor.XMLMapper.Decode (UpdateHostResponse)")
-		return
-	}
-
-	var resultCode = responseDTO.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseDTO.Result}, "HostInteractor CheckAndCreate: epp command error")
 		return
 	}
 
