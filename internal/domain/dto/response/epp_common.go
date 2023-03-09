@@ -1,5 +1,9 @@
 package response
 
+type Response struct {
+	Result Result `xml:"response>result"`
+}
+
 // TransactionID represents transaction IDs for the client and the server.
 type TransactionID struct {
 	ClientTransactionID string `xml:"clTRID,omitempty"`
