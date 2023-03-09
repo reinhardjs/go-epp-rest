@@ -1,8 +1,6 @@
 package error_handlers
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
@@ -15,8 +13,6 @@ func ClientErrorHandler(c *gin.Context) {
 		err := c.Errors.Last()
 		cause := errors.Cause(err)
 
-		log.Println(err)
-
 		switch cause.(type) {
 		case *error_types.ControllerError:
 			// TODO with Controller Error
@@ -26,6 +22,6 @@ func ClientErrorHandler(c *gin.Context) {
 			// TODO with Presenter Error
 		}
 
-		c.String(200, "2400\tCommand failed")
+		c.String(200, "2400 Command failed")
 	}
 }
