@@ -1,6 +1,7 @@
 package adapter
 
 import (
+	"log"
 	"net"
 	"time"
 
@@ -22,8 +23,15 @@ func NewEppClient(conn net.Conn) adapter.EppClient {
 	}
 }
 
+func (c *eppClient) timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
+}
+
 // Send will send data to the server.
 func (c *eppClient) Send(data []byte) ([]byte, error) {
+	defer c.timeTrack(time.Now(), "epp command response")
+
 	err := registry_epp.WriteMessage(c.conn, data)
 	if err != nil {
 		_ = c.conn.Close()
