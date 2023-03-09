@@ -30,6 +30,23 @@ func (r *registrarRepository) prepareCommand(data interface{}) ([]byte, error) {
 	return encoded, nil
 }
 
+func (r *registrarRepository) checkCommandError(byteResponse []byte) (err error) {
+	obj := &response.Response{}
+	err = r.XMLMapper.Decode(byteResponse, obj)
+
+	if err != nil {
+		err = errors.Wrap(err, "registrarRepository SendCommand: r.XMLMapper.Decode")
+		return
+	}
+
+	if obj.Result.Code >= 2000 {
+		err = &error_types.EPPCommandError{Result: obj.Result}
+		return
+	}
+
+	return
+}
+
 func (r *registrarRepository) SendCommand(data interface{}) ([]byte, error) {
 	encoded, err := r.prepareCommand(data)
 	if err != nil {
@@ -45,15 +62,9 @@ func (r *registrarRepository) SendCommand(data interface{}) ([]byte, error) {
 
 	log.Println("XML Response: \n", string(byteResponse))
 
-	obj := &response.Response{}
-	err = r.XMLMapper.Decode(byteResponse, obj)
-
+	err = r.checkCommandError(byteResponse)
 	if err != nil {
-		return nil, errors.Wrap(err, "registrarRepository SendCommand: r.XMLMapper.Decode")
-	}
-
-	if obj.Result.Code >= 2000 {
-		return nil, errors.Wrap(&error_types.EPPCommandError{Result: obj.Result}, "registrarRepository SendCommand: epp command error")
+		return nil, errors.Wrap(err, "registrarRepository SendCommand: epp command error")
 	}
 
 	return byteResponse, nil
