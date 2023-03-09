@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
@@ -18,12 +16,6 @@ func NewHostPresenter() presenter.HostPresenter {
 }
 
 func (p *hostPresenter) Check(ctx infrastructure.Context, responseObject response.CheckHostResponse) (err error) {
-	var resultCode = responseObject.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Check: epp command error")
-		return
-	}
-
 	var res string
 
 	for _, element := range responseObject.ResultData.CheckDatas {
@@ -41,12 +33,6 @@ func (p *hostPresenter) Check(ctx infrastructure.Context, responseObject respons
 }
 
 func (p *hostPresenter) Create(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
-	var resultCode = responseObject.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Create: epp command error")
-		return
-	}
-
 	var res string
 	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
 	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
@@ -57,12 +43,6 @@ func (p *hostPresenter) Create(ctx infrastructure.Context, responseObject respon
 }
 
 func (p *hostPresenter) Update(ctx infrastructure.Context, responseObject response.UpdateHostResponse) (err error) {
-	var resultCode = responseObject.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Update: epp command error")
-		return
-	}
-
 	var res string
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
@@ -71,12 +51,6 @@ func (p *hostPresenter) Update(ctx infrastructure.Context, responseObject respon
 }
 
 func (p *hostPresenter) Delete(ctx infrastructure.Context, responseObject response.DeleteHostResponse) (err error) {
-	var resultCode = responseObject.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Delete: epp command error")
-		return
-	}
-
 	var res string
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
@@ -85,12 +59,6 @@ func (p *hostPresenter) Delete(ctx infrastructure.Context, responseObject respon
 }
 
 func (p *hostPresenter) Info(ctx infrastructure.Context, responseObject response.InfoHostResponse) (err error) {
-	var resultCode = responseObject.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Info: epp command error")
-		return
-	}
-
 	var res string
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
@@ -99,12 +67,6 @@ func (p *hostPresenter) Info(ctx infrastructure.Context, responseObject response
 }
 
 func (p *hostPresenter) CheckAndCreate(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
-	var resultCode = responseObject.Result.Code
-	if resultCode >= 2000 {
-		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter CheckAndCreate: epp command error")
-		return
-	}
-
 	var res string
 	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
 	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
