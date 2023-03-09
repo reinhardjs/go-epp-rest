@@ -14,13 +14,13 @@ type TransferInteractor interface {
 }
 
 type HostInteractor interface {
-	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Create(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Update(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Change(ctx infrastructure.Context, data types.HostUpdateType, ext string, langTag string)
-	CheckAndCreate(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Create(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Update(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Change(ctx infrastructure.Context, data types.HostUpdateType, ext string, langTag string) error
+	CheckAndCreate(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
 }
 
 type DomainInteractor interface {

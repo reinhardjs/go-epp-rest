@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
 )
@@ -15,7 +17,13 @@ func NewHostPresenter() presenter.HostPresenter {
 	return &hostPresenter{}
 }
 
-func (p *hostPresenter) CheckSuccess(ctx infrastructure.Context, responseObject response.CheckHostResponse) {
+func (p *hostPresenter) Check(ctx infrastructure.Context, responseObject response.CheckHostResponse) (err error) {
+	var resultCode = responseObject.Result.Code
+	if resultCode >= 2000 {
+		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Check: epp command error")
+		return
+	}
+
 	var res string
 
 	for _, element := range responseObject.ResultData.CheckDatas {
@@ -29,48 +37,79 @@ func (p *hostPresenter) CheckSuccess(ctx infrastructure.Context, responseObject 
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, res)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) CreateSuccess(ctx infrastructure.Context, responseObject response.CreateHostResponse) {
-	var res string
+func (p *hostPresenter) Create(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
+	var resultCode = responseObject.Result.Code
+	if resultCode >= 2000 {
+		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Create: epp command error")
+		return
+	}
 
+	var res string
 	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
 	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) UpdateSuccess(ctx infrastructure.Context, responseObject response.UpdateHostResponse) {
-	var res string
+func (p *hostPresenter) Update(ctx infrastructure.Context, responseObject response.UpdateHostResponse) (err error) {
+	var resultCode = responseObject.Result.Code
+	if resultCode >= 2000 {
+		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Update: epp command error")
+		return
+	}
 
+	var res string
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) DeleteSuccess(ctx infrastructure.Context, responseObject response.DeleteHostResponse) {
-	var res string
+func (p *hostPresenter) Delete(ctx infrastructure.Context, responseObject response.DeleteHostResponse) (err error) {
+	var resultCode = responseObject.Result.Code
+	if resultCode >= 2000 {
+		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Delete: epp command error")
+		return
+	}
 
+	var res string
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) InfoSuccess(ctx infrastructure.Context, responseObject response.InfoHostResponse) {
-	var res string
+func (p *hostPresenter) Info(ctx infrastructure.Context, responseObject response.InfoHostResponse) (err error) {
+	var resultCode = responseObject.Result.Code
+	if resultCode >= 2000 {
+		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter Info: epp command error")
+		return
+	}
 
+	var res string
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) CheckAndCreateSuccess(ctx infrastructure.Context, responseObject response.CreateHostResponse) {
-	var res string
+func (p *hostPresenter) CheckAndCreate(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
+	var resultCode = responseObject.Result.Code
+	if resultCode >= 2000 {
+		err = errors.Wrap(&error_types.EPPCommandError{Result: responseObject.Result}, "HostPresenter CheckAndCreate: epp command error")
+		return
+	}
 
+	var res string
 	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
 	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
 
 	ctx.String(200, res)
+	return
 }

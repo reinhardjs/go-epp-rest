@@ -3,6 +3,7 @@ package controllers
 import (
 	"strings"
 
+	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
@@ -43,7 +44,11 @@ func (controller *hostController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, hostCheckQuery.Extension, "eng")
+	err := controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, hostCheckQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "HostController Check")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *hostController) Create(ctx infrastructure.Context) {
@@ -75,7 +80,11 @@ func (controller *hostController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
+	err := controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "HostController Create")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *hostController) Update(ctx infrastructure.Context) {
@@ -134,7 +143,11 @@ func (controller *hostController) Update(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Update(ctx.(presenter_infrastructure.Context), data, hostUpdateQuery.Extension, "eng")
+	err := controller.interactor.Update(ctx.(presenter_infrastructure.Context), data, hostUpdateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "HostController Update")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *hostController) Delete(ctx infrastructure.Context) {
@@ -154,7 +167,11 @@ func (controller *hostController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, hostDeleteQuery.Extension, "eng")
+	err := controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, hostDeleteQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "HostController Delete")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *hostController) Info(ctx infrastructure.Context) {
@@ -174,7 +191,11 @@ func (controller *hostController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, hostInfoQuery.Extension, "eng")
+	err := controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, hostInfoQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "HostController Info")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *hostController) Change(ctx infrastructure.Context) {
@@ -201,7 +222,11 @@ func (controller *hostController) Change(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Change(ctx.(presenter_infrastructure.Context), data, hostChangeQuery.Extension, "eng")
+	err := controller.interactor.Change(ctx.(presenter_infrastructure.Context), data, hostChangeQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "HostController Change")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *hostController) CheckAndCreate(ctx infrastructure.Context) {
@@ -228,5 +253,9 @@ func (controller *hostController) CheckAndCreate(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.CheckAndCreate(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
+	err := controller.interactor.CheckAndCreate(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "HostController CheckAndCreate")
+		ctx.AbortWithError(200, err)
+	}
 }
