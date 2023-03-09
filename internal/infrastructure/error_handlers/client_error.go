@@ -26,6 +26,6 @@ func ClientErrorHandler(c *gin.Context) {
 			// TODO with Presenter Error
 		}
 
-		c.String(200, "2400\tCommand failed;")
+		c.String(200, "2400\tCommand failed")
 	}
 }
