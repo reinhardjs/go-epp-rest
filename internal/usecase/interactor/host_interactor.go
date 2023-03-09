@@ -29,7 +29,7 @@ func NewHostInteractor(repository repository.RegistrarRepository, presenter pres
 func (interactor *hostInteractor) Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "HostInteractor Send: interactor.RegistrarRepository.SendCommand")
+		err = errors.Wrap(&error_types.InteractorError{Original: err}, "HostInteractor Check: interactor.RegistrarRepository.SendCommand")
 		return
 	}
 
@@ -37,7 +37,7 @@ func (interactor *hostInteractor) Check(ctx infrastructure.Context, data interfa
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "HostInteractor Send: interactor.XMLMapper.Decode (CheckHostResponse)")
+		err = errors.Wrap(&error_types.InteractorError{Original: err}, "HostInteractor Check: interactor.XMLMapper.Decode (CheckHostResponse)")
 		return
 	}
 
