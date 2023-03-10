@@ -112,7 +112,7 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 
 	err = interactor.Presenter.PollSuccess(ctx, responseDTO)
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Poll")
+		err = errors.Wrap(err, "PollInteractor Poll")
 		return
 	}
 	return
