@@ -6,9 +6,9 @@ import (
 )
 
 type TransferPresenter interface {
-	CheckSuccess(ctx infrastructure.Context, obj response.TransferCheckResponse)
-	RequestSuccess(ctx infrastructure.Context, obj response.TransferRequestResponse)
-	CancelSuccess(ctx infrastructure.Context, obj response.TransferCancelResponse)
-	ApproveSuccess(ctx infrastructure.Context, obj response.TransferApproveResponse)
-	RejectSuccess(ctx infrastructure.Context, obj response.TransferRejectResponse)
+	CheckSuccess(ctx infrastructure.Context, obj response.TransferCheckResponse) error
+	RequestSuccess(ctx infrastructure.Context, obj response.TransferRequestResponse) error
+	CancelSuccess(ctx infrastructure.Context, obj response.TransferCancelResponse) error
+	ApproveSuccess(ctx infrastructure.Context, obj response.TransferApproveResponse) error
+	RejectSuccess(ctx infrastructure.Context, obj response.TransferRejectResponse) error
 }
