@@ -20,8 +20,11 @@ func ClientErrorHandler(c *gin.Context) {
 			// TODO with Interactor Error
 		case *error_types.PresenterError:
 			// TODO with Presenter Error
+		case *error_types.EPPCommandError:
+			eppComandError := cause.(*error_types.EPPCommandError)
+			c.String(200, "2400 Command failed; "+eppComandError.Result.Message)
+		default:
+			c.String(200, "2400 Command failed")
 		}
-
-		c.String(200, "2400 Command failed")
 	}
 }
