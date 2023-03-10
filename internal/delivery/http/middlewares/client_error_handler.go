@@ -21,6 +21,9 @@ func ClientErrorHandler(c *gin.Context) {
 		case *error_types.PresenterError:
 			// TODO with Presenter Error
 		case *error_types.EPPCommandError:
+			// TODO with EPPCommand Error
+			c.String(200, "2400 Command failed")
+		default:
 			c.String(200, "2400 Command failed")
 		}
 	}
