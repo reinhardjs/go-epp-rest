@@ -6,11 +6,11 @@ import (
 )
 
 type TransferInteractor interface {
-	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Request(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Cancel(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Approve(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Reject(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Request(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Cancel(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Approve(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Reject(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
 }
 
 type HostInteractor interface {
