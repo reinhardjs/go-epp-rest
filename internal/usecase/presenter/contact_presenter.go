@@ -6,9 +6,9 @@ import (
 )
 
 type ContactPresenter interface {
-	CheckSuccess(ctx infrastructure.Context, obj response.CheckContactResponse)
-	CreateSuccess(ctx infrastructure.Context, obj response.CreateContactResponse)
-	UpdateSuccess(ctx infrastructure.Context, obj response.UpdateContactResponse)
-	DeleteSuccess(ctx infrastructure.Context, obj response.DeleteContactResponse)
-	InfoSuccess(ctx infrastructure.Context, obj response.InfoContactResponse)
+	CheckSuccess(ctx infrastructure.Context, obj response.CheckContactResponse) error
+	CreateSuccess(ctx infrastructure.Context, obj response.CreateContactResponse) error
+	UpdateSuccess(ctx infrastructure.Context, obj response.UpdateContactResponse) error
+	DeleteSuccess(ctx infrastructure.Context, obj response.DeleteContactResponse) error
+	InfoSuccess(ctx infrastructure.Context, obj response.InfoContactResponse) error
 }
