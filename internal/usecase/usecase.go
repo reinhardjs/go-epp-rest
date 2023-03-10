@@ -37,11 +37,11 @@ type DomainInteractor interface {
 }
 
 type ContactInteractor interface {
-	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Create(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Update(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string)
-	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string)
+	Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Create(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Update(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
+	Info(ctx infrastructure.Context, data interface{}, ext string, langTag string) error
 }
 
 type PollInteractor interface {
