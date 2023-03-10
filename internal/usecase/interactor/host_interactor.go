@@ -175,7 +175,7 @@ func (interactor *hostInteractor) Change(ctx infrastructure.Context, data types.
 
 	err = interactor.Presenter.Update(ctx, *responseDTO)
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor Update")
+		err = errors.Wrap(err, "HostInteractor Change:")
 		return
 	}
 	return
