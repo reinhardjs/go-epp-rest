@@ -45,5 +45,5 @@ type ContactInteractor interface {
 }
 
 type PollInteractor interface {
-	Poll(ctx infrastructure.Context)
+	Poll(ctx infrastructure.Context) error
 }
