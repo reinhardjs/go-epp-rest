@@ -6,5 +6,5 @@ import (
 )
 
 type PollPresenter interface {
-	PollSuccess(ctx infrastructure.Context, obj response.PollRequestResponse)
+	PollSuccess(ctx infrastructure.Context, obj response.PollRequestResponse) error
 }

@@ -14,7 +14,7 @@ func NewPollPresenter() presenter.PollPresenter {
 	return &pollPresenter{}
 }
 
-func (p *pollPresenter) PollSuccess(ctx infrastructure.Context, obj response.PollRequestResponse) {
+func (p *pollPresenter) PollSuccess(ctx infrastructure.Context, obj response.PollRequestResponse) (err error) {
 	var message string
 
 	if obj.Result.Code == 1301 {
@@ -26,4 +26,5 @@ func (p *pollPresenter) PollSuccess(ctx infrastructure.Context, obj response.Pol
 	}
 
 	ctx.String(200, message)
+	return
 }
