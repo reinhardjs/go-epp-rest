@@ -3,7 +3,6 @@ package interactor
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
@@ -36,7 +35,7 @@ func (interactor *domainInteractor) Check(ctx infrastructure.Context, data inter
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor Check: interactor.XMLMapper.Decode (CheckDomainResponse)")
+		err = errors.Wrap(err, "DomainInteractor Check: interactor.XMLMapper.Decode (CheckDomainResponse)")
 		return
 	}
 
@@ -59,7 +58,7 @@ func (interactor *domainInteractor) Create(ctx infrastructure.Context, data inte
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor Create: interactor.XMLMapper.Decode (CreateDomainResponse)")
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.XMLMapper.Decode (CreateDomainResponse)")
 		return
 	}
 
@@ -82,7 +81,7 @@ func (interactor *domainInteractor) Delete(ctx infrastructure.Context, data inte
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor Delete: interactor.XMLMapper.Decode (DeleteDomainResponse)")
+		err = errors.Wrap(err, "DomainInteractor Delete: interactor.XMLMapper.Decode (DeleteDomainResponse)")
 		return
 	}
 
@@ -105,7 +104,7 @@ func (interactor *domainInteractor) Info(ctx infrastructure.Context, data interf
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor Info: interactor.XMLMapper.Decode (InfoDomainResponse)")
+		err = errors.Wrap(err, "DomainInteractor Info: interactor.XMLMapper.Decode (InfoDomainResponse)")
 		return
 	}
 
@@ -128,7 +127,7 @@ func (interactor *domainInteractor) SecDNSUpdate(ctx infrastructure.Context, dat
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor SecDNSUpdate: interactor.XMLMapper.Decode (SecDNSUpdateResponse)")
+		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.XMLMapper.Decode (SecDNSUpdateResponse)")
 		return
 	}
 
@@ -151,7 +150,7 @@ func (interactor *domainInteractor) ContactUpdate(ctx infrastructure.Context, da
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor ContactUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
+		err = errors.Wrap(err, "DomainInteractor ContactUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
@@ -174,7 +173,7 @@ func (interactor *domainInteractor) StatusUpdate(ctx infrastructure.Context, dat
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor StatusUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
+		err = errors.Wrap(err, "DomainInteractor StatusUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
@@ -197,7 +196,7 @@ func (interactor *domainInteractor) AuthInfoUpdate(ctx infrastructure.Context, d
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor AuthInfoUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
+		err = errors.Wrap(err, "DomainInteractor AuthInfoUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
@@ -220,7 +219,7 @@ func (interactor *domainInteractor) NameserverUpdate(ctx infrastructure.Context,
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor NameserverUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
+		err = errors.Wrap(err, "DomainInteractor NameserverUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
@@ -243,7 +242,7 @@ func (interactor *domainInteractor) Renew(ctx infrastructure.Context, data inter
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "DomainInteractor Renew: interactor.XMLMapper.Decode (DomainUpdateResponse)")
+		err = errors.Wrap(err, "DomainInteractor Renew: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 

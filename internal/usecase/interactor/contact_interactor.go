@@ -3,7 +3,6 @@ package interactor
 import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
-	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
@@ -36,7 +35,7 @@ func (interactor *contactInteractor) Check(ctx infrastructure.Context, data inte
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "ContactInteractor Check: interactor.XMLMapper.Decode (CheckContactResponse)")
+		err = errors.Wrap(err, "ContactInteractor Check: interactor.XMLMapper.Decode (CheckContactResponse)")
 		return
 	}
 
@@ -59,7 +58,7 @@ func (interactor *contactInteractor) Create(ctx infrastructure.Context, data int
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "ContactInteractor Create: interactor.XMLMapper.Decode (CreateContactResponse)")
+		err = errors.Wrap(err, "ContactInteractor Create: interactor.XMLMapper.Decode (CreateContactResponse)")
 		return
 	}
 
@@ -82,7 +81,7 @@ func (interactor *contactInteractor) Update(ctx infrastructure.Context, data int
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "ContactInteractor Update: interactor.XMLMapper.Decode (UpdateContactResponse)")
+		err = errors.Wrap(err, "ContactInteractor Update: interactor.XMLMapper.Decode (UpdateContactResponse)")
 		return
 	}
 
@@ -105,7 +104,7 @@ func (interactor *contactInteractor) Delete(ctx infrastructure.Context, data int
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "ContactInteractor Delete: interactor.XMLMapper.Decode (DeleteContactResponse)")
+		err = errors.Wrap(err, "ContactInteractor Delete: interactor.XMLMapper.Decode (DeleteContactResponse)")
 		return
 	}
 
@@ -128,7 +127,7 @@ func (interactor *contactInteractor) Info(ctx infrastructure.Context, data inter
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
-		err = errors.Wrap(&error_types.InteractorError{Original: err}, "ContactInteractor Info: interactor.XMLMapper.Decode (InfoContactResponse)")
+		err = errors.Wrap(err, "ContactInteractor Info: interactor.XMLMapper.Decode (InfoContactResponse)")
 		return
 	}
 
