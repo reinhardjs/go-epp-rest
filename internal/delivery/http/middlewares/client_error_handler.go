@@ -10,7 +10,7 @@ func ClientErrorHandler(c *gin.Context) {
 	c.Next()
 
 	if len(c.Errors) > 0 {
-		err := c.Errors.Last()
+		err := c.Errors.Last().Err
 		cause := errors.Cause(err)
 
 		switch cause.(type) {
@@ -21,9 +21,6 @@ func ClientErrorHandler(c *gin.Context) {
 		case *error_types.PresenterError:
 			// TODO with Presenter Error
 		case *error_types.EPPCommandError:
-			eppComandError := cause.(*error_types.EPPCommandError)
-			c.String(200, "2400 Command failed; "+eppComandError.Result.Message)
-		default:
 			c.String(200, "2400 Command failed")
 		}
 	}
