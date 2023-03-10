@@ -15,7 +15,7 @@ func NewHostPresenter() presenter.HostPresenter {
 	return &hostPresenter{}
 }
 
-func (p *hostPresenter) CheckSuccess(ctx infrastructure.Context, responseObject response.CheckHostResponse) {
+func (p *hostPresenter) Check(ctx infrastructure.Context, responseObject response.CheckHostResponse) (err error) {
 	var res string
 
 	for _, element := range responseObject.ResultData.CheckDatas {
@@ -29,48 +29,49 @@ func (p *hostPresenter) CheckSuccess(ctx infrastructure.Context, responseObject 
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, res)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) CreateSuccess(ctx infrastructure.Context, responseObject response.CreateHostResponse) {
+func (p *hostPresenter) Create(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
 	var res string
-
 	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
 	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) UpdateSuccess(ctx infrastructure.Context, responseObject response.UpdateHostResponse) {
+func (p *hostPresenter) Update(ctx infrastructure.Context, responseObject response.UpdateHostResponse) (err error) {
 	var res string
-
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) DeleteSuccess(ctx infrastructure.Context, responseObject response.DeleteHostResponse) {
+func (p *hostPresenter) Delete(ctx infrastructure.Context, responseObject response.DeleteHostResponse) (err error) {
 	var res string
-
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) InfoSuccess(ctx infrastructure.Context, responseObject response.InfoHostResponse) {
+func (p *hostPresenter) Info(ctx infrastructure.Context, responseObject response.InfoHostResponse) (err error) {
 	var res string
-
 	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *hostPresenter) CheckAndCreateSuccess(ctx infrastructure.Context, responseObject response.CreateHostResponse) {
+func (p *hostPresenter) CheckAndCreate(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
 	var res string
-
 	res += fmt.Sprintf("Name %s\n", responseObject.ResultData.CreateData.Name)
 	res += fmt.Sprintf("Create Date %s\n", responseObject.ResultData.CreateData.CreateDate)
 	res = strings.TrimSuffix(res, "\n")
 
 	ctx.String(200, res)
+	return
 }

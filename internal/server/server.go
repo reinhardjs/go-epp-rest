@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -72,7 +73,9 @@ func (s *server) Run() error {
 	log.Println("Login command result :")
 	log.Println(string(response))
 
-	router.Run("localhost:8080")
+	apiHost := os.Getenv(constants.API_HOST)
+	apiPort := os.Getenv(constants.API_PORT)
+	router.Run(fmt.Sprintf("%v:%v", apiHost, apiPort))
 
 	return nil
 }

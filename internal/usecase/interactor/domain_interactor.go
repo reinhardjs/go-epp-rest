@@ -24,7 +24,7 @@ func NewDomainInteractor(domainRepository repository.RegistrarRepository, presen
 	}
 }
 
-func (interactor *domainInteractor) Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Check: interactor.RegistrarRepository.SendCommand")
@@ -35,13 +35,19 @@ func (interactor *domainInteractor) Check(ctx infrastructure.Context, data inter
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Check: interactor.XMLMapper.Decode (CheckDomainResponse)")
 		return
 	}
 
-	interactor.Presenter.CheckSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.CheckSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Check")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) Create(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) Create(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
@@ -52,13 +58,19 @@ func (interactor *domainInteractor) Create(ctx infrastructure.Context, data inte
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Create: interactor.XMLMapper.Decode (CreateDomainResponse)")
 		return
 	}
 
-	interactor.Presenter.CreateSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.CreateSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Create")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) Delete(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
@@ -69,13 +81,19 @@ func (interactor *domainInteractor) Delete(ctx infrastructure.Context, data inte
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Delete: interactor.XMLMapper.Decode (DeleteDomainResponse)")
 		return
 	}
 
-	interactor.Presenter.DeleteSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.DeleteSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Delete")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) Info(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) Info(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Create: interactor.RegistrarRepository.SendCommand")
@@ -86,13 +104,19 @@ func (interactor *domainInteractor) Info(ctx infrastructure.Context, data interf
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Info: interactor.XMLMapper.Decode (InfoDomainResponse)")
 		return
 	}
 
-	interactor.Presenter.InfoSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.InfoSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Info")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) SecDNSUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) SecDNSUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.RegistrarRepository.SendCommand")
@@ -103,13 +127,19 @@ func (interactor *domainInteractor) SecDNSUpdate(ctx infrastructure.Context, dat
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate: interactor.XMLMapper.Decode (SecDNSUpdateResponse)")
 		return
 	}
 
-	interactor.Presenter.SecDNSUpdateSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.SecDNSUpdateSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor SecDNSUpdate")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) ContactUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) ContactUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor ContactUpdate: interactor.RegistrarRepository.SendCommand")
@@ -120,13 +150,19 @@ func (interactor *domainInteractor) ContactUpdate(ctx infrastructure.Context, da
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor ContactUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
-	interactor.Presenter.ContactUpdateSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.ContactUpdateSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor ContactUpdate")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) StatusUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) StatusUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor StatusUpdate: interactor.RegistrarRepository.SendCommand")
@@ -137,13 +173,19 @@ func (interactor *domainInteractor) StatusUpdate(ctx infrastructure.Context, dat
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor StatusUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
-	interactor.Presenter.StatusUpdateSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.StatusUpdateSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor StatusUpdate")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) AuthInfoUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) AuthInfoUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor AuthInfoUpdate: interactor.RegistrarRepository.SendCommand")
@@ -154,13 +196,19 @@ func (interactor *domainInteractor) AuthInfoUpdate(ctx infrastructure.Context, d
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor AuthInfoUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
-	interactor.Presenter.AuthInfoUpdateSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.AuthInfoUpdateSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor AuthInfoUpdate")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) NameserverUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) NameserverUpdate(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor NameserverUpdate: interactor.RegistrarRepository.SendCommand")
@@ -171,13 +219,19 @@ func (interactor *domainInteractor) NameserverUpdate(ctx infrastructure.Context,
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor NameserverUpdate: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
-	interactor.Presenter.NameserverUpdateSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.NameserverUpdateSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor NameserverUpdate")
+		return
+	}
+	return
 }
 
-func (interactor *domainInteractor) Renew(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *domainInteractor) Renew(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "DomainInteractor Renew: interactor.RegistrarRepository.SendCommand")
@@ -188,8 +242,14 @@ func (interactor *domainInteractor) Renew(ctx infrastructure.Context, data inter
 	err = interactor.XMLMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Renew: interactor.XMLMapper.Decode (DomainUpdateResponse)")
 		return
 	}
 
-	interactor.Presenter.RenewSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.RenewSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "DomainInteractor Renew")
+		return
+	}
+	return
 }

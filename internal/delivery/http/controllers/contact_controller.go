@@ -3,6 +3,7 @@ package controllers
 import (
 	"strings"
 
+	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
@@ -29,7 +30,6 @@ func NewContactController(interactor usecase.ContactInteractor) ContactControlle
 }
 
 func (controller contactController) Check(ctx infrastructure.Context) {
-
 	var contactCheckQuery request.ContactCheckQuery
 	ctx.BindQuery(&contactCheckQuery)
 
@@ -41,11 +41,14 @@ func (controller contactController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	err := controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	if err != nil {
+		err = errors.Wrap(err, "ContactController Check")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller contactController) Create(ctx infrastructure.Context) {
-
 	var contactCreateQuery request.ContactCreateQuery
 	ctx.BindQuery(&contactCreateQuery)
 	name := contactCreateQuery.Firstname + " " + contactCreateQuery.Lastname
@@ -80,11 +83,14 @@ func (controller contactController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	err := controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	if err != nil {
+		err = errors.Wrap(err, "ContactController Create")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller contactController) Update(ctx infrastructure.Context) {
-
 	var contactUpdateQuery request.ContactUpdateQuery
 	ctx.BindQuery(&contactUpdateQuery)
 	// authInfo := c.Query("authinfo")
@@ -119,11 +125,14 @@ func (controller contactController) Update(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	err := controller.interactor.Update(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	if err != nil {
+		err = errors.Wrap(err, "ContactController Update")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller contactController) Delete(ctx infrastructure.Context) {
-
 	var contactDeleteQuery request.ContactDeleteQuery
 	ctx.BindQuery(&contactDeleteQuery)
 
@@ -133,11 +142,14 @@ func (controller contactController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	err := controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	if err != nil {
+		err = errors.Wrap(err, "ContactController Delete")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller contactController) Info(ctx infrastructure.Context) {
-
 	var contactInfoQuery request.ContactInfoQuery
 	ctx.BindQuery(&contactInfoQuery)
 
@@ -147,5 +159,9 @@ func (controller contactController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	err := controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	if err != nil {
+		err = errors.Wrap(err, "ContactController Info")
+		ctx.AbortWithError(200, err)
+	}
 }

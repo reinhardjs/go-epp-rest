@@ -15,7 +15,7 @@ func NewContactPresenter() presenter.ContactPresenter {
 	return &contactPresenter{}
 }
 
-func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response.CheckContactResponse) {
+func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response.CheckContactResponse) (err error) {
 	var res string
 
 	for _, element := range obj.ResultData.CheckDatas {
@@ -28,9 +28,10 @@ func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response
 	res = strings.TrimSuffix(res, "\n")
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *contactPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateContactResponse) {
+func (p *contactPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateContactResponse) (err error) {
 	var res string
 
 	res += fmt.Sprintf("ID %s\n", obj.ResultData.CreateData.Id)
@@ -38,28 +39,32 @@ func (p *contactPresenter) CreateSuccess(ctx infrastructure.Context, obj respons
 	res = strings.TrimSuffix(res, "\n")
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *contactPresenter) UpdateSuccess(ctx infrastructure.Context, obj response.UpdateContactResponse) {
+func (p *contactPresenter) UpdateSuccess(ctx infrastructure.Context, obj response.UpdateContactResponse) (err error) {
 	var res string
 
 	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *contactPresenter) DeleteSuccess(ctx infrastructure.Context, obj response.DeleteContactResponse) {
+func (p *contactPresenter) DeleteSuccess(ctx infrastructure.Context, obj response.DeleteContactResponse) (err error) {
 	var res string
 
 	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
 
 	ctx.String(200, res)
+	return
 }
 
-func (p *contactPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoContactResponse) {
+func (p *contactPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoContactResponse) (err error) {
 	var res string
 
 	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
 
 	ctx.String(200, res)
+	return
 }

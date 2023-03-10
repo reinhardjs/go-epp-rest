@@ -1,5 +1,9 @@
 package response
 
+type Response struct {
+	Result Result `xml:"response>result"`
+}
+
 // TransactionID represents transaction IDs for the client and the server.
 type TransactionID struct {
 	ClientTransactionID string `xml:"clTRID,omitempty"`
@@ -10,8 +14,12 @@ type TransactionID struct {
 type Result struct {
 	Code          int                 `xml:"code,attr"`
 	Message       string              `xml:"msg"`
-	Value         interface{}         `xml:"value"`
+	Value         Value               `xml:"value"`
 	ExternalValue *ExternalErrorValue `xml:"extValue,omitempty"`
+}
+
+type Value struct {
+	Texts []string `xml:"text"`
 }
 
 // ExternalErrorValue represents the response in the extValeu tag.

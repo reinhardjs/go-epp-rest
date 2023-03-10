@@ -10,7 +10,7 @@ import (
 func (r *registry) NewPollController() controllers.PollController {
 	pollInteractor := interactor.NewPollInteractor(
 		repository.NewEppPollRepository(r.mysqlConn),
-		repository.NewRegistrarRepository(r.eppClient),
+		repository.NewRegistrarRepository(r.eppClient, r.xmlMapper),
 		presenter.NewPollPresenter(),
 		r.xmlMapper,
 	)

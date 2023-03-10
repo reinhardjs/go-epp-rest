@@ -1,6 +1,6 @@
 module gitlab.com/merekmu/go-epp-rest
 
-go 1.19
+go 1.20
 
 require (
 	aqwari.net/xml v0.0.0-20190411173135-9e2dd5ec99d1

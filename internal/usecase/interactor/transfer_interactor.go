@@ -24,7 +24,7 @@ func NewTransferInteractor(repository repository.RegistrarRepository, presenter 
 	}
 }
 
-func (interactor *transferInteractor) Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *transferInteractor) Check(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Check: interactor.RegistrarRepository.SendCommand")
@@ -35,13 +35,19 @@ func (interactor *transferInteractor) Check(ctx infrastructure.Context, data int
 	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Check: interactor.XMLMapper.Decode (TransferCheckResponse)")
 		return
 	}
 
-	interactor.Presenter.CheckSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.CheckSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Check")
+		return
+	}
+	return
 }
 
-func (interactor *transferInteractor) Request(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *transferInteractor) Request(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
@@ -52,13 +58,19 @@ func (interactor *transferInteractor) Request(ctx infrastructure.Context, data i
 	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Request: interactor.XMLMapper.Decode (TransferRequestResponse)")
 		return
 	}
 
-	interactor.Presenter.RequestSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.RequestSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Request")
+		return
+	}
+	return
 }
 
-func (interactor *transferInteractor) Cancel(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *transferInteractor) Cancel(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
@@ -69,13 +81,19 @@ func (interactor *transferInteractor) Cancel(ctx infrastructure.Context, data in
 	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Cancel: interactor.XMLMapper.Decode (TransferCancelResponse)")
 		return
 	}
 
-	interactor.Presenter.CancelSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.CancelSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Cancel")
+		return
+	}
+	return
 }
 
-func (interactor *transferInteractor) Approve(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *transferInteractor) Approve(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
@@ -86,13 +104,19 @@ func (interactor *transferInteractor) Approve(ctx infrastructure.Context, data i
 	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Approve: interactor.XMLMapper.Decode (TransferApproveResponse)")
 		return
 	}
 
-	interactor.Presenter.ApproveSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.ApproveSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Approve")
+		return
+	}
+	return
 }
 
-func (interactor *transferInteractor) Reject(ctx infrastructure.Context, data interface{}, ext string, langTag string) {
+func (interactor *transferInteractor) Reject(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
 	responseByte, err := interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
 		err = errors.Wrap(err, "TransferInteractor Request: interactor.RegistrarRepository.SendCommand")
@@ -103,8 +127,14 @@ func (interactor *transferInteractor) Reject(ctx infrastructure.Context, data in
 	err = interactor.xmlMapper.Decode(responseByte, responseDTO)
 
 	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Reject: interactor.XMLMapper.Decode (TransferRejectResponse)")
 		return
 	}
 
-	interactor.Presenter.RejectSuccess(ctx, *responseDTO)
+	err = interactor.Presenter.RejectSuccess(ctx, *responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "TransferInteractor Reject")
+		return
+	}
+	return
 }

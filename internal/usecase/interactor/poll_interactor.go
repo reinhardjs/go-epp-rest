@@ -33,7 +33,7 @@ func NewPollInteractor(
 	}
 }
 
-func (interactor *pollInteractor) Poll(ctx infrastructure.Context) {
+func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 	pollRequestData := types.Poll{
 		Poll: types.PollCommand{
 			Operation: types.PollOperationRequest,
@@ -77,7 +77,12 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) {
 						MessageID: &responseDTO.MessageQueue.Id,
 					},
 				}
-				interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
+
+				_, err := interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
+				if err != nil {
+					err = errors.Wrap(err, "PollInteractor Poll: interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)")
+					break
+				}
 
 			} else {
 
@@ -88,7 +93,12 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) {
 						MessageID: &responseDTO.MessageQueue.Id,
 					},
 				}
-				interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
+
+				_, err := interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
+				if err != nil {
+					err = errors.Wrap(err, "PollInteractor Poll: interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)")
+					break
+				}
 
 			}
 
@@ -100,5 +110,10 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) {
 		}
 	}
 
-	interactor.Presenter.PollSuccess(ctx, responseDTO)
+	err = interactor.Presenter.PollSuccess(ctx, responseDTO)
+	if err != nil {
+		err = errors.Wrap(err, "PollInteractor Poll")
+		return
+	}
+	return
 }

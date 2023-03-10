@@ -30,7 +30,8 @@ const (
 
 // HostCheckType represents a host check command.
 type HostCheckType struct {
-	Check HostCheck `xml:"urn:ietf:params:xml:ns:host-1.0 command>check>check"`
+	Check               HostCheck `xml:"urn:ietf:params:xml:ns:host-1.0 command>check>check"`
+	ClientTransactionID *string   `xml:"command>clTRID"`
 }
 
 // HostCreateType represents a host create command.
