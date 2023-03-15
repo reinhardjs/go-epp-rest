@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log"
 	"net"
@@ -19,6 +20,7 @@ type TcpConfig struct {
 	Host         string
 	Port         int
 	TLSCert      *tls.Certificate
+	RootCACert   *x509.CertPool
 	MaxIdleConns int
 	MaxOpenConn  int
 }
@@ -30,6 +32,7 @@ func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
 		host:         cfg.Host,
 		port:         cfg.Port,
 		tlsCert:      cfg.TLSCert,
+		rootCaCert:   cfg.RootCACert,
 		idleConns:    make(map[string]*TcpConn),
 		requestChan:  make(chan *connRequest, maxQueueLength),
 		maxOpenCount: cfg.MaxOpenConn,
@@ -46,6 +49,7 @@ type TcpConnPool struct {
 	host         string
 	port         int
 	tlsCert      *tls.Certificate
+	rootCaCert   *x509.CertPool
 	mu           sync.Mutex          // mutex to prevent race conditions
 	idleConns    map[string]*TcpConn // holds the idle connections
 	numOpen      int                 // counter that tracks open connections
@@ -142,6 +146,7 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
 		Certificates:       []tls.Certificate{*p.tlsCert},
+		RootCAs:            p.rootCaCert,
 	}
 	addr := fmt.Sprintf("%s:%d", p.host, p.port)
 
@@ -169,13 +174,15 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 // handleConnectionRequest() listens to the request queue
 // and attempts to fulfil any incoming requests
 func (p *TcpConnPool) handleConnectionRequest() {
+
 	for req := range p.requestChan {
+		log.Println("REQUEST CHAN", req)
 		var (
 			requestDone = false
 			hasTimeout  = false
 
 			// start a 3-second timeout
-			timeoutChan = time.After(3 * time.Second)
+			timeoutChan = time.After(200 * time.Millisecond)
 		)
 
 		for {

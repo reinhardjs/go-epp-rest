@@ -2,6 +2,8 @@ package config
 
 import (
 	"crypto/tls"
+	"crypto/x509"
+	"io/ioutil"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -11,8 +13,9 @@ import (
 )
 
 type Config struct {
-	PayWebCCCert *tls.Certificate
-	Mysql        *mysql.Config
+	PayWebCCRootCaCert *x509.CertPool
+	PayWebCCCert       *tls.Certificate
+	Mysql              *mysql.Config
 }
 
 func InitConfig() (*Config, error) {
@@ -41,6 +44,17 @@ func InitConfig() (*Config, error) {
 		return nil, errors.Wrap(err, "init config: load x509 key pair")
 	}
 	cfg.PayWebCCCert = &payWebCCCert
+
+	caCert, err := ioutil.ReadFile(os.Getenv(constants.PAY_WEB_CC_CA_CERT_FILENAME))
+	if err != nil {
+		return nil, errors.Wrap(err, "init config: reading ca cert file")
+	}
+
+	caCertPool := x509.NewCertPool()
+	if !caCertPool.AppendCertsFromPEM(caCert) {
+		return nil, errors.Wrap(err, "init config: append ca certs from PEM")
+	}
+	cfg.PayWebCCRootCaCert = caCertPool
 
 	return cfg, nil
 }
