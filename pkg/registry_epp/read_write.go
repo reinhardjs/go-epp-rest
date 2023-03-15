@@ -4,11 +4,14 @@ import (
 	"encoding/binary"
 	"encoding/xml"
 	"errors"
+
 	"fmt"
 	"io"
 	"math"
 	"net"
 	"time"
+
+	pkg_errors "github.com/pkg/errors"
 
 	"aqwari.net/xml/xmltree"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
@@ -25,7 +28,7 @@ func ReadMessage(conn net.Conn) ([]byte, error) {
 
 	err := binary.Read(conn, binary.BigEndian, &totalSize)
 	if err != nil {
-		return nil, err
+		return nil, pkg_errors.Wrap(err, "binary.Read")
 	}
 
 	headerSize := binary.Size(totalSize)
@@ -34,13 +37,13 @@ func ReadMessage(conn net.Conn) ([]byte, error) {
 	// Ensure a reasonable time for reading the message.
 	err = conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	if err != nil {
-		return nil, err
+		return nil, pkg_errors.Wrap(err, "conn.SetReadDeadline")
 	}
 
 	buf := make([]byte, contentSize)
 	_, err = io.ReadFull(conn, buf)
 	if err != nil {
-		return nil, err
+		return nil, pkg_errors.Wrap(err, "io.ReadFull")
 	}
 
 	return buf, nil
