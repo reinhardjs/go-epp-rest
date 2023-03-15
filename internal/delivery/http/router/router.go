@@ -1,7 +1,12 @@
 package router
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gin-gonic/gin"
+	nrgin "github.com/newrelic/go-agent/v3/integrations/nrgin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/middlewares"
@@ -9,6 +14,19 @@ import (
 
 func NewRouter(appController controllers.AppController) *gin.Engine {
 	router := gin.Default()
+
+	app, err := newrelic.NewApplication(
+		newrelic.ConfigAppName("go-epp-rest"),
+		newrelic.ConfigLicense("4dfe465a7858953b3345a9b6b7c045369169NRAL"),
+		newrelic.ConfigAppLogForwardingEnabled(true),
+	)
+
+	if nil != err {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	router.Use(nrgin.Middleware(app))
 
 	// Use error handler middleware
 	router.Use(middlewares.ClientErrorHandler)                     // Error related to client error
