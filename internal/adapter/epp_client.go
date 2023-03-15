@@ -30,9 +30,9 @@ func (c *eppClient) timeTrack(start time.Time, name string) {
 
 // Send will send data to the server.
 func (c *eppClient) Send(data []byte) ([]byte, error) {
-	defer c.timeTrack(time.Now(), "epp command response")
-
 	tcpConn, err := c.connPool.Get()
+
+	defer c.timeTrack(time.Now(), "epp command response")
 
 	if err != nil {
 		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
