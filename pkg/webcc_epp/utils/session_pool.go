@@ -181,7 +181,7 @@ func (p *TcpConnPool) handleConnectionRequest() {
 			hasTimeout  = false
 
 			// start a 3-second timeout
-			timeoutChan = time.After(200 * time.Millisecond)
+			timeoutChan = time.After(3 * time.Second)
 		)
 
 		for {
