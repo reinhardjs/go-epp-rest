@@ -176,7 +176,6 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 func (p *TcpConnPool) handleConnectionRequest() {
 
 	for req := range p.requestChan {
-		log.Println("REQUEST CHAN", req)
 		var (
 			requestDone = false
 			hasTimeout  = false
