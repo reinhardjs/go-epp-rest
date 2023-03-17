@@ -28,15 +28,25 @@ type TcpConfig struct {
 // CreateTcpConnPool() creates a connection pool
 // and starts the worker that handles connection request
 func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
+	reqChanPool := sync.Pool{
+		New: func() interface{} {
+			return &connRequest{
+				connChan: make(chan *TcpConn, 1),
+				errChan:  make(chan error, 1),
+			}
+		},
+	}
+
 	pool := &TcpConnPool{
-		host:         cfg.Host,
-		port:         cfg.Port,
-		tlsCert:      cfg.TLSCert,
-		rootCaCert:   cfg.RootCACert,
-		idleConns:    make(map[string]*TcpConn),
-		requestChan:  make(chan *connRequest, maxQueueLength),
-		maxOpenCount: cfg.MaxOpenConn,
-		maxIdleCount: cfg.MaxIdleConns,
+		host:            cfg.Host,
+		port:            cfg.Port,
+		tlsCert:         cfg.TLSCert,
+		rootCaCert:      cfg.RootCACert,
+		idleConns:       make(map[string]*TcpConn),
+		requestChan:     make(chan *connRequest, maxQueueLength),
+		requestChanPool: &reqChanPool,
+		maxOpenCount:    cfg.MaxOpenConn,
+		maxIdleCount:    cfg.MaxIdleConns,
 	}
 
 	go pool.handleConnectionRequest()
@@ -46,16 +56,17 @@ func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
 
 // TcpConnPool represents a pool of tcp connections
 type TcpConnPool struct {
-	host         string
-	port         int
-	tlsCert      *tls.Certificate
-	rootCaCert   *x509.CertPool
-	mu           sync.Mutex          // mutex to prevent race conditions
-	idleConns    map[string]*TcpConn // holds the idle connections
-	numOpen      int                 // counter that tracks open connections
-	maxOpenCount int
-	maxIdleCount int
-	requestChan  chan *connRequest // A queue of connection requests
+	host            string
+	port            int
+	tlsCert         *tls.Certificate
+	rootCaCert      *x509.CertPool
+	mu              sync.Mutex          // mutex to prevent race conditions
+	idleConns       map[string]*TcpConn // holds the idle connections
+	numOpen         int                 // counter that tracks open connections
+	maxOpenCount    int
+	maxIdleCount    int
+	requestChan     chan *connRequest // A queue of connection requests
+	requestChanPool *sync.Pool
 }
 
 // TcpConn is a wrapper for a single tcp connection
@@ -105,15 +116,15 @@ func (p *TcpConnPool) Get() (*TcpConn, error) {
 	// Case 2: Queue a connection request
 	if p.maxOpenCount > 0 && p.numOpen >= p.maxOpenCount {
 		// Create the request
-		req := &connRequest{
-			connChan: make(chan *TcpConn, 1),
-			errChan:  make(chan error, 1),
-		}
+		req := p.requestChanPool.Get().(*connRequest)
 
 		// Queue the request
 		p.requestChan <- req
 
 		p.mu.Unlock()
+
+		// put back request chan to the pool, for being re-used
+		defer p.requestChanPool.Put(req)
 
 		// Waits for either
 		// 1. Request fulfilled, or
