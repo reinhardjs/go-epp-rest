@@ -38,6 +38,7 @@ func NewDomainController(interactor usecase.DomainInteractor) DomainController {
 }
 
 func (controller *domainController) Check(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var domainCheckQuery request.DomainCheckQuery
 	ctx.BindQuery(&domainCheckQuery)
