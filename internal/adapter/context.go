@@ -10,9 +10,7 @@ type ContextAdapter struct {
 	*gin.Context
 }
 
-func (c *ContextAdapter) Close() {
-	c.Request.Context().Done()
-	c.Writer.Flush()
+func (c *ContextAdapter) OnClose() {
 	runtime.GC()
 }
 
