@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"runtime"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
@@ -8,6 +10,12 @@ import (
 
 func ClientErrorHandler(c *gin.Context) {
 	c.Next()
+
+	defer func() {
+		c.Request.Context().Done()
+		c.Writer.Flush()
+		runtime.GC()
+	}()
 
 	if len(c.Errors) > 0 {
 		err := c.Errors.Last().Err
