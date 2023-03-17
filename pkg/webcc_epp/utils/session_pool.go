@@ -192,7 +192,7 @@ func (p *TcpConnPool) handleConnectionRequest() {
 			// request timeout
 			case <-timeoutChan:
 				hasTimeout = true
-				req.errChan <- errors.New("connection request timeout")
+				req.errChan <- errors.New("handle new connection request has timeout")
 			default:
 				p.mu.Lock()
 
