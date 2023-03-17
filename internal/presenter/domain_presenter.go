@@ -1,6 +1,7 @@
 package presenter
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
@@ -17,15 +18,16 @@ func NewDomainPresenter() presenter.DomainPresenter {
 
 func (p *domainPresenter) CheckSuccess(ctx infrastructure.Context, obj response.CheckDomainResponse) (err error) {
 	var res string
+	var buffer bytes.Buffer
 
 	for _, element := range obj.ResultData.CheckDatas {
 		notStr := ""
 		if element.Name.AvailKey == 0 {
 			notStr = "not "
 		}
-		res += fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr)
+		buffer.WriteString(fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr))
 	}
-	res = strings.TrimSuffix(res, "\n")
+	res = strings.TrimSuffix(buffer.String(), "\n")
 
 	ctx.String(200, res)
 	return
