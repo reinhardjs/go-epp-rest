@@ -12,8 +12,6 @@ func ClientErrorHandler(c *gin.Context) {
 	c.Next()
 
 	defer func() {
-		c.Request.Context().Done()
-		c.Writer.Flush()
 		runtime.GC()
 	}()
 

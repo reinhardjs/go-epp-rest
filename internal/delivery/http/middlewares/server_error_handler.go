@@ -10,8 +10,6 @@ import (
 
 func ServerErrorHandler(c *gin.Context, err any) {
 	defer func() {
-		c.Request.Context().Done()
-		c.Writer.Flush()
 		runtime.GC()
 	}()
 
