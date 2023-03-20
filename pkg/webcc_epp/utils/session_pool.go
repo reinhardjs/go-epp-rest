@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
@@ -185,56 +186,62 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 // handleConnectionRequest() listens to the request queue
 // and attempts to fulfil any incoming requests
 func (p *TcpConnPool) handleConnectionRequest() {
-
 	for req := range p.requestChan {
-		var (
-			requestDone = false
-			hasTimeout  = false
+		go p.handle(req)
+	}
+}
 
-			// start a 3-second timeout
-			timeoutChan = time.After(3 * time.Second)
-		)
+func (p *TcpConnPool) handle(req *connRequest) {
+	var (
+		requestDone = false
+		hasTimeout  = false
+		requestFail = false
 
-		for {
-			if requestDone || hasTimeout {
-				break
-			}
-			select {
-			// request timeout
-			case <-timeoutChan:
-				hasTimeout = true
-				req.errChan <- errors.New("handle new connection request has timeout")
-			default:
-				p.mu.Lock()
+		timeoutChan = time.After(30 * time.Second)
+	)
 
-				// First, we try to get an idle conn.
-				// If fail, we try to open a new conn.
-				// If both does not work, we try again in the next loop until timeout.
-				numIdle := len(p.idleConns)
-				if numIdle > 0 {
-					for _, c := range p.idleConns {
-						delete(p.idleConns, c.Id)
-						p.mu.Unlock()
-						req.connChan <- c // give conn
-						requestDone = true
-						break
-					}
-				} else if p.maxOpenCount > 0 && p.numOpen < p.maxOpenCount {
-					p.numOpen++
+	for {
+		if requestDone || hasTimeout || requestFail {
+			break
+		}
+		select {
+		// request timeout
+		case <-timeoutChan:
+			hasTimeout = true
+			err := error_types.RequestTimeOutError{Detail: "queue waiting time has timed out"}
+			req.errChan <- &err
+		default:
+			p.mu.Lock()
+
+			// First, we try to get an idle conn.
+			// If fail, we try to open a new conn.
+			// If both does not work, we try again in the next loop until timeout.
+			numIdle := len(p.idleConns)
+			if numIdle > 0 {
+				for _, c := range p.idleConns {
+					delete(p.idleConns, c.Id)
 					p.mu.Unlock()
-
-					c, err := p.openNewTcpConnection()
-					if err != nil {
-						p.mu.Lock()
-						p.numOpen--
-						p.mu.Unlock()
-					} else {
-						req.connChan <- c // give conn
-						requestDone = true
-					}
-				} else {
-					p.mu.Unlock()
+					req.connChan <- c // give conn
+					requestDone = true
+					break
 				}
+			} else if p.maxOpenCount > 0 && p.numOpen < p.maxOpenCount {
+				p.numOpen++
+				p.mu.Unlock()
+
+				c, err := p.openNewTcpConnection()
+				if err != nil {
+					p.mu.Lock()
+					p.numOpen--
+					p.mu.Unlock()
+					requestFail = true
+					req.errChan <- err // give error
+				} else {
+					requestDone = true
+					req.connChan <- c // give conn
+				}
+			} else {
+				p.mu.Unlock()
 			}
 		}
 	}
