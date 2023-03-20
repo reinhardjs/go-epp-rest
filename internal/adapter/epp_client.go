@@ -31,18 +31,29 @@ func (c *eppClient) timeTrack(start time.Time, name string) {
 // Send will send data to the server.
 func (c *eppClient) Send(data []byte) ([]byte, error) {
 	tcpConn, err := c.connPool.Get()
-
-	defer c.timeTrack(time.Now(), "epp command response")
-
 	if err != nil {
 		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
 	}
 
+	startTime := time.Now()
+	defer func() {
+		c.timeTrack(startTime, "epp command response")
+
+		if tcpConn != nil {
+			c.connPool.Put(tcpConn)
+		}
+	}()
+
 	err = registry_epp.WriteMessage(tcpConn.Conn, data)
 	if err != nil {
-		_ = tcpConn.Conn.Close()
+		err = errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
 
-		return nil, errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
+		errConn := tcpConn.Conn.Close()
+		if errConn != nil {
+			err = errors.Wrap(errConn, err.Error())
+		}
+
+		return nil, err
 	}
 
 	err = tcpConn.Conn.SetReadDeadline(time.Now().Add(2 * time.Second))
@@ -52,12 +63,15 @@ func (c *eppClient) Send(data []byte) ([]byte, error) {
 
 	msg, err := registry_epp.ReadMessage(tcpConn.Conn)
 	if err != nil {
-		_ = tcpConn.Conn.Close()
+		err = errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
 
-		return nil, errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
+		errConn := tcpConn.Conn.Close()
+		if errConn != nil {
+			err = errors.Wrap(errConn, err.Error())
+		}
+
+		return nil, err
 	}
-
-	c.connPool.Put(tcpConn)
 
 	return msg, nil
 }
