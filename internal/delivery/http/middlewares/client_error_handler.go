@@ -20,6 +20,8 @@ func ClientErrorHandler(c *gin.Context) {
 		cause := errors.Cause(err)
 
 		switch cause.(type) {
+		case *error_types.RequestTimeOutError:
+			c.String(408, "2400 Command failed; Request time out")
 		case *error_types.ControllerError:
 			// TODO with Controller Error
 		case *error_types.InteractorError:
