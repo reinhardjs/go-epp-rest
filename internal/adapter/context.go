@@ -1,8 +1,6 @@
 package adapter
 
 import (
-	"runtime"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,7 +9,7 @@ type ContextAdapter struct {
 }
 
 func (c *ContextAdapter) OnClose() {
-	runtime.GC()
+	// Do something on request closed
 }
 
 func (c *ContextAdapter) AbortWithError(code int, fatalErr error) *gin.Error {

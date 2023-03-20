@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"runtime"
 	"runtime/debug"
 	"time"
 
@@ -13,12 +14,13 @@ import (
 func periodicFree(d time.Duration) {
 	tick := time.Tick(d)
 	for _ = range tick {
+		runtime.GC()
 		debug.FreeOSMemory()
 	}
 }
 
 func main() {
-	go periodicFree(1 * time.Minute)
+	go periodicFree(30 * time.Second)
 
 	cfg, err := config.InitConfig()
 

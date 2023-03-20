@@ -59,6 +59,7 @@ func (controller *domainController) Check(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) Create(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var domainCreateQuery request.DomainCreateQuery
 	ctx.BindQuery(&domainCreateQuery)
@@ -117,6 +118,7 @@ func (controller *domainController) Create(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) Delete(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var domainDeleteQuery request.DomainDeleteQuery
 	ctx.BindQuery(&domainDeleteQuery)
@@ -135,6 +137,7 @@ func (controller *domainController) Delete(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) Info(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var domainInfoQuery request.DomainInfoQuery
 	ctx.BindQuery(&domainInfoQuery)
@@ -155,6 +158,7 @@ func (controller *domainController) Info(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	AddDSDataList := []types.DSData{}
 	RemoveDSDataList := []types.DSData{}
@@ -289,6 +293,7 @@ func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var domainContactUpdateQuery request.DomainContactUpdateQuery
 	ctx.BindQuery(&domainContactUpdateQuery)
@@ -370,6 +375,7 @@ func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var domainStatusUpdateQuery request.DomainStatusUpdateQuery
 	ctx.BindQuery(&domainStatusUpdateQuery)
@@ -440,6 +446,7 @@ func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var domainAuthInfoUpdateQuery request.DomainAuthInfoUpdateQuery
 	ctx.BindQuery(&domainAuthInfoUpdateQuery)
@@ -467,6 +474,7 @@ func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) NameserverUpdate(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var domainNameserverUpdateQuery request.DomainNameserverUpdateQuery
 	ctx.BindQuery(&domainNameserverUpdateQuery)
@@ -527,6 +535,8 @@ func (controller *domainController) NameserverUpdate(ctx infrastructure.Context)
 }
 
 func (controller *domainController) Renew(ctx infrastructure.Context) {
+	defer ctx.OnClose()
+
 	var domainRenewQuery request.DomainRenewQuery
 	ctx.BindQuery(&domainRenewQuery)
 

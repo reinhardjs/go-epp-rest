@@ -32,6 +32,7 @@ func NewHostController(interactor usecase.HostInteractor) HostController {
 }
 
 func (controller *hostController) Check(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var hostCheckQuery request.HostCheckQuery
 	ctx.BindQuery(&hostCheckQuery)
@@ -52,6 +53,7 @@ func (controller *hostController) Check(ctx infrastructure.Context) {
 }
 
 func (controller *hostController) Create(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var hostCreateQuery request.HostCreateQuery
 	ctx.BindQuery(&hostCreateQuery)
@@ -88,6 +90,7 @@ func (controller *hostController) Create(ctx infrastructure.Context) {
 }
 
 func (controller *hostController) Update(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var hostUpdateQuery request.HostUpdateQuery
 	ctx.BindQuery(&hostUpdateQuery)
@@ -151,6 +154,7 @@ func (controller *hostController) Update(ctx infrastructure.Context) {
 }
 
 func (controller *hostController) Delete(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var hostDeleteQuery request.HostDeleteQuery
 	ctx.BindQuery(&hostDeleteQuery)
@@ -175,6 +179,7 @@ func (controller *hostController) Delete(ctx infrastructure.Context) {
 }
 
 func (controller *hostController) Info(ctx infrastructure.Context) {
+	defer ctx.OnClose()
 
 	var hostInfoQuery request.HostInfoQuery
 	ctx.BindQuery(&hostInfoQuery)
@@ -199,6 +204,8 @@ func (controller *hostController) Info(ctx infrastructure.Context) {
 }
 
 func (controller *hostController) Change(ctx infrastructure.Context) {
+	defer ctx.OnClose()
+
 	var hostChangeQuery request.HostChangeQuery
 	ctx.BindQuery(&hostChangeQuery)
 
@@ -230,6 +237,8 @@ func (controller *hostController) Change(ctx infrastructure.Context) {
 }
 
 func (controller *hostController) CheckAndCreate(ctx infrastructure.Context) {
+	defer ctx.OnClose()
+
 	var hostCreateQuery request.HostCheckAndCreateQuery
 	ctx.BindQuery(&hostCreateQuery)
 
