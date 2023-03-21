@@ -13,7 +13,7 @@ import (
 
 func periodicFree(d time.Duration) {
 	tick := time.Tick(d)
-	for _ = range tick {
+	for range tick {
 		runtime.GC()
 		debug.FreeOSMemory()
 	}
