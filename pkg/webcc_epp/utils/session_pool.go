@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/constants"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
@@ -192,12 +195,17 @@ func (p *TcpConnPool) handleConnectionRequest() {
 }
 
 func (p *TcpConnPool) handle(req *connRequest) {
+	secondsTime, err := strconv.Atoi(os.Getenv(constants.REQUEST_TIMEOUT))
+	if err != nil {
+		req.errChan <- errors.New("REQUEST_TIMEOUT env value is not a valid number")
+	}
+
 	var (
 		requestDone = false
 		hasTimeout  = false
 		requestFail = false
 
-		timeoutChan = time.After(30 * time.Second)
+		timeoutChan = time.After(time.Duration(secondsTime) * time.Second)
 	)
 
 	for {
