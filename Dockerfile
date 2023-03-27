@@ -1,6 +1,5 @@
 # Start from golang base image
 FROM golang:alpine
-USER root
 
 # Add Maintainer info
 LABEL maintainer="Merekmu"
@@ -26,7 +25,6 @@ RUN go install -v ./...
 # Build the Go app
 RUN go build -o /build
 
-USER reinhard45
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
