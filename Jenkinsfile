@@ -25,6 +25,7 @@ pipeline {
         stage("build") {
             steps {
                 echo 'BUILD EXECUTION STARTED'
+                echo $PAY_WEB_CC_REGISTRY_TCP_HOST
                 sh 'go version'
                 sh 'go get ./...'
                 sh 'docker build . -t reinhardjs/go-epp-rest'
