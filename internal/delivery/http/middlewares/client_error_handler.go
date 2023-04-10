@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"runtime"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
@@ -9,11 +11,17 @@ import (
 func ClientErrorHandler(c *gin.Context) {
 	c.Next()
 
+	defer func() {
+		runtime.GC()
+	}()
+
 	if len(c.Errors) > 0 {
 		err := c.Errors.Last().Err
 		cause := errors.Cause(err)
 
 		switch cause.(type) {
+		case *error_types.RequestTimeOutError:
+			c.String(408, "2400 Command failed; Request time out")
 		case *error_types.ControllerError:
 			// TODO with Controller Error
 		case *error_types.InteractorError:

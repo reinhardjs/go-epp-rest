@@ -2,24 +2,24 @@ package adapter
 
 import (
 	"log"
-	"net"
 	"time"
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
+	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
 
 // Client represents an EPP client.
 type eppClient struct {
-	// conn holds the TCP connection to the server.
-	conn net.Conn
+	// connPool holds the TCP connections to the server.
+	connPool *utils.TcpConnPool
 }
 
-func NewEppClient(conn net.Conn) adapter.EppClient {
+func NewEppClient(connPool *utils.TcpConnPool) adapter.EppClient {
 	return &eppClient{
-		conn: conn,
+		connPool: connPool,
 	}
 }
 
@@ -30,21 +30,47 @@ func (c *eppClient) timeTrack(start time.Time, name string) {
 
 // Send will send data to the server.
 func (c *eppClient) Send(data []byte) ([]byte, error) {
-	defer c.timeTrack(time.Now(), "epp command response")
-
-	err := registry_epp.WriteMessage(c.conn, data)
+	tcpConn, err := c.connPool.Get()
 	if err != nil {
-		_ = c.conn.Close()
-
-		return nil, errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
+		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
 	}
 
-	_ = c.conn.SetReadDeadline(time.Now().Add(2 * time.Second))
-	msg, err := registry_epp.ReadMessage(c.conn)
-	if err != nil {
-		_ = c.conn.Close()
+	startTime := time.Now()
+	defer func() {
+		c.timeTrack(startTime, "epp command response")
 
-		return nil, errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
+		if tcpConn != nil {
+			c.connPool.Put(tcpConn)
+		}
+	}()
+
+	err = registry_epp.WriteMessage(tcpConn.Conn, data)
+	if err != nil {
+		err = errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
+
+		errConn := tcpConn.Conn.Close()
+		if errConn != nil {
+			err = errors.Wrap(errConn, err.Error())
+		}
+
+		return nil, err
+	}
+
+	err = tcpConn.Conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+	if err != nil {
+		return nil, errors.Wrap(err, "EppClient Send: tcpConn.Conn.SetReadDeadline")
+	}
+
+	msg, err := registry_epp.ReadMessage(tcpConn.Conn)
+	if err != nil {
+		err = errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
+
+		errConn := tcpConn.Conn.Close()
+		if errConn != nil {
+			err = errors.Wrap(errConn, err.Error())
+		}
+
+		return nil, err
 	}
 
 	return msg, nil

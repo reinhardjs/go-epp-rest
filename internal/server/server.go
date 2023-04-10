@@ -36,19 +36,17 @@ func (s *server) Run() error {
 	username := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_USERNAME)
 	password := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_PASSWORD)
 	tcpConfig := utils.TcpConfig{
-		Host:    tcpHost,
-		Port:    tcpPort,
-		TLSCert: s.config.PayWebCCCert,
+		Host:         tcpHost,
+		Port:         tcpPort,
+		TLSCert:      s.config.PayWebCCCert,
+		MaxOpenConn:  1,
+		MaxIdleConns: 1,
 	}
 	tcpConnPool, err := utils.CreateTcpConnPool(&tcpConfig)
 	if err != nil {
 		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}
-	tcpConn, err := tcpConnPool.Get()
-	if err != nil {
-		return errors.Wrap(err, "server run: tcpConnPool get")
-	}
-	eppClient := adapter.NewEppClient(tcpConn.Conn)
+	eppClient := adapter.NewEppClient(tcpConnPool)
 	response, err := eppClient.Login(username, password)
 	if err != nil {
 		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))

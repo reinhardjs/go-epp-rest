@@ -22,6 +22,8 @@ func NewPollController(interactor usecase.PollInteractor) PollController {
 }
 
 func (controller *pollController) Poll(ctx infrastructure.Context) {
+	defer ctx.OnClose()
+
 	err := controller.interactor.Poll(ctx.(presenter_infrastructure.Context))
 	if err != nil {
 		err = errors.Wrap(err, "PollController Poll")

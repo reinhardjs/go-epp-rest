@@ -1,13 +1,19 @@
 package adapter
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type ContextAdapter struct {
 	*gin.Context
 }
 
-func (c *ContextAdapter) AbortWithError(code int, fatalErr error) {
-	c.Context.AbortWithError(code, fatalErr)
+func (c *ContextAdapter) OnClose() {
+	// Do something on request closed
+}
+
+func (c *ContextAdapter) AbortWithError(code int, fatalErr error) *gin.Error {
+	return c.Context.AbortWithError(code, fatalErr)
 }
 
 func (c *ContextAdapter) BindQuery(obj any) error {

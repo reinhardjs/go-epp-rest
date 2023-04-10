@@ -2,13 +2,18 @@ package utils
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/pkg/errors"
+	"gitlab.com/merekmu/go-epp-rest/constants"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
@@ -19,6 +24,7 @@ type TcpConfig struct {
 	Host         string
 	Port         int
 	TLSCert      *tls.Certificate
+	RootCACert   *x509.CertPool
 	MaxIdleConns int
 	MaxOpenConn  int
 }
@@ -26,14 +32,25 @@ type TcpConfig struct {
 // CreateTcpConnPool() creates a connection pool
 // and starts the worker that handles connection request
 func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
+	reqChanPool := sync.Pool{
+		New: func() interface{} {
+			return &connRequest{
+				connChan: make(chan *TcpConn, 1),
+				errChan:  make(chan error, 1),
+			}
+		},
+	}
+
 	pool := &TcpConnPool{
-		host:         cfg.Host,
-		port:         cfg.Port,
-		tlsCert:      cfg.TLSCert,
-		idleConns:    make(map[string]*TcpConn),
-		requestChan:  make(chan *connRequest, maxQueueLength),
-		maxOpenCount: cfg.MaxOpenConn,
-		maxIdleCount: cfg.MaxIdleConns,
+		host:            cfg.Host,
+		port:            cfg.Port,
+		tlsCert:         cfg.TLSCert,
+		rootCaCert:      cfg.RootCACert,
+		idleConns:       make(map[string]*TcpConn),
+		requestChan:     make(chan *connRequest, maxQueueLength),
+		requestChanPool: &reqChanPool,
+		maxOpenCount:    cfg.MaxOpenConn,
+		maxIdleCount:    cfg.MaxIdleConns,
 	}
 
 	go pool.handleConnectionRequest()
@@ -43,15 +60,17 @@ func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
 
 // TcpConnPool represents a pool of tcp connections
 type TcpConnPool struct {
-	host         string
-	port         int
-	tlsCert      *tls.Certificate
-	mu           sync.Mutex          // mutex to prevent race conditions
-	idleConns    map[string]*TcpConn // holds the idle connections
-	numOpen      int                 // counter that tracks open connections
-	maxOpenCount int
-	maxIdleCount int
-	requestChan  chan *connRequest // A queue of connection requests
+	host            string
+	port            int
+	tlsCert         *tls.Certificate
+	rootCaCert      *x509.CertPool
+	mu              sync.Mutex          // mutex to prevent race conditions
+	idleConns       map[string]*TcpConn // holds the idle connections
+	numOpen         int                 // counter that tracks open connections
+	maxOpenCount    int
+	maxIdleCount    int
+	requestChan     chan *connRequest // A queue of connection requests
+	requestChanPool *sync.Pool
 }
 
 // TcpConn is a wrapper for a single tcp connection
@@ -101,15 +120,15 @@ func (p *TcpConnPool) Get() (*TcpConn, error) {
 	// Case 2: Queue a connection request
 	if p.maxOpenCount > 0 && p.numOpen >= p.maxOpenCount {
 		// Create the request
-		req := &connRequest{
-			connChan: make(chan *TcpConn, 1),
-			errChan:  make(chan error, 1),
-		}
+		req := p.requestChanPool.Get().(*connRequest)
 
 		// Queue the request
 		p.requestChan <- req
 
 		p.mu.Unlock()
+
+		// put back request chan to the pool, for being re-used
+		defer p.requestChanPool.Put(req)
 
 		// Waits for either
 		// 1. Request fulfilled, or
@@ -142,6 +161,7 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
 		Certificates:       []tls.Certificate{*p.tlsCert},
+		RootCAs:            p.rootCaCert,
 	}
 	addr := fmt.Sprintf("%s:%d", p.host, p.port)
 
@@ -170,54 +190,66 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 // and attempts to fulfil any incoming requests
 func (p *TcpConnPool) handleConnectionRequest() {
 	for req := range p.requestChan {
-		var (
-			requestDone = false
-			hasTimeout  = false
+		go p.handle(req)
+	}
+}
 
-			// start a 3-second timeout
-			timeoutChan = time.After(3 * time.Second)
-		)
+func (p *TcpConnPool) handle(req *connRequest) {
+	secondsTime, err := strconv.Atoi(os.Getenv(constants.REQUEST_TIMEOUT))
+	if err != nil {
+		req.errChan <- errors.New("REQUEST_TIMEOUT env value is not a valid number")
+	}
 
-		for {
-			if requestDone || hasTimeout {
-				break
-			}
-			select {
-			// request timeout
-			case <-timeoutChan:
-				hasTimeout = true
-				req.errChan <- errors.New("connection request timeout")
-			default:
-				p.mu.Lock()
+	var (
+		requestDone = false
+		hasTimeout  = false
+		requestFail = false
 
-				// First, we try to get an idle conn.
-				// If fail, we try to open a new conn.
-				// If both does not work, we try again in the next loop until timeout.
-				numIdle := len(p.idleConns)
-				if numIdle > 0 {
-					for _, c := range p.idleConns {
-						delete(p.idleConns, c.Id)
-						p.mu.Unlock()
-						req.connChan <- c // give conn
-						requestDone = true
-						break
-					}
-				} else if p.maxOpenCount > 0 && p.numOpen < p.maxOpenCount {
-					p.numOpen++
+		timeoutChan = time.After(time.Duration(secondsTime) * time.Second)
+	)
+
+	for {
+		if requestDone || hasTimeout || requestFail {
+			break
+		}
+		select {
+		// request timeout
+		case <-timeoutChan:
+			hasTimeout = true
+			err := error_types.RequestTimeOutError{Detail: "queue waiting time has timed out"}
+			req.errChan <- &err
+		default:
+			p.mu.Lock()
+
+			// First, we try to get an idle conn.
+			// If fail, we try to open a new conn.
+			// If both does not work, we try again in the next loop until timeout.
+			numIdle := len(p.idleConns)
+			if numIdle > 0 {
+				for _, c := range p.idleConns {
+					delete(p.idleConns, c.Id)
 					p.mu.Unlock()
-
-					c, err := p.openNewTcpConnection()
-					if err != nil {
-						p.mu.Lock()
-						p.numOpen--
-						p.mu.Unlock()
-					} else {
-						req.connChan <- c // give conn
-						requestDone = true
-					}
-				} else {
-					p.mu.Unlock()
+					req.connChan <- c // give conn
+					requestDone = true
+					break
 				}
+			} else if p.maxOpenCount > 0 && p.numOpen < p.maxOpenCount {
+				p.numOpen++
+				p.mu.Unlock()
+
+				c, err := p.openNewTcpConnection()
+				if err != nil {
+					p.mu.Lock()
+					p.numOpen--
+					p.mu.Unlock()
+					requestFail = true
+					req.errChan <- err // give error
+				} else {
+					requestDone = true
+					req.connChan <- c // give conn
+				}
+			} else {
+				p.mu.Unlock()
 			}
 		}
 	}

@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -16,8 +15,9 @@ import (
 )
 
 type Config struct {
-	PayWebCCCert *tls.Certificate
-	Mysql        *mysql.Config
+	PayWebCCRootCaCert *x509.CertPool
+	PayWebCCCert       *tls.Certificate
+	Mysql              *mysql.Config
 }
 
 func InitConfig() (*Config, error) {
@@ -42,8 +42,6 @@ func InitConfig() (*Config, error) {
 		User:     mysqlUser,
 		Password: mysqlPassword,
 	}
-
-	log.Println(os.Getenv(constants.PAY_WEB_CC_TRUSTORE))
 
 	trustore, err := base64.StdEncoding.DecodeString(os.Getenv(constants.PAY_WEB_CC_TRUSTORE))
 	if err != nil {
@@ -70,6 +68,17 @@ func InitConfig() (*Config, error) {
 		PrivateKey:  key,
 	}
 	cfg.PayWebCCCert = &tlsCert
+
+	// caCert, err := base64.StdEncoding.DecodeString(os.Getenv(constants.PAY_WEB_CC_CA_CERT))
+	// if err != nil {
+	// 	return nil, errors.Wrap(err, "Failed to decode caCert base64")
+	// }
+
+	// caCertPool := x509.NewCertPool()
+	// if !caCertPool.AppendCertsFromPEM(caCert) {
+	// 	return nil, errors.Wrap(err, "init config: append ca certs from PEM")
+	// }
+	// cfg.PayWebCCRootCaCert = caCertPool
 
 	return cfg, nil
 }

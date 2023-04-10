@@ -2,29 +2,68 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/middlewares"
+
+	"github.com/gin-contrib/pprof"
 )
 
+type handler struct {
+	appController controllers.AppController
+}
+
+func (h *handler) domainCheck(c *gin.Context) {
+	h.appController.Domain.Check(&adapter.ContextAdapter{Context: c})
+}
+
+func (h *handler) domainCreate(c *gin.Context) {
+	h.appController.Domain.Create(&adapter.ContextAdapter{Context: c})
+}
+
+func (h *handler) domainDelete(c *gin.Context) {
+	h.appController.Domain.Delete(&adapter.ContextAdapter{Context: c})
+}
+
+func (h *handler) domainInfo(c *gin.Context) {
+	h.appController.Domain.Info(&adapter.ContextAdapter{Context: c})
+}
+
+func (h *handler) domainSecDNSUpdate(c *gin.Context) {
+	h.appController.Domain.SecDNSUpdate(&adapter.ContextAdapter{Context: c})
+}
+
+func (h *handler) domainContactUpdate(c *gin.Context) {
+	h.appController.Domain.ContactUpdate(&adapter.ContextAdapter{Context: c})
+}
+
+func (h *handler) domainStatusUpdate(c *gin.Context) {
+	h.appController.Domain.StatusUpdate(&adapter.ContextAdapter{Context: c})
+}
+
 func NewRouter(appController controllers.AppController) *gin.Engine {
+	handler := &handler{appController}
 	router := gin.Default()
+
+	// Profiling monitor
+	pprof.Register(router)
+
+	// Prometheus monitoring
+	prometheus := ginprometheus.NewPrometheus("gin")
+	prometheus.Use(router)
 
 	// Use error handler middleware
 	router.Use(middlewares.ClientErrorHandler)                     // Error related to client error
 	router.Use(gin.CustomRecovery(middlewares.ServerErrorHandler)) // Error related to server error resulted from like panic/exception, etc..
 
-	router.GET("/hello", func(c *gin.Context) {
-		c.String(200, "Hello, World!")
-	})
-
-	router.GET("/domain/check", func(c *gin.Context) { appController.Domain.Check(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/domain/create", func(c *gin.Context) { appController.Domain.Create(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/domain/delete", func(c *gin.Context) { appController.Domain.Delete(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/domain/info", func(c *gin.Context) { appController.Domain.Info(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/domain/secdnsupdate", func(c *gin.Context) { appController.Domain.SecDNSUpdate(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/domain/contact/update", func(c *gin.Context) { appController.Domain.ContactUpdate(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/domain/status/update", func(c *gin.Context) { appController.Domain.StatusUpdate(&adapter.ContextAdapter{Context: c}) })
+	router.GET("/domain/check", handler.domainCheck)
+	router.GET("/domain/create", handler.domainCreate)
+	router.GET("/domain/delete", handler.domainDelete)
+	router.GET("/domain/info", handler.domainInfo)
+	router.GET("/domain/secdnsupdate", handler.domainSecDNSUpdate)
+	router.GET("/domain/contact/update", handler.domainContactUpdate)
+	router.GET("/domain/status/update", handler.domainStatusUpdate)
 	router.GET("/domain/authinfo/update", func(c *gin.Context) { appController.Domain.AuthInfoUpdate(&adapter.ContextAdapter{Context: c}) })
 	router.GET("/domain/nameserver/update", func(c *gin.Context) { appController.Domain.NameserverUpdate(&adapter.ContextAdapter{Context: c}) })
 	router.GET("/domain/renew", func(c *gin.Context) { appController.Domain.Renew(&adapter.ContextAdapter{Context: c}) })
