@@ -3,7 +3,9 @@ package config
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"io/ioutil"
+	"encoding/base64"
+	"encoding/pem"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -19,9 +21,13 @@ type Config struct {
 }
 
 func InitConfig() (*Config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, errors.Wrap(err, "init config: godotenv load")
+	env := os.Getenv("ENV")
+
+	if env != "production" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			return nil, errors.Wrap(err, "init config: godotenv load")
+		}
 	}
 
 	cfg := &Config{}
@@ -37,24 +43,66 @@ func InitConfig() (*Config, error) {
 		Password: mysqlPassword,
 	}
 
-	trustoreFileName := os.Getenv(constants.PAY_WEB_CC_TRUSTORE_FILENAME)
-	keystoreFileName := os.Getenv(constants.PAY_WEB_CC_KEYSTORE_FILENAME)
-	payWebCCCert, err := tls.LoadX509KeyPair(trustoreFileName, keystoreFileName)
+	trustore, err := base64.StdEncoding.DecodeString(os.Getenv(constants.PAY_WEB_CC_TRUSTORE))
 	if err != nil {
-		return nil, errors.Wrap(err, "init config: load x509 key pair")
-	}
-	cfg.PayWebCCCert = &payWebCCCert
-
-	caCert, err := ioutil.ReadFile(os.Getenv(constants.PAY_WEB_CC_CA_CERT_FILENAME))
-	if err != nil {
-		return nil, errors.Wrap(err, "init config: reading ca cert file")
+		return nil, errors.Wrap(err, "Failed to decode trustore base64")
 	}
 
-	caCertPool := x509.NewCertPool()
-	if !caCertPool.AppendCertsFromPEM(caCert) {
-		return nil, errors.Wrap(err, "init config: append ca certs from PEM")
+	keystore, err := base64.StdEncoding.DecodeString(os.Getenv(constants.PAY_WEB_CC_KEYSTORE))
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to decode keystore base64")
 	}
-	cfg.PayWebCCRootCaCert = caCertPool
+
+	cert, err := parseCertificate([]byte(trustore))
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse certificate:")
+	}
+
+	key, err := parsePrivateKey([]byte(keystore))
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse private key:")
+	}
+
+	tlsCert := tls.Certificate{
+		Certificate: [][]byte{cert},
+		PrivateKey:  key,
+	}
+	cfg.PayWebCCCert = &tlsCert
+
+	// caCert, err := base64.StdEncoding.DecodeString(os.Getenv(constants.PAY_WEB_CC_CA_CERT))
+	// if err != nil {
+	// 	return nil, errors.Wrap(err, "Failed to decode caCert base64")
+	// }
+
+	// caCertPool := x509.NewCertPool()
+	// if !caCertPool.AppendCertsFromPEM(caCert) {
+	// 	return nil, errors.Wrap(err, "init config: append ca certs from PEM")
+	// }
+	// cfg.PayWebCCRootCaCert = caCertPool
 
 	return cfg, nil
+}
+
+func parseCertificate(pemBlock []byte) ([]byte, error) {
+	block, _ := pem.Decode(pemBlock)
+	if block == nil {
+		return nil, fmt.Errorf("failed to parse certificate PEM")
+	}
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	return cert.Raw, nil
+}
+
+func parsePrivateKey(pemBlock []byte) (interface{}, error) {
+	block, _ := pem.Decode(pemBlock)
+	if block == nil {
+		return nil, fmt.Errorf("failed to parse private key PEM")
+	}
+	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	return key, nil
 }

@@ -6,7 +6,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/config"
 	"gitlab.com/merekmu/go-epp-rest/constants"
@@ -28,11 +27,6 @@ func NewServer(config *config.Config) *server {
 }
 
 func (s *server) Run() error {
-	err := godotenv.Load()
-	if err != nil {
-		return errors.Wrap(err, "server run: godotenv load")
-	}
-
 	tcpHost := os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_HOST)
 	tcpPort, err := strconv.Atoi(os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_PORT))
 	if err != nil {
