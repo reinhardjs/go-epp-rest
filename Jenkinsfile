@@ -77,8 +77,8 @@ pipeline {
         }
 
         stage("git-clone-project") {
-            steps { 
-                git credentialsId: 'gitlab-cred', url: 'http://gitlab/merekmu/go-epp-rest', branch: 'feat/nojira-cicd'   
+            steps {
+                git credentialsId: 'gitlab-cred', url: 'http://gitlab/merekmu/go-epp-rest', branch: 'main'
             }
         }
         
