@@ -14,6 +14,10 @@ func NewRouter(appController controllers.AppController) *gin.Engine {
 	router.Use(middlewares.ClientErrorHandler)                     // Error related to client error
 	router.Use(gin.CustomRecovery(middlewares.ServerErrorHandler)) // Error related to server error resulted from like panic/exception, etc..
 
+	router.GET("/hello", func(c *gin.Context) {
+		c.String(200, "Hello, World!")
+	})
+
 	router.GET("/domain/check", func(c *gin.Context) { appController.Domain.Check(&adapter.ContextAdapter{Context: c}) })
 	router.GET("/domain/create", func(c *gin.Context) { appController.Domain.Create(&adapter.ContextAdapter{Context: c}) })
 	router.GET("/domain/delete", func(c *gin.Context) { appController.Domain.Delete(&adapter.ContextAdapter{Context: c}) })

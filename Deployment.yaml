@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment                               # Type of Kubernetes resource
+metadata:
+  name: go-epp-rest                            # Name of the Kubernetes resource
+spec:
+  replicas: 1                                  # Number of replicas
+  selector:
+    matchLabels:
+      app: go-epp-rest                         # This deployment applies to any Pods matching the specified label
+  template:                                    # This deployment will create a set of pods using the configurations in this template
+    metadata:
+      labels:                                  # The labels that will be applied to all of the pods in this deployment
+        app: go-epp-rest 
+    spec:                                      # Spec for the container which will run in the Pod
+      containers:
+      - name: go-epp-rest
+        image: sccs.webnic.tl:5000/reinhardjs/go-epp-rest:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: go-epp-rest-secret
