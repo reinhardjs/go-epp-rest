@@ -31,7 +31,7 @@ type TcpConfig struct {
 
 // CreateTcpConnPool() creates a connection pool
 // and starts the worker that handles connection request
-func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
+func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 	reqChanPool := sync.Pool{
 		New: func() interface{} {
 			return &connRequest{
@@ -41,7 +41,7 @@ func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
 		},
 	}
 
-	pool := &TcpConnPool{
+	pool := &SessionPool{
 		host:            cfg.Host,
 		port:            cfg.Port,
 		tlsCert:         cfg.TLSCert,
@@ -58,8 +58,8 @@ func CreateTcpConnPool(cfg *TcpConfig) (*TcpConnPool, error) {
 	return pool, nil
 }
 
-// TcpConnPool represents a pool of tcp connections
-type TcpConnPool struct {
+// SessionPool represents a pool of tcp connections
+type SessionPool struct {
 	host            string
 	port            int
 	tlsCert         *tls.Certificate
@@ -75,9 +75,24 @@ type TcpConnPool struct {
 
 // TcpConn is a wrapper for a single tcp connection
 type TcpConn struct {
-	Id   string       // A unique id to identify a connection
-	Pool *TcpConnPool // The TCP connecion pool
-	Conn net.Conn     // The underlying TCP connection
+	Id          string     // A unique id to identify a connection
+	Conn        net.Conn   // The underlying TCP connection
+	mu          sync.Mutex // mutex to prevent race conditions
+	shouldLogin bool
+}
+
+func (t *TcpConn) GetShouldLogin() bool {
+	t.mu.Lock()
+	shouldLogin := t.shouldLogin
+	t.mu.Unlock()
+
+	return shouldLogin
+}
+
+func (t *TcpConn) SetShouldLogin(shouldLogin bool) {
+	t.mu.Lock()
+	t.shouldLogin = shouldLogin
+	t.mu.Unlock()
 }
 
 // connRequest wraps a channel to receive a connection
@@ -87,9 +102,16 @@ type connRequest struct {
 	errChan  chan error
 }
 
+func (p *SessionPool) Throw() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.numOpen--
+}
+
 // put() attempts to return a used connection back to the pool
 // It closes the connection if it can't do so
-func (p *TcpConnPool) Put(c *TcpConn) {
+func (p *SessionPool) Put(c *TcpConn) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -97,12 +119,12 @@ func (p *TcpConnPool) Put(c *TcpConn) {
 		p.idleConns[c.Id] = c // put into the pool
 	} else {
 		c.Conn.Close()
-		c.Pool.numOpen--
+		p.numOpen--
 	}
 }
 
 // get() retrieves a TCP connection
-func (p *TcpConnPool) Get() (*TcpConn, error) {
+func (p *SessionPool) Get() (*TcpConn, error) {
 	p.mu.Lock()
 
 	// Case 1: Gets a free connection from the pool if any
@@ -157,7 +179,7 @@ func (p *TcpConnPool) Get() (*TcpConn, error) {
 }
 
 // openNewTcpConnection() creates a new TCP connection at p.host and p.port
-func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
+func (p *SessionPool) openNewTcpConnection() (*TcpConn, error) {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
 		Certificates:       []tls.Certificate{*p.tlsCert},
@@ -180,21 +202,21 @@ func (p *TcpConnPool) openNewTcpConnection() (*TcpConn, error) {
 
 	return &TcpConn{
 		// Use unix time as id
-		Id:   fmt.Sprintf("%v", time.Now().UnixNano()),
-		Conn: c,
-		Pool: p,
+		Id:          fmt.Sprintf("%v", time.Now().UnixNano()),
+		Conn:        c,
+		shouldLogin: true, // should login for the first time
 	}, nil
 }
 
 // handleConnectionRequest() listens to the request queue
 // and attempts to fulfil any incoming requests
-func (p *TcpConnPool) handleConnectionRequest() {
+func (p *SessionPool) handleConnectionRequest() {
 	for req := range p.requestChan {
 		go p.handle(req)
 	}
 }
 
-func (p *TcpConnPool) handle(req *connRequest) {
+func (p *SessionPool) handle(req *connRequest) {
 	secondsTime, err := strconv.Atoi(os.Getenv(constants.REQUEST_TIMEOUT))
 	if err != nil {
 		req.errChan <- errors.New("REQUEST_TIMEOUT env value is not a valid number")

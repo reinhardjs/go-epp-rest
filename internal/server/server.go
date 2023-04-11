@@ -19,7 +19,7 @@ import (
 
 type server struct {
 	config      *config.Config
-	sessionPool *utils.TcpConnPool
+	sessionPool *utils.SessionPool
 }
 
 func NewServer(config *config.Config) *server {
@@ -47,7 +47,7 @@ func (s *server) Run() error {
 		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}
 	eppClient := adapter.NewEppClient(tcpConnPool)
-	response, err := eppClient.Login(username, password)
+	response, err := eppClient.InitLogin(username, password)
 	if err != nil {
 		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
 		os.Exit(1)
