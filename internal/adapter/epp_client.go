@@ -1,11 +1,9 @@
 package adapter
 
 import (
-	"io"
 	"log"
 	"net"
 	"os"
-	"syscall"
 	"time"
 
 	"github.com/pkg/errors"
@@ -56,36 +54,36 @@ func (c *eppClient) InitLogin(username string, password string) (response []byte
 
 // Send will send data to the server.
 func (c *eppClient) Send(data []byte) (response []byte, err error) {
-	tcpConn, err := c.sessionPool.Get()
+	var session *utils.Session
+
+	session, err = c.sessionPool.Get()
+	defer c.sessionPool.Put(session)
+
 	if err != nil {
 		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
 	}
 
-	if tcpConn.GetShouldLogin() == true {
-		response, err = c.login(tcpConn.Conn, c.loginCred.username, c.loginCred.password)
-		if err != nil {
-			return nil, errors.Wrap(err, "server Run: eppClient.Login")
-		}
+	var startTime time.Time
 
-		tcpConn.SetShouldLogin(false)
+	var tcpConn net.Conn = session.GetTcpConn()
+	if tcpConn != nil {
+		startTime = time.Now()
+		response, err = c.write(tcpConn, data)
+		c.trackTime(startTime, "epp command response")
 	}
 
-	startTime := time.Now()
-	defer func() {
-		c.timeTrack(startTime, "epp command response")
-
-		if c.isNetConnClosedErr(err) {
-			tcpConn.SetShouldLogin(true)
-			c.sessionPool.Throw()
+	if tcpConn == nil || c.isNetConnClosedErr(err) {
+		tcpConn, err = c.sessionPool.Retry(session)
+		if err != nil {
 			return
 		}
 
-		if tcpConn != nil {
-			c.sessionPool.Put(tcpConn)
-		}
-	}()
+		startTime = time.Now()
+		response, err = c.write(tcpConn, data)
+		c.trackTime(startTime, "epp command response")
+	}
 
-	return c.write(tcpConn.Conn, data)
+	return
 }
 
 // login will perform a login to an EPP server.
@@ -123,37 +121,29 @@ func (c *eppClient) login(conn net.Conn, username, password string) ([]byte, err
 func (c *eppClient) write(conn net.Conn, data []byte) (response []byte, err error) {
 	err = registry_epp.WriteMessage(conn, data)
 	if err != nil {
-		err = errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
+		_ = conn.Close()
 
-		errConn := conn.Close()
-		if errConn != nil {
-			err = errors.Wrap(errConn, err.Error())
-		}
-
-		return nil, err
+		return nil, errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
 	}
 
 	err = conn.SetReadDeadline(time.Now().Add(2 * time.Second))
 	if err != nil {
+		_ = conn.Close()
+
 		return nil, errors.Wrap(err, "EppClient Send: conn.SetReadDeadline")
 	}
 
 	msg, err := registry_epp.ReadMessage(conn)
 	if err != nil {
-		err = errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
+		_ = conn.Close()
 
-		errConn := conn.Close()
-		if errConn != nil {
-			err = errors.Wrap(errConn, err.Error())
-		}
-
-		return nil, err
+		return nil, errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
 	}
 
 	return msg, nil
 }
 
-func (c *eppClient) timeTrack(start time.Time, name string) {
+func (c *eppClient) trackTime(start time.Time, name string) {
 	elapsed := time.Since(start)
 	log.Printf("%s took %s", name, elapsed)
 }
@@ -161,20 +151,7 @@ func (c *eppClient) timeTrack(start time.Time, name string) {
 func (c *eppClient) isNetConnClosedErr(err error) bool {
 	err = errors.Cause(err)
 	if err != nil {
-		netErr, ok := err.(net.Error)
-		if ok && netErr.Timeout() {
-			return true
-		} else {
-			switch {
-			case
-				errors.Is(err, net.ErrClosed),
-				errors.Is(err, io.EOF),
-				errors.Is(err, syscall.EPIPE):
-				return true
-			default:
-				return false
-			}
-		}
+		return true
 	}
 
 	return false
