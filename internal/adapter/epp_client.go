@@ -45,8 +45,6 @@ func (c *eppClient) InitLogin(username string, password string) (response []byte
 		os.Exit(1)
 	}
 
-	tcpConn.SetShouldLogin(false)
-
 	c.sessionPool.Put(tcpConn)
 
 	return response, nil

@@ -23,6 +23,8 @@ const maxQueueLength = 10_000
 // TcpConfig is a set of configuration for a TCP connection pool
 type TcpConfig struct {
 	Host         string
+	Username     string
+	Password     string
 	Port         int
 	TLSCert      *tls.Certificate
 	RootCACert   *x509.CertPool
@@ -45,6 +47,8 @@ func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 	pool := &SessionPool{
 		host:            cfg.Host,
 		port:            cfg.Port,
+		username:        cfg.Username,
+		password:        cfg.Password,
 		tlsCert:         cfg.TLSCert,
 		rootCaCert:      cfg.RootCACert,
 		idleConns:       make(map[string]*Session),
@@ -67,6 +71,8 @@ func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 type SessionPool struct {
 	host            string
 	port            int
+	username        string
+	password        string
 	tlsCert         *tls.Certificate
 	rootCaCert      *x509.CertPool
 	mu              sync.Mutex          // mutex to prevent race conditions
@@ -106,20 +112,6 @@ func (t *Session) GetTcpConn() net.Conn {
 	t.updateLock.Unlock()
 
 	return conn
-}
-
-func (t *Session) GetShouldLogin() bool {
-	t.mu.Lock()
-	shouldLogin := t.shouldLogin
-	t.mu.Unlock()
-
-	return shouldLogin
-}
-
-func (t *Session) SetShouldLogin(shouldLogin bool) {
-	t.mu.Lock()
-	t.shouldLogin = shouldLogin
-	t.mu.Unlock()
 }
 
 // connRequest wraps a channel to receive a connection
@@ -249,10 +241,7 @@ func (p *SessionPool) openNewTcpConnection() (net.Conn, error) {
 
 	log.Println(string(greeting))
 
-	username := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_USERNAME)
-	password := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_PASSWORD)
-
-	response, err := p.login(c, username, password)
+	response, err := p.login(c, p.username, p.password)
 	if err != nil {
 		return nil, errors.Wrap(err, "SessionPool openNewTcpConnection: p.login")
 	}
