@@ -124,7 +124,7 @@ func (c *eppClient) write(conn net.Conn, data []byte) (response []byte, err erro
 		return nil, errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
 	}
 
-	err = conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+	err = conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 	if err != nil {
 		_ = conn.Close()
 
