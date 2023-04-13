@@ -114,7 +114,7 @@ func (p *SessionPool) Put(c *Session) {
 	}
 }
 
-func (p *SessionPool) Retry(c *Session) (net.Conn, error) {
+func (p *SessionPool) RenewTcpConn(c *Session) (net.Conn, error) {
 	c.renewLock.Lock()
 	defer c.renewLock.Unlock()
 
@@ -319,10 +319,10 @@ func (p *SessionPool) handleConnectionRenewal() {
 			if err != nil {
 				err = errors.Wrap(err, "SessionPool Get: req.session.pool.openNewTcpConnection")
 				req.errChan <- err
-				req.session.RenewConn(nil)
+				req.session.SetConn(nil)
 			} else {
 				req.tcpConn <- conn
-				req.session.RenewConn(conn)
+				req.session.SetConn(conn)
 			}
 		}(req)
 	}

@@ -24,7 +24,7 @@ func (t *Session) SetOnUpdate(onUpdate bool) {
 	t.updateLock.Unlock()
 }
 
-func (t *Session) RenewConn(conn net.Conn) {
+func (t *Session) SetConn(conn net.Conn) {
 	t.updateLock.Lock()
 	t.Conn = conn
 	t.onUpdate = false

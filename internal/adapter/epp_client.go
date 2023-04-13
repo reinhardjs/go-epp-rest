@@ -71,7 +71,7 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	}
 
 	if tcpConn == nil || c.isNetConnClosedErr(err) {
-		tcpConn, err = c.sessionPool.Retry(session)
+		tcpConn, err = c.sessionPool.RenewTcpConn(session)
 		if err != nil {
 			return
 		}
