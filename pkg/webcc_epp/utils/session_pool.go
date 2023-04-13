@@ -191,6 +191,26 @@ func (p *SessionPool) Get() (*Session, error) {
 	return newTcpConn, nil
 }
 
+// createNewSession() creates a new TCP connection at p.host and p.port
+func (p *SessionPool) createNewSession() (*Session, error) {
+	c, err := p.openNewTcpConnection()
+	if err != nil {
+		return nil, err
+	}
+
+	session := &Session{
+		// Use unix time as id
+		Id:          fmt.Sprintf("%v", time.Now().UnixNano()),
+		Conn:        c,
+		Pool:        p,
+		shouldLogin: true, // should login for the first time
+	}
+
+	session.updateCond = sync.NewCond(&session.updateLock)
+
+	return session, nil
+}
+
 func (p *SessionPool) openNewTcpConnection() (net.Conn, error) {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
@@ -220,26 +240,6 @@ func (p *SessionPool) openNewTcpConnection() (net.Conn, error) {
 	log.Println(string(response))
 
 	return c, nil
-}
-
-// createNewSession() creates a new TCP connection at p.host and p.port
-func (p *SessionPool) createNewSession() (*Session, error) {
-	c, err := p.openNewTcpConnection()
-	if err != nil {
-		return nil, err
-	}
-
-	session := &Session{
-		// Use unix time as id
-		Id:          fmt.Sprintf("%v", time.Now().UnixNano()),
-		Conn:        c,
-		Pool:        p,
-		shouldLogin: true, // should login for the first time
-	}
-
-	session.updateCond = sync.NewCond(&session.updateLock)
-
-	return session, nil
 }
 
 // handleConnectionRequest() listens to the request queue
