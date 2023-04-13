@@ -14,22 +14,51 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/constants"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
-	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
 
 const maxQueueLength = 10_000
 
+// connRequest wraps a channel to receive a connection
+// and a channel to receive an error
+type connRequest struct {
+	connChan chan *Session
+	errChan  chan error
+}
+
+type connRenewal struct {
+	session *Session
+	tcpConn chan net.Conn
+	errChan chan error
+}
+
 // TcpConfig is a set of configuration for a TCP connection pool
 type TcpConfig struct {
 	Host         string
-	Username     string
-	Password     string
 	Port         int
 	TLSCert      *tls.Certificate
 	RootCACert   *x509.CertPool
 	MaxIdleConns int
 	MaxOpenConn  int
+}
+
+// SessionPool represents a pool of tcp connections
+type SessionPool struct {
+	host            string
+	port            int
+	eppClient       adapter.EppClient
+	tlsCert         *tls.Certificate
+	rootCaCert      *x509.CertPool
+	mu              sync.Mutex          // mutex to prevent race conditions
+	idleConns       map[string]*Session // holds the idle connections
+	renewConns      map[string]*Session // holds session that needs to be renewed
+	numOpen         int                 // counter that tracks open connections
+	maxOpenCount    int
+	maxIdleCount    int
+	renewChan       chan *connRenewal
+	requestChan     chan *connRequest // A queue of connection requests
+	requestChanPool *sync.Pool
 }
 
 // CreateTcpConnPool() creates a connection pool
@@ -47,8 +76,6 @@ func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 	pool := &SessionPool{
 		host:            cfg.Host,
 		port:            cfg.Port,
-		username:        cfg.Username,
-		password:        cfg.Password,
 		tlsCert:         cfg.TLSCert,
 		rootCaCert:      cfg.RootCACert,
 		idleConns:       make(map[string]*Session),
@@ -67,64 +94,8 @@ func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 	return pool, nil
 }
 
-// SessionPool represents a pool of tcp connections
-type SessionPool struct {
-	host            string
-	port            int
-	username        string
-	password        string
-	tlsCert         *tls.Certificate
-	rootCaCert      *x509.CertPool
-	mu              sync.Mutex          // mutex to prevent race conditions
-	renewMu         sync.Mutex          // mutex to prevent race conditions
-	idleConns       map[string]*Session // holds the idle connections
-	renewConns      map[string]*Session // holds session that needs to be renewed
-	numOpen         int                 // counter that tracks open connections
-	maxOpenCount    int
-	maxIdleCount    int
-	renewChan       chan *connRenewal
-	requestChan     chan *connRequest // A queue of connection requests
-	requestChanPool *sync.Pool
-}
-
-// Session is a wrapper for a single tcp connection
-type Session struct {
-	Id          string     // A unique id to identify a connection
-	Conn        net.Conn   // The underlying TCP connection
-	mu          sync.Mutex // mutex to prevent race conditions
-	updateLock  sync.Mutex
-	updateCond  *sync.Cond
-	Pool        *SessionPool
-	onUpdate    bool
-	shouldLogin bool
-}
-
-func (t *Session) GetTcpConn() net.Conn {
-	var conn net.Conn
-
-	t.updateLock.Lock()
-
-	if t.onUpdate {
-		t.updateCond.Wait()
-	}
-
-	conn = t.Conn
-	t.updateLock.Unlock()
-
-	return conn
-}
-
-// connRequest wraps a channel to receive a connection
-// and a channel to receive an error
-type connRequest struct {
-	connChan chan *Session
-	errChan  chan error
-}
-
-type connRenewal struct {
-	session *Session
-	tcpConn chan net.Conn
-	errChan chan error
+func (p *SessionPool) SetEppClient(eppClient adapter.EppClient) {
+	p.eppClient = eppClient
 }
 
 // put() attempts to return a used connection back to the pool
@@ -144,8 +115,8 @@ func (p *SessionPool) Put(c *Session) {
 }
 
 func (p *SessionPool) Retry(c *Session) (net.Conn, error) {
-	p.renewMu.Lock()
-	defer p.renewMu.Unlock()
+	c.renewLock.Lock()
+	defer c.renewLock.Unlock()
 
 	p.renewConns[c.Id] = c
 
@@ -241,7 +212,7 @@ func (p *SessionPool) openNewTcpConnection() (net.Conn, error) {
 
 	log.Println(string(greeting))
 
-	response, err := p.login(c, p.username, p.password)
+	response, err := p.eppClient.DoLogin(c)
 	if err != nil {
 		return nil, errors.Wrap(err, "SessionPool openNewTcpConnection: p.login")
 	}
@@ -362,65 +333,4 @@ func (p *SessionPool) handleConnectionRenewal() {
 			req.session.updateLock.Unlock()
 		}(req)
 	}
-}
-
-// login will perform a login to an EPP server.
-func (p *SessionPool) login(conn net.Conn, username string, password string) ([]byte, error) {
-	login := types.Login{
-		ClientID: username,
-		Password: password,
-		Options: types.LoginOptions{
-			Version:  "1.0",
-			Language: "en",
-		},
-		Services: types.LoginServices{
-			ObjectURI: []string{
-				"urn:ietf:params:xml:ns:domain-1.0",
-				"urn:ietf:params:xml:ns:contact-1.0",
-				"urn:ietf:params:xml:ns:host-1.0",
-			},
-			ServiceExtension: types.LoginServiceExtension{
-				ExtensionURI: []string{
-					"urn:ietf:params:xml:ns:secDNS-1.0",
-					"urn:ietf:params:xml:ns:secDNS-1.1",
-				},
-			},
-		},
-	}
-
-	encoded, err := registry_epp.Encode(login, registry_epp.ClientXMLAttributes())
-	if err != nil {
-		return nil, errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
-	}
-
-	return p.write(conn, encoded)
-}
-
-func (p *SessionPool) write(conn net.Conn, data []byte) (response []byte, err error) {
-	if conn == nil {
-		return nil, errors.New("connection is closed")
-	}
-
-	err = registry_epp.WriteMessage(conn, data)
-	if err != nil {
-		_ = conn.Close()
-
-		return nil, errors.Wrap(err, "EppClient Send: registry_epp.WriteMessage")
-	}
-
-	err = conn.SetReadDeadline(time.Now().Add(2 * time.Second))
-	if err != nil {
-		_ = conn.Close()
-
-		return nil, errors.Wrap(err, "EppClient Send: conn.SetReadDeadline")
-	}
-
-	msg, err := registry_epp.ReadMessage(conn)
-	if err != nil {
-		_ = conn.Close()
-
-		return nil, errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
-	}
-
-	return msg, nil
 }

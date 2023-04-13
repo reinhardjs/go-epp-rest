@@ -40,8 +40,6 @@ func (s *server) Run() error {
 
 	tcpConfig := utils.TcpConfig{
 		Host:         tcpHost,
-		Username:     username,
-		Password:     password,
 		Port:         tcpPort,
 		TLSCert:      s.config.PayWebCCCert,
 		MaxOpenConn:  1,
@@ -52,6 +50,7 @@ func (s *server) Run() error {
 		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}
 	eppClient := adapter.NewEppClient(tcpConnPool)
+	tcpConnPool.SetEppClient(eppClient)
 	response, err := eppClient.InitLogin(username, password)
 	if err != nil {
 		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))

@@ -39,7 +39,7 @@ func (c *eppClient) InitLogin(username string, password string) (response []byte
 		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
 	}
 
-	response, err = c.login(tcpConn.Conn, username, password)
+	response, err = c.DoLogin(tcpConn.Conn)
 	if err != nil {
 		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
 		os.Exit(1)
@@ -84,11 +84,11 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	return
 }
 
-// login will perform a login to an EPP server.
-func (c *eppClient) login(conn net.Conn, username, password string) ([]byte, error) {
+// Login will perform a Login to an EPP server.
+func (c *eppClient) DoLogin(conn net.Conn) ([]byte, error) {
 	login := types.Login{
-		ClientID: username,
-		Password: password,
+		ClientID: c.loginCred.username,
+		Password: c.loginCred.password,
 		Options: types.LoginOptions{
 			Version:  "1.0",
 			Language: "en",
