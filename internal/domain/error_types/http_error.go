@@ -5,5 +5,5 @@ type RequestTimeOutError struct {
 }
 
 func (e *RequestTimeOutError) Error() string {
-	return "request time out"
+	return "request time out: " + e.Detail
 }

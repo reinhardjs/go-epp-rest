@@ -27,14 +27,17 @@ func NewServer(config *config.Config) *server {
 }
 
 func (s *server) Run() error {
+	username := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_USERNAME)
+	password := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_PASSWORD)
 	tcpHost := os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_HOST)
+	apiHost := os.Getenv(constants.API_HOST)
+	apiPort := os.Getenv(constants.API_PORT)
+
 	tcpPort, err := strconv.Atoi(os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_PORT))
 	if err != nil {
 		return errors.Wrap(err, "server run: strconv Atoi tcp port value from env")
 	}
 
-	username := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_USERNAME)
-	password := os.Getenv(constants.PAY_WEB_CC_REGISTRY_LOGIN_PASSWORD)
 	tcpConfig := utils.TcpConfig{
 		Host:         tcpHost,
 		Port:         tcpPort,
@@ -47,6 +50,7 @@ func (s *server) Run() error {
 		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}
 	eppClient := adapter.NewEppClient(tcpConnPool)
+	tcpConnPool.SetEppClient(eppClient)
 	response, err := eppClient.InitLogin(username, password)
 	if err != nil {
 		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
@@ -65,8 +69,6 @@ func (s *server) Run() error {
 	log.Println("Login command result :")
 	log.Println(string(response))
 
-	apiHost := os.Getenv(constants.API_HOST)
-	apiPort := os.Getenv(constants.API_PORT)
 	router.Run(fmt.Sprintf("%v:%v", apiHost, apiPort))
 
 	return nil
