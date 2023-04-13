@@ -107,8 +107,8 @@ func (p *SessionPool) Put(c *Session) {
 	if p.maxIdleCount > 0 && p.maxIdleCount > len(p.idleConns) {
 		p.idleConns[c.Id] = c // put into the pool
 	} else {
-		if c.Conn != nil {
-			c.Conn.Close()
+		if c.conn != nil {
+			c.conn.Close()
 		}
 		p.numOpen--
 	}
@@ -201,12 +201,14 @@ func (p *SessionPool) createNewSession() (*Session, error) {
 	session := &Session{
 		// Use unix time as id
 		Id:          fmt.Sprintf("%v", time.Now().UnixNano()),
-		Conn:        c,
+		conn:        c,
 		Pool:        p,
 		shouldLogin: true, // should login for the first time
 	}
 
 	session.updateCond = sync.NewCond(&session.updateLock)
+
+	session.RunHelloWorker()
 
 	return session, nil
 }

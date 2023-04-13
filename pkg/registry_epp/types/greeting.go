@@ -1,6 +1,13 @@
 package types
 
-import "time"
+import (
+	"encoding/xml"
+	"time"
+)
+
+type Hello struct {
+	Hello xml.Name `xml:"hello"`
+}
 
 // EPPGreeting is the type to represent a greeting from the server.
 type EPPGreeting struct {
