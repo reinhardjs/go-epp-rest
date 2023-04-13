@@ -52,7 +52,6 @@ type SessionPool struct {
 	rootCaCert      *x509.CertPool
 	mu              sync.Mutex          // mutex to prevent race conditions
 	idleConns       map[string]*Session // holds the idle connections
-	renewConns      map[string]*Session // holds session that needs to be renewed
 	numOpen         int                 // counter that tracks open connections
 	maxOpenCount    int
 	maxIdleCount    int
@@ -79,7 +78,6 @@ func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 		tlsCert:         cfg.TLSCert,
 		rootCaCert:      cfg.RootCACert,
 		idleConns:       make(map[string]*Session),
-		renewConns:      make(map[string]*Session),
 		renewChan:       make(chan *connRenewal, maxQueueLength),
 		requestChan:     make(chan *connRequest, maxQueueLength),
 		requestChanPool: &reqChanPool,
@@ -117,8 +115,6 @@ func (p *SessionPool) Put(c *Session) {
 func (p *SessionPool) RenewTcpConn(c *Session) (net.Conn, error) {
 	c.renewLock.Lock()
 	defer c.renewLock.Unlock()
-
-	p.renewConns[c.Id] = c
 
 	req := &connRenewal{
 		session: c,
