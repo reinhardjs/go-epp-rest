@@ -18,6 +18,14 @@ type Session struct {
 	shouldLogin bool
 }
 
+func (t *Session) RenewConn(conn net.Conn) {
+	t.updateLock.Lock()
+	t.Conn = conn
+	t.onUpdate = false
+	t.updateCond.Signal()
+	t.updateLock.Unlock()
+}
+
 func (t *Session) GetTcpConn() net.Conn {
 	var conn net.Conn
 

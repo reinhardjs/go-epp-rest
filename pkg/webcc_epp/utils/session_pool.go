@@ -318,19 +318,14 @@ func (p *SessionPool) handleConnectionRenewal() {
 
 			conn, err := req.session.Pool.openNewTcpConnection()
 
-			req.session.updateLock.Lock()
 			if err != nil {
 				err = errors.Wrap(err, "SessionPool Get: req.session.pool.openNewTcpConnection")
-
-				req.session.Conn = nil
 				req.errChan <- err
+				req.session.RenewConn(nil)
 			} else {
-				req.session.Conn = conn
 				req.tcpConn <- conn
+				req.session.RenewConn(conn)
 			}
-			req.session.updateCond.Signal()
-			req.session.onUpdate = false
-			req.session.updateLock.Unlock()
 		}(req)
 	}
 }
