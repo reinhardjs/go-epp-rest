@@ -18,6 +18,12 @@ type Session struct {
 	shouldLogin bool
 }
 
+func (t *Session) SetOnUpdate(onUpdate bool) {
+	t.updateLock.Lock()
+	t.onUpdate = onUpdate
+	t.updateLock.Unlock()
+}
+
 func (t *Session) RenewConn(conn net.Conn) {
 	t.updateLock.Lock()
 	t.Conn = conn

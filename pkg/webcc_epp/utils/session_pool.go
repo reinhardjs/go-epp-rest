@@ -312,9 +312,7 @@ func (p *SessionPool) handleConnectionRequest() {
 func (p *SessionPool) handleConnectionRenewal() {
 	for req := range p.renewChan {
 		go func(req *connRenewal) {
-			req.session.updateLock.Lock()
-			req.session.onUpdate = true
-			req.session.updateLock.Unlock()
+			req.session.SetOnUpdate(true)
 
 			conn, err := req.session.Pool.openNewTcpConnection()
 
