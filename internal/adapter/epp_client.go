@@ -39,7 +39,7 @@ func (c *eppClient) InitLogin(username string, password string) (response []byte
 		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
 	}
 
-	response, err = c.DoLogin(tcpConn.Conn)
+	response, err = c.DoLogin(tcpConn.GetTcpConn())
 	if err != nil {
 		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
 		os.Exit(1)
@@ -71,7 +71,7 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	}
 
 	if tcpConn == nil || c.isNetConnClosedErr(err) {
-		tcpConn, err = c.sessionPool.Retry(session)
+		tcpConn, err = c.sessionPool.RenewTcpConn(session)
 		if err != nil {
 			return
 		}
@@ -110,7 +110,18 @@ func (c *eppClient) DoLogin(conn net.Conn) ([]byte, error) {
 
 	encoded, err := registry_epp.Encode(login, registry_epp.ClientXMLAttributes())
 	if err != nil {
-		return nil, errors.Wrap(err, "EppClient Send: registry_epp.ReadMessage")
+		return nil, errors.Wrap(err, "EppClient DoLogin: registry_epp.Encode")
+	}
+
+	return c.write(conn, encoded)
+}
+
+func (c *eppClient) SendHello(conn net.Conn) (response []byte, err error) {
+	hello := types.Hello{}
+
+	encoded, err := registry_epp.Encode(hello, registry_epp.ClientXMLAttributes())
+	if err != nil {
+		return nil, errors.Wrap(err, "EppClient SendHello: registry_epp.Encode")
 	}
 
 	return c.write(conn, encoded)

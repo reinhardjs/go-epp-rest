@@ -52,7 +52,6 @@ type SessionPool struct {
 	rootCaCert      *x509.CertPool
 	mu              sync.Mutex          // mutex to prevent race conditions
 	idleConns       map[string]*Session // holds the idle connections
-	renewConns      map[string]*Session // holds session that needs to be renewed
 	numOpen         int                 // counter that tracks open connections
 	maxOpenCount    int
 	maxIdleCount    int
@@ -79,7 +78,6 @@ func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 		tlsCert:         cfg.TLSCert,
 		rootCaCert:      cfg.RootCACert,
 		idleConns:       make(map[string]*Session),
-		renewConns:      make(map[string]*Session),
 		renewChan:       make(chan *connRenewal, maxQueueLength),
 		requestChan:     make(chan *connRequest, maxQueueLength),
 		requestChanPool: &reqChanPool,
@@ -107,18 +105,16 @@ func (p *SessionPool) Put(c *Session) {
 	if p.maxIdleCount > 0 && p.maxIdleCount > len(p.idleConns) {
 		p.idleConns[c.Id] = c // put into the pool
 	} else {
-		if c.Conn != nil {
-			c.Conn.Close()
+		if c.conn != nil {
+			c.conn.Close()
 		}
 		p.numOpen--
 	}
 }
 
-func (p *SessionPool) Retry(c *Session) (net.Conn, error) {
+func (p *SessionPool) RenewTcpConn(c *Session) (net.Conn, error) {
 	c.renewLock.Lock()
 	defer c.renewLock.Unlock()
-
-	p.renewConns[c.Id] = c
 
 	req := &connRenewal{
 		session: c,
@@ -201,12 +197,14 @@ func (p *SessionPool) createNewSession() (*Session, error) {
 	session := &Session{
 		// Use unix time as id
 		Id:          fmt.Sprintf("%v", time.Now().UnixNano()),
-		Conn:        c,
+		conn:        c,
 		Pool:        p,
 		shouldLogin: true, // should login for the first time
 	}
 
 	session.updateCond = sync.NewCond(&session.updateLock)
+
+	session.RunHelloWorker()
 
 	return session, nil
 }
@@ -319,10 +317,10 @@ func (p *SessionPool) handleConnectionRenewal() {
 			if err != nil {
 				err = errors.Wrap(err, "SessionPool Get: req.session.pool.openNewTcpConnection")
 				req.errChan <- err
-				req.session.RenewConn(nil)
+				req.session.SetConn(nil)
 			} else {
 				req.tcpConn <- conn
-				req.session.RenewConn(conn)
+				req.session.SetConn(conn)
 			}
 		}(req)
 	}
