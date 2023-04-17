@@ -53,11 +53,11 @@ type DeleteHostResponse struct {
 
 // Host Info
 type InfoHostResponse struct {
-	Result        Result               `xml:"response>result"`
-	ResultData    DomainHostResultData `xml:"response>resData"`
-	TransactionID TransactionID        `xml:"response>trID"`
+	Result        Result             `xml:"response>result"`
+	ResultData    InfoHostResultData `xml:"response>resData"`
+	TransactionID TransactionID      `xml:"response>trID"`
 }
 
-type DomainHostResultData struct {
-	InfoData types.HostInfoData `xml:"urn:ietf:params:xml:ns:domain-1.0 infData"`
+type InfoHostResultData struct {
+	InfoData types.HostInfoData `xml:"urn:ietf:params:xml:ns:host-1.0 infData"`
 }
