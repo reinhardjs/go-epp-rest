@@ -1,11 +1,13 @@
 package middlewares
 
 import (
+	"fmt"
 	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
 func ClientErrorHandler(c *gin.Context) {
@@ -30,7 +32,9 @@ func ClientErrorHandler(c *gin.Context) {
 			// TODO with Presenter Error
 		case *error_types.EPPCommandError:
 			// TODO with EPPCommand Error
-			c.String(200, "2400 Command failed")
+			eppCommandErr := cause.(*error_types.EPPCommandError)
+			resultCode := registry_epp.ResultCode(eppCommandErr.Result.Code)
+			c.String(200, fmt.Sprintf("%d %s", resultCode.Code(), resultCode.Message()))
 		default:
 			c.String(200, "2400 Command failed")
 		}
