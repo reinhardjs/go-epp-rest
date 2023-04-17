@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
@@ -35,9 +37,20 @@ func (p *domainPresenter) CheckSuccess(ctx infrastructure.Context, obj response.
 
 func (p *domainPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateDomainResponse) (err error) {
 	var res string
+	var buffer bytes.Buffer
 
-	res = fmt.Sprintf("%v %s", obj.Result.Code, obj.ResultData.CreatedData.ExpiredDate)
+	layoutFormat := "2006-01-02T15:04:05.999999999Z"
+	expiringDate, errParse := time.Parse(layoutFormat, obj.ResultData.CreatedData.ExpiredDate)
+	if errParse != nil {
+		err = errors.Wrap(errParse, "PollInteractor Poll: QueueDate time.Parse")
+		return
+	}
+	expiringDate = expiringDate.Local()
+	expiringDate = expiringDate.Add(-(time.Hour * 8))
 
+	buffer.WriteString(fmt.Sprintf("%s %s", "1000", expiringDate.Format("2006-01-02 15:04:05")))
+
+	res = buffer.String()
 	ctx.String(200, res)
 	return
 }
@@ -53,9 +66,33 @@ func (p *domainPresenter) DeleteSuccess(ctx infrastructure.Context, obj response
 
 func (p *domainPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoDomainResponse) (err error) {
 	var res string
+	var buffer bytes.Buffer
 
-	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+	buffer.WriteString(fmt.Sprintf("%s domain[%s]\n", "1000", obj.ResultData.InfoData.Name))
+	buffer.WriteString(fmt.Sprintf("domainns[%s]\n", strings.Join(obj.ResultData.InfoData.NameServer.HostObject, ",")))
+	buffer.WriteString(fmt.Sprintf("host[%s]\n", strings.Join(obj.ResultData.InfoData.Host, ",")))
+	buffer.WriteString(fmt.Sprintf("regid[%s]\n", obj.ResultData.InfoData.Registrant))
 
+	contactMap := make(map[string]string)
+	for _, contact := range obj.ResultData.InfoData.Contact {
+		contactMap[contact.Type] = contact.Name
+	}
+
+	buffer.WriteString(fmt.Sprintf("admid[%s]\n", contactMap["admin"]))
+	buffer.WriteString(fmt.Sprintf("tecid[%s]\n", contactMap["tech"]))
+	buffer.WriteString(fmt.Sprintf("bilid[%s]\n", contactMap["billing"]))
+
+	buffer.WriteString(fmt.Sprintf("authinfo[%s]\n", obj.ResultData.InfoData.AuthInfo.Password))
+	buffer.WriteString(fmt.Sprintf("createdate[%s]\n", obj.ResultData.InfoData.CreateDate.Format("2006-01-02 15:04:05")))
+	buffer.WriteString(fmt.Sprintf("expirydate[%s]\n", obj.ResultData.InfoData.ExpireDate.Format("2006-01-02 15:04:05")))
+
+	statusArray := make([]string, 0, len(obj.ResultData.InfoData.Status))
+	for _, status := range obj.ResultData.InfoData.Status {
+		statusArray = append(statusArray, string(status.DomainStatusType))
+	}
+	buffer.WriteString(fmt.Sprintf("status[%s]", strings.Join(statusArray, ",")))
+
+	res = buffer.String()
 	ctx.String(200, res)
 	return
 }
