@@ -1,6 +1,7 @@
 package presenter
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
@@ -33,11 +34,11 @@ func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response
 
 func (p *contactPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateContactResponse) (err error) {
 	var res string
+	var buffer bytes.Buffer
 
-	res += fmt.Sprintf("ID %s\n", obj.ResultData.CreateData.Id)
-	res += fmt.Sprintf("Create Date %s\n", obj.ResultData.CreateData.CreateDate)
-	res = strings.TrimSuffix(res, "\n")
+	buffer.WriteString(fmt.Sprintf("1000 %s", obj.ResultData.CreateData.Id))
 
+	res = buffer.String()
 	ctx.String(200, res)
 	return
 }
@@ -62,8 +63,32 @@ func (p *contactPresenter) DeleteSuccess(ctx infrastructure.Context, obj respons
 
 func (p *contactPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoContactResponse) (err error) {
 	var res string
+	var buffer bytes.Buffer
 
-	res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
+	buffer.WriteString("1000 CONTACT INFO IS::\n")
+	buffer.WriteString(fmt.Sprintf("ID :%s\n", obj.ResultData.InfoData.Name))
+	buffer.WriteString(fmt.Sprintf("ROID :%s\n", obj.ResultData.InfoData.ROID))
+	for _, postalInfo := range obj.ResultData.InfoData.PostalInfo {
+		buffer.WriteString(fmt.Sprintf("NAME :%s\n", postalInfo.Name))
+		buffer.WriteString(fmt.Sprintf("ORG :%s\n", postalInfo.Organization))
+		for index, address := range postalInfo.Address.Street {
+			buffer.WriteString(fmt.Sprintf("STREET%d :%s\n", index, address))
+		}
+		buffer.WriteString(fmt.Sprintf("CITY :%s\n", postalInfo.Address.City))
+		buffer.WriteString(fmt.Sprintf("SP :%s\n", postalInfo.Address.StateProvince))
+		buffer.WriteString(fmt.Sprintf("PC :%s\n", postalInfo.Address.PostalCode))
+		buffer.WriteString(fmt.Sprintf("CC :%s\n", postalInfo.Address.CountryCode))
+	}
+	buffer.WriteString(fmt.Sprintf("VOICE :%s\n", obj.ResultData.InfoData.Voice.Value))
+	buffer.WriteString(fmt.Sprintf("FAX :%s\n", obj.ResultData.InfoData.Fax.Value))
+	buffer.WriteString(fmt.Sprintf("EMAIL :%s\n", obj.ResultData.InfoData.Email))
+	buffer.WriteString(fmt.Sprintf("clID :%s\n", obj.ResultData.InfoData.ClientID))
+	buffer.WriteString(fmt.Sprintf("crID :%s\n", obj.ResultData.InfoData.CreateID))
+	buffer.WriteString(fmt.Sprintf("crDate :%s\n", obj.ResultData.InfoData.CreateDate.Local().Format("2006-01-02 15:04:05")))
+	buffer.WriteString(fmt.Sprintf("upID :%s\n", obj.ResultData.InfoData.UpdateID))
+	buffer.WriteString(fmt.Sprintf("authInfo :%s", obj.ResultData.InfoData.AuthInfo.Password))
+
+	res = buffer.String()
 
 	ctx.String(200, res)
 	return
