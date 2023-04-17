@@ -1,8 +1,11 @@
 package interactor
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
+	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
@@ -182,10 +185,12 @@ func (interactor *hostInteractor) Change(ctx infrastructure.Context, data types.
 }
 
 func (interactor *hostInteractor) CheckAndCreate(ctx infrastructure.Context, data interface{}, ext string, langTag string) (err error) {
+	requestData := data.(types.HostCreateType)
+	hostName := requestData.Create.Name
 	checkData := types.HostCheckType{
 		Check: types.HostCheck{
 			Names: []string{
-				data.(types.HostCreateType).Create.Name,
+				hostName,
 			},
 		},
 	}
@@ -205,7 +210,18 @@ func (interactor *hostInteractor) CheckAndCreate(ctx infrastructure.Context, dat
 
 	responseByte, err = interactor.RegistrarRepository.SendCommand(data)
 	if err != nil {
-		err = errors.Wrap(err, "HostInteractor CheckAndCreate: interactor.RegistrarRepository.SendCommand (host create)")
+		eppCommandError := errors.Cause(err).(*error_types.EPPCommandError)
+
+		if eppCommandError.Result.Code == 2302 {
+			responseObject := &response.CreateHostResponse{}
+			responseObject.Result.Code = 1000
+			responseObject.Result.Message = fmt.Sprintf("Host %s is not available", hostName)
+			interactor.Presenter.CheckAndCreate(ctx, *responseObject)
+			err = nil
+		} else {
+			err = errors.Wrap(err, "HostInteractor CheckAndCreate: interactor.RegistrarRepository.SendCommand (host create)")
+		}
+
 		return
 	}
 
