@@ -16,7 +16,7 @@ func NewEppPollRepository(dbConn *gorm.DB) repository.EppPollRepository {
 }
 
 func (r *eppPollRepository) Insert(eppPoll entities.EPPPoll) error {
-	tx := r.dbConn.Create(eppPoll)
+	tx := r.dbConn.Create(&eppPoll)
 
 	if tx.Error != nil {
 		return errors.Wrap(tx.Error, "EppPollRepository Insert: r.dbConn.Create")

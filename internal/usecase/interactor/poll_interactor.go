@@ -1,6 +1,8 @@
 package interactor
 
 import (
+	"log"
+
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
@@ -24,12 +26,14 @@ func NewPollInteractor(
 	registrarRepository repository.RegistrarRepository,
 	presenter presenter.PollPresenter,
 	xmlMapper mapper.XMLMapper,
+	dtoToEntityMapper mapper.DtoToEntity,
 ) usecase.PollInteractor {
 	return &pollInteractor{
 		EppPollRepository:   eppPollRepository,
 		RegistrarRepository: registrarRepository,
 		Presenter:           presenter,
 		XMLMapper:           xmlMapper,
+		DtoToEntityMapper:   dtoToEntityMapper,
 	}
 }
 
@@ -40,10 +44,11 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 		},
 	}
 
-	var responseDTO response.PollRequestResponse
+	var responseDTO *response.PollRequestResponse = &response.PollRequestResponse{}
 	var code int = -1
 
 	for code != 1300 {
+		log.Println("Start loop")
 		responseByte, err := interactor.RegistrarRepository.SendCommand(pollRequestData)
 		if err != nil {
 			err = errors.Wrap(err, "PollInteractor Poll: interactor.RegistrarRepository.SendCommand")
@@ -59,10 +64,13 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 		code = responseDTO.Result.Code
 
 		if responseDTO.MessageQueue != nil {
-
 			if code == 1301 {
-
-				eppPoll := interactor.DtoToEntityMapper.MapPollRequestResponseToEppPollEntity(responseDTO)
+				eppPoll, err := interactor.DtoToEntityMapper.MapPollRequestResponseToEppPollEntity(*responseDTO)
+				if err != nil {
+					err = errors.Wrap(err, "PollInteractor Poll: DtoToEntityMapper.MapPollRequestResponseToEppPollEntity")
+					log.Println(err)
+					break
+				}
 
 				err = interactor.EppPollRepository.Insert(eppPoll)
 				if err != nil {
@@ -78,14 +86,12 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 					},
 				}
 
-				_, err := interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
+				_, err = interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)
 				if err != nil {
 					err = errors.Wrap(err, "PollInteractor Poll: interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)")
 					break
 				}
-
 			} else {
-
 				// Acknowledge
 				pollAcknowledgeData := types.Poll{
 					Poll: types.PollCommand{
@@ -99,7 +105,6 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 					err = errors.Wrap(err, "PollInteractor Poll: interactor.RegistrarRepository.SendCommand(pollAcknowledgeData)")
 					break
 				}
-
 			}
 
 			code = 1301
@@ -110,7 +115,11 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 		}
 	}
 
-	err = interactor.Presenter.PollSuccess(ctx, responseDTO)
+	if err != nil {
+		return
+	}
+
+	err = interactor.Presenter.PollSuccess(ctx, *responseDTO)
 	if err != nil {
 		err = errors.Wrap(err, "PollInteractor Poll")
 		return

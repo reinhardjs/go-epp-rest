@@ -17,7 +17,7 @@ func NewTransferPresenter() presenter.TransferPresenter {
 func (p *transferPresenter) CheckSuccess(ctx infrastructure.Context, responseObject response.TransferCheckResponse) (err error) {
 	var res string
 
-	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+	res = fmt.Sprintf("%v %v; %s", responseObject.Result.Code, responseObject.Result.Message, responseObject.ResultData.TransferData.TransferStatus)
 
 	ctx.String(200, res)
 	return
@@ -26,7 +26,7 @@ func (p *transferPresenter) CheckSuccess(ctx infrastructure.Context, responseObj
 func (p *transferPresenter) RequestSuccess(ctx infrastructure.Context, responseObject response.TransferRequestResponse) (err error) {
 	var res string
 
-	res = fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message)
+	res = fmt.Sprintf("%v %v", "1000", responseObject.Result.Message)
 
 	ctx.String(200, res)
 	return

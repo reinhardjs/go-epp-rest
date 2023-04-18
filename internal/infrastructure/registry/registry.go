@@ -8,17 +8,18 @@ import (
 )
 
 type registry struct {
-	eppClient adapter.EppClient
-	mysqlConn *gorm.DB
-	xmlMapper mapper.XMLMapper
+	eppClient         adapter.EppClient
+	mysqlConn         *gorm.DB
+	xmlMapper         mapper.XMLMapper
+	dtoToEntityMapper mapper.DtoToEntity
 }
 
 type Registry interface {
 	NewAppController() controllers.AppController
 }
 
-func NewRegistry(eppClient adapter.EppClient, mysqlConn *gorm.DB, xmlMapper mapper.XMLMapper) Registry {
-	return &registry{eppClient: eppClient, mysqlConn: mysqlConn, xmlMapper: xmlMapper}
+func NewRegistry(eppClient adapter.EppClient, mysqlConn *gorm.DB, xmlMapper mapper.XMLMapper, dtoToEntityMapper mapper.DtoToEntity) Registry {
+	return &registry{eppClient: eppClient, mysqlConn: mysqlConn, xmlMapper: xmlMapper, dtoToEntityMapper: dtoToEntityMapper}
 }
 
 func (r *registry) NewAppController() controllers.AppController {
