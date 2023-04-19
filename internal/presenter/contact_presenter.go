@@ -17,17 +17,17 @@ func NewContactPresenter() presenter.ContactPresenter {
 }
 
 func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response.CheckContactResponse) (err error) {
-	var res string
+	var buffer bytes.Buffer
 
 	for _, element := range obj.ResultData.CheckDatas {
 		notStr := ""
 		if element.Id.AvailKey == 0 {
 			notStr = "not "
 		}
-		res += fmt.Sprintf("Contact %s, contact %savailable\n", element.Id.Value, notStr)
+		buffer.WriteString(fmt.Sprintf("Contact %s, contact %savailable\n", element.Id.Value, notStr))
 	}
-	res = strings.TrimSuffix(res, "\n")
 
+	res := strings.TrimSuffix(buffer.String(), "\n")
 	ctx.String(200, res)
 	return
 }
