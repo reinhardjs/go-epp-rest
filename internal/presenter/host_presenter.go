@@ -17,18 +17,18 @@ func NewHostPresenter() presenter.HostPresenter {
 }
 
 func (p *hostPresenter) Check(ctx infrastructure.Context, responseObject response.CheckHostResponse) (err error) {
-	var res string
+	var buffer bytes.Buffer
 
 	for _, element := range responseObject.ResultData.CheckDatas {
 		notStr := ""
 		if element.HostName.Available == 0 {
 			notStr = "not "
 		}
-		res += fmt.Sprintf("Host %s is %savailable\n", element.HostName.Value, notStr)
+		buffer.WriteString(fmt.Sprintf("Host %s is %savailable\n", element.HostName.Value, notStr))
 	}
-	res = strings.TrimSuffix(res, "\n")
-	res = fmt.Sprintf("%v %v", responseObject.Result.Code, res)
 
+	res := strings.TrimSuffix(buffer.String(), "\n")
+	res = fmt.Sprintf("%v %v", responseObject.Result.Code, res)
 	ctx.String(200, res)
 	return
 }
