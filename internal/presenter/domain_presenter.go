@@ -80,8 +80,16 @@ func (p *domainPresenter) InfoSuccess(ctx infrastructure.Context, obj response.I
 	buffer.WriteString(fmt.Sprintf("bilid[%s]\n", contactMap["billing"]))
 
 	buffer.WriteString(fmt.Sprintf("authinfo[%s]\n", obj.ResultData.InfoData.AuthInfo.Password))
-	buffer.WriteString(fmt.Sprintf("createdate[%s]\n", obj.ResultData.InfoData.CreateDate.Format("2006-01-02 15:04:05")))
-	buffer.WriteString(fmt.Sprintf("expirydate[%s]\n", obj.ResultData.InfoData.ExpireDate.Format("2006-01-02 15:04:05")))
+
+	createDate := *obj.ResultData.InfoData.CreateDate
+	createDate = createDate.Local()
+	createDate = createDate.Add(-(time.Hour * 8))
+	buffer.WriteString(fmt.Sprintf("createdate[%s]\n", createDate.Format("2006-01-02 15:04:05")))
+
+	expiryDate := *obj.ResultData.InfoData.ExpireDate
+	expiryDate = expiryDate.Local()
+	expiryDate = expiryDate.Add(-(time.Hour * 8))
+	buffer.WriteString(fmt.Sprintf("expirydate[%s]\n", expiryDate.Format("2006-01-02 15:04:05")))
 
 	statusArray := make([]string, 0, len(obj.ResultData.InfoData.Status))
 	for _, status := range obj.ResultData.InfoData.Status {
