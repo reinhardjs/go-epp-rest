@@ -6,12 +6,17 @@ import (
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/entities"
+	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter/mapper"
 )
 
 type DtoToEntityImpl struct{}
 
-func (m *DtoToEntityImpl) MapPollRequestResponseToEppPoll(input response.PollRequestResponse) (output entities.EPPPoll, err error) {
-	layoutFormat := "2006-01-02T15:04:05.999999999-0700"
+func NewDtoToEntityMapper() mapper.DtoToEntity {
+	return &DtoToEntityImpl{}
+}
+
+func (m *DtoToEntityImpl) MapPollRequestResponseToEppPollEntity(input response.PollRequestResponse) (output entities.EPPPoll, err error) {
+	layoutFormat := "2006-01-02T15:04:05.999999999Z"
 
 	queueDate, errParse := time.Parse(layoutFormat, input.MessageQueue.QueueDate)
 	if errParse != nil {
@@ -19,22 +24,49 @@ func (m *DtoToEntityImpl) MapPollRequestResponseToEppPoll(input response.PollReq
 		return
 	}
 
-	reDateTime, errParse := time.Parse(layoutFormat, input.ResultData.TransferData.RequestingDate)
-	if errParse != nil {
-		err = errors.Wrap(errParse, "PollInteractor Poll: RequestingDate time.Parse")
-		return
-	}
+	message := input.MessageQueue.Message
+	var domain, status, requestingID, actingID string
+	var reDateTime, exDateTime, acDateTime time.Time
 
-	exDateTime, errParse := time.Parse(layoutFormat, input.ResultData.TransferData.ExpireDate)
-	if errParse != nil {
-		err = errors.Wrap(errParse, "PollInteractor Poll: ExpireDate time.Parse")
-		return
-	}
+	if input.ResultData.TransferData != nil {
+		reDateTime, errParse = time.Parse(layoutFormat, input.ResultData.TransferData.RequestingDate)
+		if errParse != nil {
+			err = errors.Wrap(errParse, "PollInteractor Poll: RequestingDate time.Parse")
+			return
+		}
 
-	acDateTime, errParse := time.Parse(layoutFormat, input.ResultData.TransferData.ActingDate)
-	if errParse != nil {
-		err = errors.Wrap(errParse, "PollInteractor Poll: ActingDate time.Parse")
-		return
+		exDateTime, _ = time.Parse(layoutFormat, input.ResultData.TransferData.ExpireDate)
+
+		acDateTime, _ = time.Parse(layoutFormat, input.ResultData.TransferData.ActingDate)
+
+		domain = input.ResultData.TransferData.Name
+		status = string(input.ResultData.TransferData.TransferStatus)
+		requestingID = input.ResultData.TransferData.RequestingID
+		actingID = input.ResultData.TransferData.ActingID
+
+		if status == "pending" {
+			message = "Transfer Requested."
+		}
+
+		if status == "clientApproved" {
+			message = "Transfer Approved."
+		}
+
+		if status == "clientCancelled" {
+			message = "Transfer Cancelled."
+		}
+
+		if status == "clientRejected" {
+			message = "Transfer Rejected."
+		}
+
+		if status == "serverApproved" {
+			message = "Transfer Auto Approved."
+		}
+
+		if status == "serverCancelled" {
+			message = "Transfer Auto Rejected."
+		}
 	}
 
 	output = entities.EPPPoll{
@@ -42,15 +74,15 @@ func (m *DtoToEntityImpl) MapPollRequestResponseToEppPoll(input response.PollReq
 		Datetime:       time.Now(),
 		MessageId:      input.MessageQueue.Id,
 		MessageCount:   input.MessageQueue.Count,
-		Message:        input.MessageQueue.Message,
+		Message:        message,
 		QDate:          queueDate,
-		Domain:         input.ResultData.TransferData.Name,
-		Status:         string(input.ResultData.TransferData.TransferStatus),
+		Domain:         domain,
+		Status:         status,
 		RequestingDate: reDateTime,
 		ExpireDate:     exDateTime,
 		ActingDate:     acDateTime,
-		RequestingId:   input.ResultData.TransferData.RequestingID,
-		ActingId:       input.ResultData.TransferData.ActingID,
+		RequestingId:   requestingID,
+		ActingId:       actingID,
 	}
 
 	return

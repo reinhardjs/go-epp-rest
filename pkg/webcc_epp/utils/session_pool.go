@@ -113,9 +113,6 @@ func (p *SessionPool) Put(c *Session) {
 }
 
 func (p *SessionPool) RenewTcpConn(c *Session) (net.Conn, error) {
-	c.renewLock.Lock()
-	defer c.renewLock.Unlock()
-
 	req := &connRenewal{
 		session: c,
 		tcpConn: make(chan net.Conn, 1),

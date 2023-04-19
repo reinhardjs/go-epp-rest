@@ -31,7 +31,7 @@ type CreateDomainResponse struct {
 }
 
 type CreateDomainResultData struct {
-	CreatedData CreateDomainData `xml:"creData>cd"`
+	CreatedData CreateDomainData `xml:"creData"`
 }
 
 type CreateDomainData struct {
@@ -82,7 +82,7 @@ type RenewDomainResponse struct {
 }
 
 type RenewDomainResultData struct {
-	RenewedData RenewDomainData `xml:"renData>cd"`
+	RenewedData RenewDomainData `xml:"renData"`
 }
 
 type RenewDomainData struct {

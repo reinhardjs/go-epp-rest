@@ -13,6 +13,7 @@ func (r *registry) NewPollController() controllers.PollController {
 		repository.NewRegistrarRepository(r.eppClient, r.xmlMapper),
 		presenter.NewPollPresenter(),
 		r.xmlMapper,
+		r.dtoToEntityMapper,
 	)
 
 	return controllers.NewPollController(pollInteractor)

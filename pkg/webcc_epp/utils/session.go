@@ -16,7 +16,6 @@ type Session struct {
 	Id          string     // A unique id to identify a connection
 	conn        net.Conn   // The underlying TCP connection
 	mu          sync.Mutex // mutex to prevent race conditions
-	renewLock   sync.Mutex // mutex to prevent race conditions
 	updateLock  sync.Mutex
 	updateCond  *sync.Cond
 	Pool        *SessionPool

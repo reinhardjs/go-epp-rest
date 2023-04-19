@@ -53,11 +53,11 @@ type DeleteContactResponse struct {
 
 // Contact Info
 type InfoContactResponse struct {
-	Result        Result                  `xml:"response>result"`
-	ResultData    DomainContactResultData `xml:"response>resData"`
-	TransactionID TransactionID           `xml:"response>trID"`
+	Result        Result            `xml:"response>result"`
+	ResultData    ContactResultData `xml:"response>resData"`
+	TransactionID TransactionID     `xml:"response>trID"`
 }
 
-type DomainContactResultData struct {
-	InfoData types.ContactInfoData `xml:"urn:ietf:params:xml:ns:domain-1.0 infData"`
+type ContactResultData struct {
+	InfoData types.ContactInfoData `xml:"urn:ietf:params:xml:ns:contact-1.0 infData"`
 }

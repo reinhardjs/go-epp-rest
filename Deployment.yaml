@@ -16,6 +16,9 @@ spec:
       - name: go-epp-rest
         image: sccs.webnic.tl:5000/reinhardjs/go-epp-rest:latest
         imagePullPolicy: Always
+        env:
+        - name: ENV
+          value: "production"
         envFrom:
         - secretRef:
             name: go-epp-rest-secret

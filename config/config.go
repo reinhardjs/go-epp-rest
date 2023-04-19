@@ -6,7 +6,9 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
+	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
@@ -22,6 +24,11 @@ type Config struct {
 
 func InitConfig() (*Config, error) {
 	env := os.Getenv("ENV")
+
+	log.Println("Environment: ", env)
+
+	// Using local timezone
+	time.Local = time.Now().Location()
 
 	if env != "production" {
 		err := godotenv.Load(".env")
