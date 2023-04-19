@@ -183,9 +183,9 @@ type DomainInfoName struct {
 
 // DomainRenew represents a domain renew command.
 type DomainRenew struct {
-	Name       string    `xml:"name"`
-	ExpireDate time.Time `xml:"curExpDate"`
-	Period     Period    `xml:"period,omitempty"`
+	Name       string `xml:"name"`
+	ExpireDate string `xml:"curExpDate"`
+	Period     Period `xml:"period,omitempty"`
 }
 
 // DomainTransfer represents a domain transfer command.

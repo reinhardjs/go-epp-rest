@@ -568,7 +568,7 @@ func (controller *domainController) Renew(ctx infrastructure.Context) {
 				Value: period,
 				Unit:  "y", //yearly
 			},
-			ExpireDate: currentExpireDate,
+			ExpireDate: currentExpireDate.Format("2006-01-02"),
 		},
 	}
 

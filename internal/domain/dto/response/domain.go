@@ -82,7 +82,7 @@ type RenewDomainResponse struct {
 }
 
 type RenewDomainResultData struct {
-	RenewedData RenewDomainData `xml:"renData>cd"`
+	RenewedData RenewDomainData `xml:"renData"`
 }
 
 type RenewDomainData struct {

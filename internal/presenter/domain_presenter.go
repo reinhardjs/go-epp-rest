@@ -142,7 +142,17 @@ func (p *domainPresenter) RenewSuccess(ctx infrastructure.Context, obj response.
 	var res string
 
 	if obj.Result.Code == 1000 {
-		res = fmt.Sprintf("%v %v", obj.Result.Code, obj.ResultData.RenewedData.ExpiredDate)
+		layoutFormat := "2006-01-02T15:04:05.999999999Z"
+
+		newExpireDate, err := time.Parse(layoutFormat, obj.ResultData.RenewedData.ExpiredDate)
+		if err != nil {
+			err = errors.Wrap(err, "DomainController Renew: time.Parse")
+		}
+
+		newExpireDate = newExpireDate.Local()
+		newExpireDate = newExpireDate.Add(-(time.Hour * 8))
+
+		res = fmt.Sprintf("%v %v", obj.Result.Code, newExpireDate.Format("2006-01-02 15:04:05"))
 	} else {
 		res = fmt.Sprintf("%v %v", obj.Result.Code, obj.Result.Message)
 	}
