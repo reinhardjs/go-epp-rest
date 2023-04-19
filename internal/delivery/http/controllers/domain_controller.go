@@ -263,7 +263,7 @@ func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	if secDNSUpdateQuery.IsRemoveAll == "yes" {
+	if secDNSUpdateQuery.IsRemoveAll == "Y" {
 		doRemove := true
 		data.Command.Extension = &types.Extension{
 			SecDNSUpdate: &types.SecDNSUpdate{
