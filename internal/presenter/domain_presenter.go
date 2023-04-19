@@ -29,8 +29,8 @@ func (p *domainPresenter) CheckSuccess(ctx infrastructure.Context, obj response.
 		}
 		buffer.WriteString(fmt.Sprintf("Domain %s, domain %savailable\n", element.Name.Value, notStr))
 	}
-	res = strings.TrimSuffix(buffer.String(), "\n")
 
+	res = strings.TrimSuffix(buffer.String(), "\n")
 	ctx.String(200, res)
 	return
 }
