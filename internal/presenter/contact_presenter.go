@@ -33,13 +33,11 @@ func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response
 }
 
 func (p *contactPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateContactResponse) (err error) {
-	var res string
 	var buffer bytes.Buffer
 
 	buffer.WriteString(fmt.Sprintf("1000 %s", obj.ResultData.CreateData.Id))
 
-	res = buffer.String()
-	ctx.String(200, res)
+	ctx.String(200, buffer.String())
 	return
 }
 
@@ -62,7 +60,6 @@ func (p *contactPresenter) DeleteSuccess(ctx infrastructure.Context, obj respons
 }
 
 func (p *contactPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoContactResponse) (err error) {
-	var res string
 	var buffer bytes.Buffer
 
 	buffer.WriteString("1000 CONTACT INFO IS::\n")
@@ -88,8 +85,6 @@ func (p *contactPresenter) InfoSuccess(ctx infrastructure.Context, obj response.
 	buffer.WriteString(fmt.Sprintf("upID :%s\n", obj.ResultData.InfoData.UpdateID))
 	buffer.WriteString(fmt.Sprintf("authInfo :%s", obj.ResultData.InfoData.AuthInfo.Password))
 
-	res = buffer.String()
-
-	ctx.String(200, res)
+	ctx.String(200, buffer.String())
 	return
 }

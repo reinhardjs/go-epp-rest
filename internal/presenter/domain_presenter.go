@@ -36,7 +36,6 @@ func (p *domainPresenter) CheckSuccess(ctx infrastructure.Context, obj response.
 }
 
 func (p *domainPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateDomainResponse) (err error) {
-	var res string
 	var buffer bytes.Buffer
 
 	layoutFormat := "2006-01-02T15:04:05.999999999Z"
@@ -50,8 +49,7 @@ func (p *domainPresenter) CreateSuccess(ctx infrastructure.Context, obj response
 
 	buffer.WriteString(fmt.Sprintf("%s %s", "1000", expiringDate.Format("2006-01-02 15:04:05")))
 
-	res = buffer.String()
-	ctx.String(200, res)
+	ctx.String(200, buffer.String())
 	return
 }
 
@@ -65,7 +63,6 @@ func (p *domainPresenter) DeleteSuccess(ctx infrastructure.Context, obj response
 }
 
 func (p *domainPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoDomainResponse) (err error) {
-	var res string
 	var buffer bytes.Buffer
 
 	buffer.WriteString(fmt.Sprintf("%s domain[%s]\n", "1000", obj.ResultData.InfoData.Name))
@@ -92,8 +89,7 @@ func (p *domainPresenter) InfoSuccess(ctx infrastructure.Context, obj response.I
 	}
 	buffer.WriteString(fmt.Sprintf("status[%s]", strings.Join(statusArray, ",")))
 
-	res = buffer.String()
-	ctx.String(200, res)
+	ctx.String(200, buffer.String())
 	return
 }
 

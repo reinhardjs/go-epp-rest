@@ -24,6 +24,10 @@ type Value struct {
 
 // ExternalErrorValue represents the response in the extValeu tag.
 type ExternalErrorValue struct {
-	Value  interface{} `xml:"value"`
-	Reason string      `xml:"reason"`
+	Value  ExtValue `xml:"value"`
+	Reason string   `xml:"reason"`
+}
+
+type ExtValue struct {
+	ReasonCode string `xml:"reasonCode"`
 }

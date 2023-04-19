@@ -34,13 +34,11 @@ func (p *hostPresenter) Check(ctx infrastructure.Context, responseObject respons
 }
 
 func (p *hostPresenter) Create(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
-	var res string
 	var buffer bytes.Buffer
 
 	buffer.WriteString(fmt.Sprintf("%d %s", responseObject.Result.Code, responseObject.Result.Message))
 
-	res = buffer.String()
-	ctx.String(200, res)
+	ctx.String(200, buffer.String())
 	return
 }
 
@@ -61,7 +59,6 @@ func (p *hostPresenter) Delete(ctx infrastructure.Context, responseObject respon
 }
 
 func (p *hostPresenter) Info(ctx infrastructure.Context, responseObject response.InfoHostResponse) (err error) {
-	var res string
 	var buffer bytes.Buffer
 
 	buffer.WriteString(fmt.Sprintf("1000 Host[%s]\n", responseObject.ResultData.InfoData.Name))
@@ -74,18 +71,15 @@ func (p *hostPresenter) Info(ctx infrastructure.Context, responseObject response
 		buffer.WriteString(fmt.Sprintf("IPAddress[%s]Type[%s]", address.Address, address.IPType))
 	}
 
-	res = buffer.String()
-	ctx.String(200, res)
+	ctx.String(200, buffer.String())
 	return
 }
 
 func (p *hostPresenter) CheckAndCreate(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
-	var res string
 	var buffer bytes.Buffer
 
 	buffer.WriteString(fmt.Sprintf("%d %s", responseObject.Result.Code, responseObject.Result.Message))
 
-	res = buffer.String()
-	ctx.String(200, res)
+	ctx.String(200, buffer.String())
 	return
 }
