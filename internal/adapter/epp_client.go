@@ -30,6 +30,7 @@ type eppClient struct {
 func NewEppClient(connPool *utils.SessionPool) adapter.EppClient {
 	return &eppClient{
 		sessionPool: connPool,
+		generator:   utils.NewGenerator(),
 	}
 }
 
