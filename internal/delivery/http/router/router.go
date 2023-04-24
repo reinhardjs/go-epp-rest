@@ -3,44 +3,11 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
-	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/middlewares"
 
 	"github.com/gin-contrib/pprof"
 )
-
-type handler struct {
-	appController controllers.AppController
-}
-
-func (h *handler) domainCheck(c *gin.Context) {
-	h.appController.Domain.Check(&adapter.ContextAdapter{Context: c})
-}
-
-func (h *handler) domainCreate(c *gin.Context) {
-	h.appController.Domain.Create(&adapter.ContextAdapter{Context: c})
-}
-
-func (h *handler) domainDelete(c *gin.Context) {
-	h.appController.Domain.Delete(&adapter.ContextAdapter{Context: c})
-}
-
-func (h *handler) domainInfo(c *gin.Context) {
-	h.appController.Domain.Info(&adapter.ContextAdapter{Context: c})
-}
-
-func (h *handler) domainSecDNSUpdate(c *gin.Context) {
-	h.appController.Domain.SecDNSUpdate(&adapter.ContextAdapter{Context: c})
-}
-
-func (h *handler) domainContactUpdate(c *gin.Context) {
-	h.appController.Domain.ContactUpdate(&adapter.ContextAdapter{Context: c})
-}
-
-func (h *handler) domainStatusUpdate(c *gin.Context) {
-	h.appController.Domain.StatusUpdate(&adapter.ContextAdapter{Context: c})
-}
 
 func NewRouter(appController controllers.AppController) *gin.Engine {
 	handler := &handler{appController}
@@ -57,38 +24,46 @@ func NewRouter(appController controllers.AppController) *gin.Engine {
 	router.Use(middlewares.ClientErrorHandler)                     // Error related to client error
 	router.Use(gin.CustomRecovery(middlewares.ServerErrorHandler)) // Error related to server error resulted from like panic/exception, etc..
 
-	router.GET("/domain/check", handler.domainCheck)
-	router.GET("/domain/create", handler.domainCreate)
-	router.GET("/domain/delete", handler.domainDelete)
-	router.GET("/domain/info", handler.domainInfo)
-	router.GET("/domain/secdnsupdate", handler.domainSecDNSUpdate)
-	router.GET("/domain/contact/update", handler.domainContactUpdate)
-	router.GET("/domain/status/update", handler.domainStatusUpdate)
-	router.GET("/domain/authinfo/update", func(c *gin.Context) { appController.Domain.AuthInfoUpdate(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/domain/nameserver/update", func(c *gin.Context) { appController.Domain.NameserverUpdate(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/domain/renew", func(c *gin.Context) { appController.Domain.Renew(&adapter.ContextAdapter{Context: c}) })
+	v1 := router.Group("api/v1")
+	{
+		v1.GET("/", handler.apiV1)
+	}
 
-	router.GET("/host/check", func(c *gin.Context) { appController.Host.Check(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/host/create", func(c *gin.Context) { appController.Host.Create(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/host/update", func(c *gin.Context) { appController.Host.Update(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/host/delete", func(c *gin.Context) { appController.Host.Delete(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/host/info", func(c *gin.Context) { appController.Host.Info(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/host/change", func(c *gin.Context) { appController.Host.Change(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/host/checkcreate", func(c *gin.Context) { appController.Host.CheckAndCreate(&adapter.ContextAdapter{Context: c}) })
+	v2 := router.Group("api/v2")
+	{
+		v2.GET("/domain/check", handler.domainCheck)
+		v2.GET("/domain/create", handler.domainCreate)
+		v2.GET("/domain/delete", handler.domainDelete)
+		v2.GET("/domain/info", handler.domainInfo)
+		v2.GET("/domain/secdnsupdate", handler.domainSecDNSUpdate)
+		v2.GET("/domain/contact/update", handler.domainContactUpdate)
+		v2.GET("/domain/status/update", handler.domainStatusUpdate)
+		v2.GET("/domain/authinfo/update", handler.domainAuthInfoUpdate)
+		v2.GET("/domain/nameserver/update", handler.domainNameserverUpdate)
+		v2.GET("/domain/renew", handler.domainRenew)
 
-	router.GET("/contact/check", func(c *gin.Context) { appController.Contact.Check(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/contact/create", func(c *gin.Context) { appController.Contact.Create(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/contact/update", func(c *gin.Context) { appController.Contact.Update(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/contact/delete", func(c *gin.Context) { appController.Contact.Delete(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/contact/info", func(c *gin.Context) { appController.Contact.Info(&adapter.ContextAdapter{Context: c}) })
+		v2.GET("/host/check", handler.hostCheck)
+		v2.GET("/host/create", handler.hostCreate)
+		v2.GET("/host/update", handler.hostUpdate)
+		v2.GET("/host/delete", handler.hostDelete)
+		v2.GET("/host/info", handler.hostInfo)
+		v2.GET("/host/change", handler.hostChange)
+		v2.GET("/host/checkcreate", handler.hostCheckAndCreate)
 
-	router.GET("/transfer/check", func(c *gin.Context) { appController.Transfer.Check(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/transfer/request", func(c *gin.Context) { appController.Transfer.Request(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/transfer/cancel", func(c *gin.Context) { appController.Transfer.Cancel(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/transfer/approve", func(c *gin.Context) { appController.Transfer.Approve(&adapter.ContextAdapter{Context: c}) })
-	router.GET("/transfer/reject", func(c *gin.Context) { appController.Transfer.Approve(&adapter.ContextAdapter{Context: c}) })
+		v2.GET("/contact/check", handler.contactCheck)
+		v2.GET("/contact/create", handler.contactCreate)
+		v2.GET("/contact/update", handler.contactUpdate)
+		v2.GET("/contact/delete", handler.contactDelete)
+		v2.GET("/contact/info", handler.contactInfo)
 
-	router.GET("/poll", func(c *gin.Context) { appController.Poll.Poll(&adapter.ContextAdapter{Context: c}) })
+		v2.GET("/transfer/check", handler.transferCheck)
+		v2.GET("/transfer/request", handler.transferRequest)
+		v2.GET("/transfer/cancel", handler.transferCancel)
+		v2.GET("/transfer/approve", handler.transferApprove)
+		v2.GET("/transfer/reject", handler.transferReject)
+
+		v2.GET("/poll", handler.poll)
+	}
 
 	return router
 }

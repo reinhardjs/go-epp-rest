@@ -63,7 +63,8 @@ func (s *server) Run() error {
 	}
 
 	xmlMapper := mapper.NewXMLMapper()
-	registry := registry.NewRegistry(eppClient, mysqlConn, xmlMapper)
+	dtoToEntityMapper := mapper.NewDtoToEntityMapper()
+	registry := registry.NewRegistry(eppClient, mysqlConn, xmlMapper, dtoToEntityMapper)
 	router := router.NewRouter(registry.NewAppController())
 
 	log.Println("Login command result :")

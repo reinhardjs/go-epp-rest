@@ -12,6 +12,7 @@ import (
 	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
+	"golang.org/x/net/idna"
 )
 
 type domainController struct {
@@ -142,15 +143,22 @@ func (controller *domainController) Info(ctx infrastructure.Context) {
 	var domainInfoQuery request.DomainInfoQuery
 	ctx.BindQuery(&domainInfoQuery)
 
+	domain := domainInfoQuery.Domain
+	domain, err := idna.ToASCII(domain)
+	if err != nil {
+		err = errors.Wrap(err, "DomainController Info: idna.ToASCII")
+		return
+	}
+
 	data := types.DomainInfoType{
 		Info: types.DomainInfo{
 			Name: types.DomainInfoName{
-				Name: domainInfoQuery.Domain,
+				Name: domain,
 			},
 		},
 	}
 
-	err := controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
+	err = controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Info")
 		ctx.AbortWithError(200, err)
@@ -255,7 +263,7 @@ func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	if secDNSUpdateQuery.IsRemoveAll == "yes" {
+	if secDNSUpdateQuery.IsRemoveAll == "Y" {
 		doRemove := true
 		data.Command.Extension = &types.Extension{
 			SecDNSUpdate: &types.SecDNSUpdate{
@@ -560,7 +568,7 @@ func (controller *domainController) Renew(ctx infrastructure.Context) {
 				Value: period,
 				Unit:  "y", //yearly
 			},
-			ExpireDate: currentExpireDate,
+			ExpireDate: currentExpireDate.Format("2006-01-02"),
 		},
 	}
 

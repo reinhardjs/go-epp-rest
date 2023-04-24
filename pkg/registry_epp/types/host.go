@@ -138,7 +138,7 @@ type HostChange struct {
 // HostAddress represents an IP address beloning to a host.
 type HostAddress struct {
 	Address string `xml:",chardata"`
-	IP      IPType `xml:"ip,attr"`
+	IPType  IPType `xml:"ip,attr"`
 }
 
 // HostStatus represents statuses for a host.

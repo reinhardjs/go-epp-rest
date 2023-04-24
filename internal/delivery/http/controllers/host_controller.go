@@ -71,7 +71,7 @@ func (controller *hostController) Create(ctx infrastructure.Context) {
 		ipType := types.HostIPv4 // need to check ip type based on ip address
 		hostAddressList = append(hostAddressList, types.HostAddress{
 			Address: ipAddress,
-			IP:      ipType,
+			IPType:  ipType,
 		})
 	}
 
@@ -111,7 +111,7 @@ func (controller *hostController) Update(ctx infrastructure.Context) {
 		ipType := types.HostIPv4 // need to check ip type based on ip address
 		addHostAddressList = append(addHostAddressList, types.HostAddress{
 			Address: ipAddress,
-			IP:      ipType,
+			IPType:  ipType,
 		})
 	}
 
@@ -119,7 +119,7 @@ func (controller *hostController) Update(ctx infrastructure.Context) {
 		ipType := types.HostIPv4 // need to check ip type based on ip address
 		removeHostAddressList = append(removeHostAddressList, types.HostAddress{
 			Address: ipAddress,
-			IP:      ipType,
+			IPType:  ipType,
 		})
 	}
 
@@ -218,7 +218,7 @@ func (controller *hostController) Change(ctx infrastructure.Context) {
 				Address: []types.HostAddress{
 					{
 						Address: "190.1.1.1",
-						IP:      types.HostIPv4,
+						IPType:  types.HostIPv4,
 					},
 				},
 			},
@@ -251,7 +251,7 @@ func (controller *hostController) CheckAndCreate(ctx infrastructure.Context) {
 		ipType := types.HostIPv4 // need to check ip type based on ip address
 		hostAddressList = append(hostAddressList, types.HostAddress{
 			Address: ipAddress,
-			IP:      ipType,
+			IPType:  ipType,
 		})
 	}
 

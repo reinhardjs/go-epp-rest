@@ -1,11 +1,15 @@
 package middlewares
 
 import (
+	"bytes"
+	"fmt"
+	"regexp"
 	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
+	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
 func ClientErrorHandler(c *gin.Context) {
@@ -30,7 +34,28 @@ func ClientErrorHandler(c *gin.Context) {
 			// TODO with Presenter Error
 		case *error_types.EPPCommandError:
 			// TODO with EPPCommand Error
-			c.String(200, "2400 Command failed")
+			var buffer bytes.Buffer
+			eppCommandErr := cause.(*error_types.EPPCommandError)
+			resultCode := registry_epp.ResultCode(eppCommandErr.Result.Code)
+
+			buffer.WriteString(fmt.Sprintf("%d %s", resultCode.Code(), resultCode.Message()))
+
+			eppCommandError := cause.(*error_types.EPPCommandError)
+
+			if len(eppCommandError.Result.Value.Texts) > 0 {
+				value := eppCommandError.Result.Value.Texts[0]
+				re := regexp.MustCompile(`\[(.*?)\]`)
+				match := re.FindStringSubmatch(value)
+				if len(match) > 1 {
+					buffer.WriteString(fmt.Sprintf(" | %s", match[1]))
+				}
+			}
+
+			if eppCommandError.Result.ExternalValue != nil {
+				buffer.WriteString(fmt.Sprintf(" | %s %s", eppCommandError.Result.ExternalValue.Value.ReasonCode, eppCommandError.Result.ExternalValue.Reason))
+			}
+
+			c.String(200, buffer.String())
 		default:
 			c.String(200, "2400 Command failed")
 		}
