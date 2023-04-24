@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
+	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 )
 
@@ -22,6 +23,9 @@ func ClientErrorHandler(c *gin.Context) {
 	if len(c.Errors) > 0 {
 		err := c.Errors.Last().Err
 		cause := errors.Cause(err)
+
+		logger := utils.GetLoggerInstance()
+		logger.Info(err)
 
 		switch cause.(type) {
 		case *error_types.RequestTimeOutError:

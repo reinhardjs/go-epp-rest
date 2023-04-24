@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"log"
-
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/error_types"
@@ -53,14 +51,10 @@ func (r *registrarRepository) SendCommand(data interface{}) ([]byte, error) {
 		return nil, errors.Wrap(err, "registrarRepository SendCommand: r.prepareCommand")
 	}
 
-	log.Println("XML Request: \n", string(encoded))
-
 	byteResponse, err := r.eppClient.Send(encoded)
 	if err != nil {
 		return nil, errors.Wrap(err, "registrarRepository SendCommand: r.eppClient.Send")
 	}
-
-	log.Println("XML Response: \n", string(byteResponse))
 
 	err = r.checkCommandError(byteResponse)
 	if err != nil {

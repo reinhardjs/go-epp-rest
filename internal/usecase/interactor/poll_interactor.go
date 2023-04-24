@@ -1,8 +1,6 @@
 package interactor
 
 import (
-	"log"
-
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
@@ -48,7 +46,6 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 	var code int = -1
 
 	for code != 1300 {
-		log.Println("Start loop")
 		responseByte, err := interactor.RegistrarRepository.SendCommand(pollRequestData)
 		if err != nil {
 			err = errors.Wrap(err, "PollInteractor Poll: interactor.RegistrarRepository.SendCommand")
@@ -68,7 +65,6 @@ func (interactor *pollInteractor) Poll(ctx infrastructure.Context) (err error) {
 				eppPoll, err := interactor.DtoToEntityMapper.MapPollRequestResponseToEppPollEntity(*responseDTO)
 				if err != nil {
 					err = errors.Wrap(err, "PollInteractor Poll: DtoToEntityMapper.MapPollRequestResponseToEppPollEntity")
-					log.Println(err)
 					break
 				}
 

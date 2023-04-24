@@ -14,7 +14,7 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/router"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/mysql"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/registry"
-	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
+	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 )
 
 type server struct {
@@ -49,7 +49,8 @@ func (s *server) Run() error {
 	if err != nil {
 		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}
-	eppClient := adapter.NewEppClient(tcpConnPool)
+	logger := utils.GetLoggerInstance()
+	eppClient := adapter.NewEppClient(tcpConnPool, logger)
 	tcpConnPool.SetEppClient(eppClient)
 	response, err := eppClient.InitLogin(username, password)
 	if err != nil {

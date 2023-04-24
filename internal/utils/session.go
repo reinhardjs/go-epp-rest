@@ -31,13 +31,29 @@ func (t *Session) helloWorker(period time.Duration, quit chan bool) {
 	for {
 		select {
 		case <-ticker.C:
-			log.Println("Sending Hello")
-			response, err := t.Pool.eppClient.SendHello(t.GetTcpConn())
-			if err != nil {
-				log.Println("Error sending hello:", err)
-			} else {
+			retryCount := 0
+			maxRetry := 2
+
+			for retryCount < maxRetry {
+				log.Println("Sending Hello")
+				response, err := t.Pool.eppClient.SendHello(t.GetTcpConn())
+				if err != nil {
+					log.Println("Error sending hello:", err)
+					log.Println("retrying for renewal...")
+
+					_, err := t.Pool.RenewTcpConn(t)
+					if err != nil {
+						log.Println("Error retrying for renewal:", err)
+						break
+					}
+
+					retryCount = retryCount + 1
+					continue
+				}
+
 				log.Println("Hello response:")
 				log.Println(string(response))
+				break
 			}
 		case <-quit:
 			return
