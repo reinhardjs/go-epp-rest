@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
+	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
-	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
 )
 
 type loginCred struct {
@@ -23,6 +24,7 @@ type eppClient struct {
 	// sessionPool holds the TCP connections to the server.
 	sessionPool *utils.SessionPool
 	loginCred   loginCred
+	generator   utils.Generator
 }
 
 func NewEppClient(connPool *utils.SessionPool) adapter.EppClient {
@@ -57,12 +59,15 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	session, err = c.sessionPool.Get()
 	defer c.sessionPool.Put(session)
 
+	requestId := c.generator.GenerateRequestId()
+	sessionId := session.Id
+	logrus.Info("request:", requestId, " | ", "session:", sessionId)
+
 	if err != nil {
 		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
 	}
 
 	var startTime time.Time
-
 	var tcpConn net.Conn = session.GetTcpConn()
 	if tcpConn != nil {
 		startTime = time.Now()

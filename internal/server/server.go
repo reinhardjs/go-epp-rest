@@ -14,7 +14,7 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/router"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/mysql"
 	"gitlab.com/merekmu/go-epp-rest/internal/infrastructure/registry"
-	"gitlab.com/merekmu/go-epp-rest/pkg/webcc_epp/utils"
+	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 )
 
 type server struct {

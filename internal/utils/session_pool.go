@@ -193,7 +193,7 @@ func (p *SessionPool) createNewSession() (*Session, error) {
 
 	session := &Session{
 		// Use unix time as id
-		Id:          fmt.Sprintf("%v", time.Now().UnixNano()),
+		Id:          fmt.Sprintf("session-%v", time.Now().UnixNano()),
 		conn:        c,
 		Pool:        p,
 		shouldLogin: true, // should login for the first time
