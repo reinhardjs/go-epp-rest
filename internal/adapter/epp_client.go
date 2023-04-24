@@ -1,13 +1,12 @@
 package adapter
 
 import (
-	"log"
+	"fmt"
 	"net"
 	"os"
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp"
@@ -24,13 +23,15 @@ type eppClient struct {
 	// sessionPool holds the TCP connections to the server.
 	sessionPool *utils.SessionPool
 	loginCred   loginCred
-	generator   utils.Generator
+	generator   utils.IDGenerator
+	logger      utils.Logger
 }
 
-func NewEppClient(connPool *utils.SessionPool) adapter.EppClient {
+func NewEppClient(connPool *utils.SessionPool, logger utils.Logger) adapter.EppClient {
 	return &eppClient{
 		sessionPool: connPool,
 		generator:   utils.NewGenerator(),
+		logger:      logger,
 	}
 }
 
@@ -44,7 +45,7 @@ func (c *eppClient) InitLogin(username string, password string) (response []byte
 
 	response, err = c.DoLogin(tcpConn.GetTcpConn())
 	if err != nil {
-		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
+		c.logger.Info(errors.Wrap(err, "server Run: eppClient.Login"))
 		os.Exit(1)
 	}
 
@@ -62,7 +63,10 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 
 	requestId := c.generator.GenerateRequestId()
 	sessionId := session.Id
-	logrus.Info("request:", requestId, " | ", "session:", sessionId)
+
+	c.logger.Info("\n ############################## START OF REQUEST :  ############################## ", string(response))
+	c.logger.Info("request:", requestId, " | ", "session:", sessionId)
+	c.logger.Info(fmt.Sprintf("%v%v", "\n --------------- XML Request: --------------- \n", string(data)))
 
 	if err != nil {
 		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
@@ -70,10 +74,9 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 
 	var startTime time.Time
 	var tcpConn net.Conn = session.GetTcpConn()
+	startTime = time.Now()
 	if tcpConn != nil {
-		startTime = time.Now()
 		response, err = c.write(tcpConn, data)
-		c.trackTime(startTime, "epp command response")
 	}
 
 	if tcpConn == nil || c.isNetConnClosedErr(err) {
@@ -82,10 +85,13 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 			return
 		}
 
-		startTime = time.Now()
 		response, err = c.write(tcpConn, data)
-		c.trackTime(startTime, "epp command response")
 	}
+
+	c.logger.Info(fmt.Sprintf("%v%v", "\n --------------- XML Response: ---------------\n", string(response)))
+	c.trackTime(startTime, "epp command response")
+
+	c.logger.Info("\n ############################## END OF REQUEST : ############################## \n\n\n")
 
 	return
 }
@@ -160,7 +166,7 @@ func (c *eppClient) write(conn net.Conn, data []byte) (response []byte, err erro
 
 func (c *eppClient) trackTime(start time.Time, name string) {
 	elapsed := time.Since(start)
-	log.Printf("%s took %s", name, elapsed)
+	c.logger.Info(fmt.Sprintf("%s took %s", name, elapsed))
 }
 
 func (c *eppClient) isNetConnClosedErr(err error) bool {

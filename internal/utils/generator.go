@@ -6,28 +6,31 @@ import (
 	"time"
 )
 
-type generator struct {
-	mu             sync.Mutex
-	differentiator int
+type idGenerator struct {
+	mu                    sync.Mutex
+	requestDifferentiator int
+	sessionDifferentiator int
 }
 
-type Generator interface {
+type IDGenerator interface {
 	GenerateRequestId() string
+	GenerateSessionId() string
 }
 
-func NewGenerator() Generator {
-	return &generator{
-		differentiator: -1,
+func NewGenerator() IDGenerator {
+	return &idGenerator{
+		requestDifferentiator: -1,
+		sessionDifferentiator: -1,
 	}
 }
 
-func (g *generator) GenerateRequestId() string {
+func (g *idGenerator) GenerateRequestId() string {
 	g.mu.Lock()
 
-	if g.differentiator == 9 {
-		g.differentiator = 0
+	if g.requestDifferentiator == 9 {
+		g.requestDifferentiator = 0
 	} else {
-		g.differentiator++
+		g.requestDifferentiator++
 	}
 
 	// create a time variable
@@ -37,5 +40,24 @@ func (g *generator) GenerateRequestId() string {
 	unixNano := now.UnixNano()
 	g.mu.Unlock()
 
-	return fmt.Sprintf("request-%v-%v", unixNano, g.differentiator)
+	return fmt.Sprintf("request-%v-%v", unixNano, g.requestDifferentiator)
+}
+
+func (g *idGenerator) GenerateSessionId() string {
+	g.mu.Lock()
+
+	if g.sessionDifferentiator == 9 {
+		g.sessionDifferentiator = 0
+	} else {
+		g.sessionDifferentiator++
+	}
+
+	// create a time variable
+	now := time.Now()
+
+	// convert to unix time in nanoseconds
+	unixNano := now.UnixNano()
+	g.mu.Unlock()
+
+	return fmt.Sprintf("session-%v-%v", unixNano, g.sessionDifferentiator)
 }

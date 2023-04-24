@@ -58,6 +58,7 @@ type SessionPool struct {
 	renewChan       chan *connRenewal
 	requestChan     chan *connRequest // A queue of connection requests
 	requestChanPool *sync.Pool
+	generator       IDGenerator
 }
 
 // CreateTcpConnPool() creates a connection pool
@@ -83,6 +84,7 @@ func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 		requestChanPool: &reqChanPool,
 		maxOpenCount:    cfg.MaxOpenConn,
 		maxIdleCount:    cfg.MaxIdleConns,
+		generator:       NewGenerator(),
 	}
 
 	go pool.handleConnectionRequest()
@@ -193,7 +195,7 @@ func (p *SessionPool) createNewSession() (*Session, error) {
 
 	session := &Session{
 		// Use unix time as id
-		Id:          fmt.Sprintf("session-%v", time.Now().UnixNano()),
+		Id:          p.generator.GenerateSessionId(),
 		conn:        c,
 		Pool:        p,
 		shouldLogin: true, // should login for the first time

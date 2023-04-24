@@ -49,7 +49,8 @@ func (s *server) Run() error {
 	if err != nil {
 		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}
-	eppClient := adapter.NewEppClient(tcpConnPool)
+	logger := utils.GetLoggerInstance()
+	eppClient := adapter.NewEppClient(tcpConnPool, logger)
 	tcpConnPool.SetEppClient(eppClient)
 	response, err := eppClient.InitLogin(username, password)
 	if err != nil {
