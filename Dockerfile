@@ -10,10 +10,11 @@ RUN apk update && apk add --no-cache git && apk add --no-cach bash && apk add bu
 
 # Setup folders
 RUN mkdir /app
-WORKDIR /app
 
 # Create logs folder
-RUN mkdir /logs
+RUN mkdir /app/logs
+
+WORKDIR /app
 
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
