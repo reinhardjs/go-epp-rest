@@ -32,29 +32,38 @@ func (s *server) Run() error {
 	tcpHost := os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_HOST)
 	apiHost := os.Getenv(constants.API_HOST)
 	apiPort := os.Getenv(constants.API_PORT)
-
 	tcpPort, err := strconv.Atoi(os.Getenv(constants.PAY_WEB_CC_REGISTRY_TCP_PORT))
 	if err != nil {
 		return errors.Wrap(err, "server run: strconv Atoi tcp port value from env")
+	}
+
+	maxOpenConn, err := strconv.Atoi(os.Getenv(constants.MAX_OPEN_CONN))
+	if err != nil {
+		return errors.Wrap(err, "server run: strconv Atoi max open conn value from env")
+	}
+
+	maxIdleConns, err := strconv.Atoi(os.Getenv(constants.MAX_IDLE_CONNS))
+	if err != nil {
+		return errors.Wrap(err, "server run: strconv Atoi max idle conns value from env")
 	}
 
 	tcpConfig := utils.TcpConfig{
 		Host:         tcpHost,
 		Port:         tcpPort,
 		TLSCert:      s.config.PayWebCCCert,
-		MaxOpenConn:  1,
-		MaxIdleConns: 1,
+		MaxOpenConn:  maxOpenConn,
+		MaxIdleConns: maxIdleConns,
 	}
 	tcpConnPool, err := utils.CreateTcpConnPool(&tcpConfig)
 	if err != nil {
 		return errors.Wrap(err, "server run: session pool create tcp conn pool")
 	}
 	logger := utils.GetLoggerInstance()
-	eppClient := adapter.NewEppClient(tcpConnPool, logger)
+	eppClient := adapter.NewEppClient(tcpConnPool, logger, username, password)
 	tcpConnPool.SetEppClient(eppClient)
-	response, err := eppClient.InitLogin(username, password)
+	err = tcpConnPool.Init()
 	if err != nil {
-		log.Println(errors.Wrap(err, "server Run: eppClient.Login"))
+		log.Println(errors.Wrap(err, "server Run: tcpConnPool.Init()"))
 		os.Exit(1)
 	}
 
@@ -67,9 +76,6 @@ func (s *server) Run() error {
 	dtoToEntityMapper := mapper.NewDtoToEntityMapper()
 	registry := registry.NewRegistry(eppClient, mysqlConn, xmlMapper, dtoToEntityMapper)
 	router := router.NewRouter(registry.NewAppController())
-
-	log.Println("Login command result :")
-	log.Println(string(response))
 
 	router.Run(fmt.Sprintf("%v:%v", apiHost, apiPort))
 

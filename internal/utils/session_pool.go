@@ -131,6 +131,31 @@ func (p *SessionPool) RenewTcpConn(c *Session) (net.Conn, error) {
 	}
 }
 
+func (p *SessionPool) Init() error {
+	p.mu.Lock()
+	idleCons := p.idleConns
+	maxIdleCount := p.maxIdleCount
+	p.mu.Unlock()
+
+	for len(idleCons) < maxIdleCount {
+		p.mu.Lock()
+		p.numOpen++
+		p.mu.Unlock()
+
+		newSession, err := p.createNewSession()
+		if err != nil {
+			p.mu.Lock()
+			p.numOpen--
+			p.mu.Unlock()
+			return errors.Wrap(err, "SessionPool Init: p.createNewSession")
+		}
+
+		p.Put(newSession)
+	}
+
+	return nil
+}
+
 // get() retrieves a TCP connection
 func (p *SessionPool) Get() (*Session, error) {
 	p.mu.Lock()
@@ -175,15 +200,15 @@ func (p *SessionPool) Get() (*Session, error) {
 	p.numOpen++
 	p.mu.Unlock()
 
-	newTcpConn, err := p.createNewSession()
+	newSession, err := p.createNewSession()
 	if err != nil {
 		p.mu.Lock()
 		p.numOpen--
 		p.mu.Unlock()
-		return nil, errors.Wrap(err, "SessionPool Get: p.openNewTcpConnection")
+		return nil, errors.Wrap(err, "SessionPool Get: p.createNewSession")
 	}
 
-	return newTcpConn, nil
+	return newSession, nil
 }
 
 // createNewSession() creates a new TCP connection at p.host and p.port
