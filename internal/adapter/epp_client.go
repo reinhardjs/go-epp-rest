@@ -75,7 +75,7 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	buffer.WriteString(fmt.Sprintln("\n"+requestId, " | ", sessionId))
 	buffer.WriteString(fmt.Sprintf("%v%v", " --------------- XML Response: ---------------", string(response)))
 	c.logger.Info(buffer.String())
-	c.trackTime(startTime, "epp command response\n\n\n")
+	c.trackTime(startTime, "epp command response")
 
 	return
 }
@@ -150,7 +150,7 @@ func (c *eppClient) write(conn net.Conn, data []byte) (response []byte, err erro
 
 func (c *eppClient) trackTime(start time.Time, name string) {
 	elapsed := time.Since(start)
-	c.logger.Info(fmt.Sprintf("%s took %s", name, elapsed))
+	c.logger.Info(fmt.Sprintf("%s took %s\n\n\n", name, elapsed))
 }
 
 func (c *eppClient) isNetConnClosedErr(err error) bool {
