@@ -1,9 +1,9 @@
 package adapter
 
 import (
+	"bytes"
 	"fmt"
 	"net"
-	"os"
 	"time"
 
 	"github.com/pkg/errors"
@@ -27,35 +27,18 @@ type eppClient struct {
 	logger      utils.Logger
 }
 
-func NewEppClient(connPool *utils.SessionPool, logger utils.Logger) adapter.EppClient {
+func NewEppClient(connPool *utils.SessionPool, logger utils.Logger, username string, password string) adapter.EppClient {
 	return &eppClient{
 		sessionPool: connPool,
+		loginCred:   loginCred{username, password},
 		generator:   utils.NewGenerator(),
 		logger:      logger,
 	}
 }
 
-func (c *eppClient) InitLogin(username string, password string) (response []byte, err error) {
-	c.loginCred = loginCred{username, password}
-
-	tcpConn, err := c.sessionPool.Get()
-	if err != nil {
-		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
-	}
-
-	response, err = c.DoLogin(tcpConn.GetTcpConn())
-	if err != nil {
-		c.logger.Info(errors.Wrap(err, "server Run: eppClient.Login"))
-		os.Exit(1)
-	}
-
-	c.sessionPool.Put(tcpConn)
-
-	return response, nil
-}
-
 // Send will send data to the server.
 func (c *eppClient) Send(data []byte) (response []byte, err error) {
+	var buffer bytes.Buffer
 	var session *utils.Session
 
 	session, err = c.sessionPool.Get()
@@ -64,9 +47,9 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	requestId := c.generator.GenerateRequestId()
 	sessionId := session.Id
 
-	c.logger.Info("\n ############################## START OF REQUEST :  ############################## ", string(response))
-	c.logger.Info("request:", requestId, " | ", "session:", sessionId)
-	c.logger.Info(fmt.Sprintf("%v%v", "\n --------------- XML Request: --------------- \n", string(data)))
+	buffer.WriteString(fmt.Sprintln("\n"+requestId, " | ", sessionId))
+	buffer.WriteString(fmt.Sprintf("%v%v", " --------------- XML Request: --------------- \n", string(data)))
+	c.logger.Info(buffer.String())
 
 	if err != nil {
 		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
@@ -88,10 +71,11 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 		response, err = c.write(tcpConn, data)
 	}
 
-	c.logger.Info(fmt.Sprintf("%v%v", "\n --------------- XML Response: ---------------\n", string(response)))
-	c.trackTime(startTime, "epp command response")
-
-	c.logger.Info("\n ############################## END OF REQUEST : ############################## \n\n\n")
+	buffer.Reset()
+	buffer.WriteString(fmt.Sprintln("\n"+requestId, " | ", sessionId))
+	buffer.WriteString(fmt.Sprintf("%v%v", " --------------- XML Response: ---------------", string(response)))
+	c.logger.Info(buffer.String())
+	c.trackTime(startTime, "epp command response\n\n\n")
 
 	return
 }
