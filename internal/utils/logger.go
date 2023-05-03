@@ -37,13 +37,13 @@ func GetLoggerInstance() Logger {
 
 func (l *logger) Run() {
 	// Create a file for writing logs
-	file, err := os.OpenFile("logs/api.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		panic(err)
-	}
+	// file, err := os.OpenFile("logs/api.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	// Set the logger to write output to both the file and terminal
-	l.log.SetOutput(io.MultiWriter(os.Stdout, file))
+	l.log.SetOutput(io.MultiWriter(os.Stdout))
 
 	l.log.SetFormatter(&logrus.TextFormatter{
 		DisableQuote:    true,
