@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 
 	"github.com/pkg/errors"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
@@ -33,13 +32,15 @@ func (r *registrarRepository) prepareCommand(data interface{}) ([]byte, error) {
 }
 
 func (r *registrarRepository) checkCommandErrorV2(output interface{}) (err error) {
-	result := reflect.ValueOf(output).FieldByName("Result")
+	v := reflect.ValueOf(output)
+	if v.Kind() == reflect.Ptr {
+		v = reflect.Indirect(v)
+	}
 
-	resultCodeString := result.FieldByName("Code").String()
-
-	resultCode, err := strconv.Atoi(resultCodeString)
+	result := v.FieldByName("Result")
+	resultCode := int(result.FieldByName("Code").Int())
 	if err != nil {
-		err = errors.Wrap(err, "registrarRepository SendCommand: checkCommandError: strconv.ParseUint")
+		err = errors.Wrap(err, "registrarRepository SendCommand: checkCommandError: strconv.Atoi")
 	}
 
 	value := result.FieldByName("Value")
@@ -68,25 +69,25 @@ func (r *registrarRepository) checkCommandErrorV2(output interface{}) (err error
 	return
 }
 
-func (r *registrarRepository) SendCommandV2(data interface{}) (output interface{}, err error) {
+func (r *registrarRepository) SendCommandV2(data interface{}, output interface{}) (err error) {
 	encoded, err := r.prepareCommand(data)
 	if err != nil {
-		return nil, errors.Wrap(err, "registrarRepository SendCommand: r.prepareCommand")
+		return errors.Wrap(err, "registrarRepository SendCommand: r.prepareCommand")
 	}
 
 	byteResponse, err := r.eppClient.Send(encoded)
 	if err != nil {
-		return nil, errors.Wrap(err, "registrarRepository SendCommand: r.eppClient.Send")
+		return errors.Wrap(err, "registrarRepository SendCommand: r.eppClient.Send")
 	}
 
-	err = r.XMLMapper.Decode(byteResponse, &output)
+	err = r.XMLMapper.Decode(byteResponse, output)
 	if err != nil {
-		return nil, errors.Wrap(err, "registrarRepository SendCommand: r.XMLMapper.Decode")
+		return errors.Wrap(err, "registrarRepository SendCommand: r.XMLMapper.Decode")
 	}
 
 	err = r.checkCommandErrorV2(output)
 	if err != nil {
-		return nil, errors.Wrap(err, "registrarRepository SendCommand: epp command error")
+		return errors.Wrap(err, "registrarRepository SendCommand: epp command error")
 	}
 
 	return
