@@ -23,17 +23,20 @@ func ClientErrorHandler(c *gin.Context) {
 		cause := errors.Cause(err)
 
 		logger := utils.GetLoggerInstance()
-		logger.Info(err)
 
 		switch cause.(type) {
 		case *error_types.RequestTimeOutError:
+			logger.Info(err)
 			c.String(408, "2400 Command failed; Request time out")
 		case *error_types.ControllerError:
 			// TODO with Controller Error
+			logger.Info(err)
 		case *error_types.InteractorError:
 			// TODO with Interactor Error
+			logger.Info(err)
 		case *error_types.PresenterError:
 			// TODO with Presenter Error
+			logger.Info(err)
 		case *error_types.EPPCommandError:
 			// TODO with EPPCommand Error
 			buffer := utils.GetBufferPoolInstance().Get()
@@ -57,6 +60,7 @@ func ClientErrorHandler(c *gin.Context) {
 
 			c.String(200, buffer.String())
 		default:
+			logger.Info(err)
 			c.String(200, "2400 Command failed")
 		}
 	}
