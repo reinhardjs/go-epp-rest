@@ -2,15 +2,17 @@ package utils
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"strings"
 	"sync"
 
 	"github.com/sirupsen/logrus"
 )
 
-var lock = &sync.Mutex{}
+var loggerLock = &sync.Mutex{}
 
-var instance *logger
+var loggerInstance *logger
 
 type logger struct {
 	logChannel chan string
@@ -22,26 +24,36 @@ type Logger interface {
 }
 
 func GetLoggerInstance() Logger {
-	if instance == nil {
-		lock.Lock()
-		defer lock.Unlock()
+	loggerLock.Lock()
+	defer loggerLock.Unlock()
 
-		if instance == nil {
-			instance = &logger{
+	if loggerInstance == nil {
+		if loggerInstance == nil {
+			loggerInstance = &logger{
 				logChannel: make(chan string),
 				log:        logrus.New(),
 			}
 
-			instance.Run()
+			loggerInstance.Run()
 		}
 
-		return instance
+		return loggerInstance
 	}
 
-	return instance
+	return loggerInstance
 }
 
 func (l *logger) Run() {
+	// Create a file for writing logs
+	file, err := os.OpenFile("logs/api.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Set the logger to write output to both the file and terminal
+	l.log.SetOutput(io.MultiWriter(os.Stdout, file))
+
 	l.log.SetFormatter(&logrus.TextFormatter{
 		DisableQuote:    true,
 		TimestampFormat: "2006-01-02 15:04:05.999999999",
@@ -49,17 +61,6 @@ func (l *logger) Run() {
 
 	go func(logger *logger) {
 		for msg := range logger.logChannel {
-			// Create a file for writing logs
-			// file, err := os.OpenFile("logs/api.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-
-			// defer file.Close()
-
-			// if err != nil {
-			// 	panic(err)
-			// }
-
-			// Set the logger to write output to both the file and terminal
-			// l.log.SetOutput(io.MultiWriter(os.Stdout))
 			logger.log.Info(msg)
 		}
 	}(l)
