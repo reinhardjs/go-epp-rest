@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"bytes"
 	"fmt"
 	"runtime"
 
@@ -37,7 +36,9 @@ func ClientErrorHandler(c *gin.Context) {
 			// TODO with Presenter Error
 		case *error_types.EPPCommandError:
 			// TODO with EPPCommand Error
-			var buffer bytes.Buffer
+			buffer := utils.GetBufferPoolInstance().Get()
+			defer utils.GetBufferPoolInstance().Put(buffer)
+
 			eppCommandErr := cause.(*error_types.EPPCommandError)
 			resultCode := registry_epp.ResultCode(eppCommandErr.Result.Code)
 

@@ -1,12 +1,12 @@
 package presenter
 
 import (
-	"bytes"
 	"fmt"
 
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 )
 
 type transferPresenter struct{}
@@ -16,7 +16,8 @@ func NewTransferPresenter() presenter.TransferPresenter {
 }
 
 func (p *transferPresenter) CheckSuccess(ctx infrastructure.Context, responseObject response.TransferCheckResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("%v %v", responseObject.Result.Code, responseObject.Result.Message))
 
@@ -29,7 +30,8 @@ func (p *transferPresenter) CheckSuccess(ctx infrastructure.Context, responseObj
 }
 
 func (p *transferPresenter) RequestSuccess(ctx infrastructure.Context, responseObject response.TransferRequestResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("%v %v", "1000", responseObject.Result.Message))
 
@@ -42,7 +44,8 @@ func (p *transferPresenter) RequestSuccess(ctx infrastructure.Context, responseO
 }
 
 func (p *transferPresenter) CancelSuccess(ctx infrastructure.Context, responseObject response.TransferCancelResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("%v %v", "1000", responseObject.Result.Message))
 
@@ -55,7 +58,8 @@ func (p *transferPresenter) CancelSuccess(ctx infrastructure.Context, responseOb
 }
 
 func (p *transferPresenter) ApproveSuccess(ctx infrastructure.Context, responseObject response.TransferApproveResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("%v %v", "1000", responseObject.Result.Message))
 
@@ -68,7 +72,8 @@ func (p *transferPresenter) ApproveSuccess(ctx infrastructure.Context, responseO
 }
 
 func (p *transferPresenter) RejectSuccess(ctx infrastructure.Context, responseObject response.TransferRejectResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("%v %v", "1000", responseObject.Result.Message))
 

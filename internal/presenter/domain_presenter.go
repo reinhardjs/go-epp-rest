@@ -1,7 +1,6 @@
 package presenter
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 )
 
 type domainPresenter struct{}
@@ -20,7 +20,8 @@ func NewDomainPresenter() presenter.DomainPresenter {
 
 func (p *domainPresenter) CheckSuccess(ctx infrastructure.Context, obj response.CheckDomainResponse) (err error) {
 	var res string
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	for _, element := range obj.ResultData.CheckDatas {
 		notStr := ""
@@ -36,7 +37,8 @@ func (p *domainPresenter) CheckSuccess(ctx infrastructure.Context, obj response.
 }
 
 func (p *domainPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateDomainResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	layoutFormat := "2006-01-02T15:04:05.999999999Z"
 	expiringDate, errParse := time.Parse(layoutFormat, obj.ResultData.CreatedData.ExpiredDate)
@@ -63,7 +65,8 @@ func (p *domainPresenter) DeleteSuccess(ctx infrastructure.Context, obj response
 }
 
 func (p *domainPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoDomainResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("%s domain[%s]\n", "1000", obj.ResultData.InfoData.Name))
 	buffer.WriteString(fmt.Sprintf("domainns[%s]\n", strings.Join(obj.ResultData.InfoData.NameServer.HostObject, ",")))

@@ -1,13 +1,13 @@
 package presenter
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 )
 
 type hostPresenter struct{}
@@ -17,7 +17,8 @@ func NewHostPresenter() presenter.HostPresenter {
 }
 
 func (p *hostPresenter) Check(ctx infrastructure.Context, responseObject response.CheckHostResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	for _, element := range responseObject.ResultData.CheckDatas {
 		notStr := ""
@@ -34,7 +35,8 @@ func (p *hostPresenter) Check(ctx infrastructure.Context, responseObject respons
 }
 
 func (p *hostPresenter) Create(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("%d %s", responseObject.Result.Code, responseObject.Result.Message))
 
@@ -59,7 +61,8 @@ func (p *hostPresenter) Delete(ctx infrastructure.Context, responseObject respon
 }
 
 func (p *hostPresenter) Info(ctx infrastructure.Context, responseObject response.InfoHostResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("1000 Host[%s]\n", responseObject.ResultData.InfoData.Name))
 	buffer.WriteString(fmt.Sprintf("ClientID[%s]\n", responseObject.ResultData.InfoData.ClientID))
@@ -76,7 +79,8 @@ func (p *hostPresenter) Info(ctx infrastructure.Context, responseObject response
 }
 
 func (p *hostPresenter) CheckAndCreate(ctx infrastructure.Context, responseObject response.CreateHostResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("%d %s", responseObject.Result.Code, responseObject.Result.Message))
 

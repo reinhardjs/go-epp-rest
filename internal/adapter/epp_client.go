@@ -1,7 +1,6 @@
 package adapter
 
 import (
-	"bytes"
 	"fmt"
 	"net"
 	"time"
@@ -38,7 +37,9 @@ func NewEppClient(connPool *utils.SessionPool, logger utils.Logger, username str
 
 // Send will send data to the server.
 func (c *eppClient) Send(data []byte) (response []byte, err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
+
 	var session *utils.Session
 
 	session, err = c.sessionPool.Get()

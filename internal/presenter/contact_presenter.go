@@ -1,13 +1,13 @@
 package presenter
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/response"
 	"gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase/presenter"
+	"gitlab.com/merekmu/go-epp-rest/internal/utils"
 )
 
 type contactPresenter struct{}
@@ -17,7 +17,8 @@ func NewContactPresenter() presenter.ContactPresenter {
 }
 
 func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response.CheckContactResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	for _, element := range obj.ResultData.CheckDatas {
 		notStr := ""
@@ -33,7 +34,8 @@ func (p *contactPresenter) CheckSuccess(ctx infrastructure.Context, obj response
 }
 
 func (p *contactPresenter) CreateSuccess(ctx infrastructure.Context, obj response.CreateContactResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString(fmt.Sprintf("1000 %s", obj.ResultData.CreateData.Id))
 
@@ -60,7 +62,8 @@ func (p *contactPresenter) DeleteSuccess(ctx infrastructure.Context, obj respons
 }
 
 func (p *contactPresenter) InfoSuccess(ctx infrastructure.Context, obj response.InfoContactResponse) (err error) {
-	var buffer bytes.Buffer
+	buffer := utils.GetBufferPoolInstance().Get()
+	defer utils.GetBufferPoolInstance().Put(buffer)
 
 	buffer.WriteString("1000 CONTACT INFO IS::\n")
 	buffer.WriteString(fmt.Sprintf("ID :%s\n", obj.ResultData.InfoData.Name))
