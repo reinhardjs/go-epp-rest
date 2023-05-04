@@ -2,12 +2,12 @@ package utils
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"sync"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var loggerLock = &sync.Mutex{}
@@ -16,7 +16,7 @@ var loggerInstance *logger
 
 type logger struct {
 	logChannel chan string
-	log        *logrus.Logger
+	log        *zap.Logger
 }
 
 type Logger interface {
@@ -29,12 +29,9 @@ func GetLoggerInstance() Logger {
 
 	if loggerInstance == nil {
 		if loggerInstance == nil {
-			loggerInstance = &logger{
-				logChannel: make(chan string),
-				log:        logrus.New(),
-			}
+			loggerInstance = &logger{}
 
-			loggerInstance.Run()
+			loggerInstance.Init()
 		}
 
 		return loggerInstance
@@ -43,21 +40,21 @@ func GetLoggerInstance() Logger {
 	return loggerInstance
 }
 
-func (l *logger) Run() {
-	// Create a file for writing logs
-	file, err := os.OpenFile("logs/api.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+func (l *logger) Init() {
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	fileEncoder := zapcore.NewConsoleEncoder(config)
+	consoleEncoder := zapcore.NewConsoleEncoder(config)
+	logFile, _ := os.OpenFile("logs/api.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	writer := zapcore.AddSync(logFile)
+	defaultLogLevel := zapcore.DebugLevel
+	core := zapcore.NewTee(
+		zapcore.NewCore(fileEncoder, writer, defaultLogLevel),
+		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
+	)
 
-	if err != nil {
-		panic(err)
-	}
-
-	// Set the logger to write output to both the file and terminal
-	l.log.SetOutput(io.MultiWriter(os.Stdout, file))
-
-	l.log.SetFormatter(&logrus.TextFormatter{
-		DisableQuote:    true,
-		TimestampFormat: "2006-01-02 15:04:05.999999999",
-	})
+	l.log = zap.New(core, zap.AddStacktrace(zapcore.ErrorLevel))
+	l.logChannel = make(chan string)
 
 	go func(logger *logger) {
 		for msg := range logger.logChannel {
