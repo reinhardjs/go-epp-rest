@@ -2,8 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"strings"
 	"sync"
 
@@ -52,16 +50,16 @@ func (l *logger) Run() {
 	go func(logger *logger) {
 		for msg := range logger.logChannel {
 			// Create a file for writing logs
-			file, err := os.OpenFile("logs/api.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+			// file, err := os.OpenFile("logs/api.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 
-			defer file.Close()
+			// defer file.Close()
 
-			if err != nil {
-				panic(err)
-			}
+			// if err != nil {
+			// 	panic(err)
+			// }
 
 			// Set the logger to write output to both the file and terminal
-			l.log.SetOutput(io.MultiWriter(os.Stdout, file))
+			// l.log.SetOutput(io.MultiWriter(os.Stdout))
 			logger.log.Info(msg)
 		}
 	}(l)
