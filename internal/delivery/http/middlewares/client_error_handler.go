@@ -44,20 +44,16 @@ func ClientErrorHandler(c *gin.Context) {
 
 			buffer.WriteString(fmt.Sprintf("%d %s", resultCode.Code(), resultCode.Message()))
 
-			// eppCommandError := cause.(*error_types.EPPCommandError)
+			eppCommandError := cause.(*error_types.EPPCommandError)
 
-			// if len(eppCommandError.Result.Value.Texts) > 0 {
-			// 	value := eppCommandError.Result.Value.Texts[0]
-			// 	re, _ := regexp.Compile(`\[(.*?)\]`)
-			// 	match := re.FindStringSubmatch(value)
-			// 	if len(match) > 1 {
-			// 		buffer.WriteString(fmt.Sprintf(" | %s", match[1]))
-			// 	}
-			// }
+			if eppCommandError.Result.ExternalValue != nil {
+				buffer.WriteString(fmt.Sprintf(" | %s %s", eppCommandError.Result.ExternalValue.Value.ReasonCode, eppCommandError.Result.ExternalValue.Reason))
+			}
 
-			// if eppCommandError.Result.ExternalValue != nil {
-			// 	buffer.WriteString(fmt.Sprintf(" | %s %s", eppCommandError.Result.ExternalValue.Value.ReasonCode, eppCommandError.Result.ExternalValue.Reason))
-			// }
+			if len(eppCommandError.Result.Value.Texts) > 0 {
+				value := eppCommandError.Result.Value.Texts[0]
+				buffer.WriteString(fmt.Sprintf(" | %s", value))
+			}
 
 			c.String(200, buffer.String())
 		default:
