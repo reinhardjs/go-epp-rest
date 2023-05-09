@@ -40,53 +40,40 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	buffer := utils.GetBufferPoolInstance().Get()
 	defer utils.GetBufferPoolInstance().Put(buffer)
 
-	// var session *utils.Session
+	var session *utils.Session
 
-	// session, err = c.sessionPool.Get()
-	// defer c.sessionPool.Put(session)
+	session, err = c.sessionPool.Get()
+	defer c.sessionPool.Put(session)
 
-	// requestId := c.generator.GenerateRequestId()
-	// sessionId := session.Id
+	requestId := c.generator.GenerateRequestId()
+	sessionId := session.Id
 
-	// buffer.WriteString(fmt.Sprintln("\n"+requestId, " | ", sessionId))
-	// buffer.WriteString(fmt.Sprintf("%v%v", " --------------- XML Request: --------------- \n", string(data)))
-	// c.logger.Info(buffer.String())
+	buffer.WriteString(fmt.Sprintln("\n"+requestId, " | ", sessionId))
+	buffer.WriteString(fmt.Sprintf("%v%v", " --------------- XML Request: --------------- \n", string(data)))
+	c.logger.Info(buffer.String())
 
-	// if err != nil {
-	// 	return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
-	// }
+	if err != nil {
+		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
+	}
 
 	var startTime time.Time
-	// var tcpConn net.Conn = session.GetTcpConn()
+	var tcpConn net.Conn = session.GetTcpConn()
 	startTime = time.Now()
-	// if tcpConn != nil {
-	// 	response, err = c.write(tcpConn, data)
-	// }
+	if tcpConn != nil {
+		response, err = c.write(tcpConn, data)
+	}
 
-	// if tcpConn == nil || c.isNetConnClosedErr(err) {
-	// 	tcpConn, err = c.sessionPool.RenewTcpConn(session)
-	// 	if err != nil {
-	// 		return
-	// 	}
+	if tcpConn == nil || c.isNetConnClosedErr(err) {
+		tcpConn, err = c.sessionPool.RenewTcpConn(session)
+		if err != nil {
+			return
+		}
 
-	// 	response, err = c.write(tcpConn, data)
-	// }
-
-	response = []byte(`<?xml version="1.0" encoding="UTF-8"?>
-	<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-	  <response>
-		<result code="2303">
-		  <msg>Object does not exist</msg>
-		</result>
-		<trID>
-		  <clTRID>5425BD57-5FE2-4AD9-BE18-9E30F3374C5C</clTRID>
-		  <svTRID>533e9b20-9e29-402a-9411-2abf48e4046e</svTRID>
-		</trID>
-	  </response>
-	</epp>`)
+		response, err = c.write(tcpConn, data)
+	}
 
 	buffer.Reset()
-	// buffer.WriteString(fmt.Sprintln("\n"+requestId, " | ", sessionId))
+	buffer.WriteString(fmt.Sprintln("\n"+requestId, " | ", sessionId))
 	buffer.WriteString(fmt.Sprintf("%v%v", " --------------- XML Response: ---------------", string(response)))
 	c.logger.Info(buffer.String())
 	c.trackTime(startTime, "epp command response")
