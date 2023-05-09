@@ -273,66 +273,64 @@ func (p *SessionPool) openNewTcpConnection() (net.Conn, error) {
 // and attempts to fulfil any incoming requests
 func (p *SessionPool) handleConnectionRequest() {
 	for req := range p.requestChan {
-		go func(req *connRequest) {
-			secondsTime, err := strconv.Atoi(os.Getenv(constants.REQUEST_TIMEOUT))
-			if err != nil {
-				req.errChan <- errors.New("REQUEST_TIMEOUT env value is not a valid number")
+		secondsTime, err := strconv.Atoi(os.Getenv(constants.REQUEST_TIMEOUT))
+		if err != nil {
+			req.errChan <- errors.New("REQUEST_TIMEOUT env value is not a valid number")
+		}
+
+		var (
+			requestDone = false
+			hasTimeout  = false
+			requestFail = false
+
+			timeoutChan = time.After(time.Duration(secondsTime) * time.Second)
+		)
+
+		for {
+			if requestDone || hasTimeout || requestFail {
+				break
 			}
+			select {
+			// request timeout
+			case <-timeoutChan:
+				hasTimeout = true
+				err := error_types.RequestTimeOutError{Detail: "queue waiting time has timed out"}
+				req.errChan <- &err
+			default:
+				p.mu.Lock()
 
-			var (
-				requestDone = false
-				hasTimeout  = false
-				requestFail = false
-
-				timeoutChan = time.After(time.Duration(secondsTime) * time.Second)
-			)
-
-			for {
-				if requestDone || hasTimeout || requestFail {
-					break
-				}
-				select {
-				// request timeout
-				case <-timeoutChan:
-					hasTimeout = true
-					err := error_types.RequestTimeOutError{Detail: "queue waiting time has timed out"}
-					req.errChan <- &err
-				default:
-					p.mu.Lock()
-
-					// First, we try to get an idle conn.
-					// If fail, we try to open a new conn.
-					// If both does not work, we try again in the next loop until timeout.
-					numIdle := len(p.idleConns)
-					if numIdle > 0 {
-						for _, c := range p.idleConns {
-							delete(p.idleConns, c.Id)
-							p.mu.Unlock()
-							req.connChan <- c // give conn
-							requestDone = true
-							break
-						}
-					} else if p.maxOpenCount > 0 && p.numOpen < p.maxOpenCount {
-						p.numOpen++
+				// First, we try to get an idle conn.
+				// If fail, we try to open a new conn.
+				// If both does not work, we try again in the next loop until timeout.
+				numIdle := len(p.idleConns)
+				if numIdle > 0 {
+					for _, c := range p.idleConns {
+						delete(p.idleConns, c.Id)
 						p.mu.Unlock()
-
-						c, err := p.createNewSession()
-						if err != nil {
-							p.mu.Lock()
-							p.numOpen--
-							p.mu.Unlock()
-							requestFail = true
-							req.errChan <- err // give error
-						} else {
-							requestDone = true
-							req.connChan <- c // give conn
-						}
-					} else {
-						p.mu.Unlock()
+						req.connChan <- c // give conn
+						requestDone = true
+						break
 					}
+				} else if p.maxOpenCount > 0 && p.numOpen < p.maxOpenCount {
+					p.numOpen++
+					p.mu.Unlock()
+
+					c, err := p.createNewSession()
+					if err != nil {
+						p.mu.Lock()
+						p.numOpen--
+						p.mu.Unlock()
+						requestFail = true
+						req.errChan <- err // give error
+					} else {
+						requestDone = true
+						req.connChan <- c // give conn
+					}
+				} else {
+					p.mu.Unlock()
 				}
 			}
-		}(req)
+		}
 	}
 }
 
