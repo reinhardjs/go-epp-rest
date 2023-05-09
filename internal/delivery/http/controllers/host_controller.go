@@ -3,10 +3,9 @@ package controllers
 import (
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
-	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -16,13 +15,13 @@ type hostController struct {
 }
 
 type HostController interface {
-	Check(c infrastructure.Context)
-	Create(c infrastructure.Context)
-	Update(c infrastructure.Context)
-	Delete(c infrastructure.Context)
-	Info(c infrastructure.Context)
-	Change(c infrastructure.Context)
-	CheckAndCreate(c infrastructure.Context)
+	Check(c *gin.Context)
+	Create(c *gin.Context)
+	Update(c *gin.Context)
+	Delete(c *gin.Context)
+	Info(c *gin.Context)
+	Change(c *gin.Context)
+	CheckAndCreate(c *gin.Context)
 }
 
 func NewHostController(interactor usecase.HostInteractor) HostController {
@@ -31,9 +30,7 @@ func NewHostController(interactor usecase.HostInteractor) HostController {
 	}
 }
 
-func (controller *hostController) Check(ctx infrastructure.Context) {
-	// defer ctx.OnClose()
-
+func (controller *hostController) Check(ctx *gin.Context) {
 	var hostCheckQuery request.HostCheckQuery
 	ctx.BindQuery(&hostCheckQuery)
 
@@ -45,16 +42,14 @@ func (controller *hostController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, hostCheckQuery.Extension, "eng")
+	err := controller.interactor.Check(ctx, data, hostCheckQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Check")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *hostController) Create(ctx infrastructure.Context) {
-	// defer ctx.OnClose()
-
+func (controller *hostController) Create(ctx *gin.Context) {
 	var hostCreateQuery request.HostCreateQuery
 	ctx.BindQuery(&hostCreateQuery)
 
@@ -82,16 +77,14 @@ func (controller *hostController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
+	err := controller.interactor.Create(ctx, data, hostCreateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Create")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *hostController) Update(ctx infrastructure.Context) {
-	// defer ctx.OnClose()
-
+func (controller *hostController) Update(ctx *gin.Context) {
 	var hostUpdateQuery request.HostUpdateQuery
 	ctx.BindQuery(&hostUpdateQuery)
 
@@ -146,16 +139,14 @@ func (controller *hostController) Update(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.Update(ctx.(presenter_infrastructure.Context), data, hostUpdateQuery.Extension, "eng")
+	err := controller.interactor.Update(ctx, data, hostUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Update")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *hostController) Delete(ctx infrastructure.Context) {
-	// defer ctx.OnClose()
-
+func (controller *hostController) Delete(ctx *gin.Context) {
 	var hostDeleteQuery request.HostDeleteQuery
 	ctx.BindQuery(&hostDeleteQuery)
 
@@ -171,16 +162,14 @@ func (controller *hostController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, hostDeleteQuery.Extension, "eng")
+	err := controller.interactor.Delete(ctx, data, hostDeleteQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Delete")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *hostController) Info(ctx infrastructure.Context) {
-	// defer ctx.OnClose()
-
+func (controller *hostController) Info(ctx *gin.Context) {
 	var hostInfoQuery request.HostInfoQuery
 	ctx.BindQuery(&hostInfoQuery)
 
@@ -196,16 +185,14 @@ func (controller *hostController) Info(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, hostInfoQuery.Extension, "eng")
+	err := controller.interactor.Info(ctx, data, hostInfoQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Info")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *hostController) Change(ctx infrastructure.Context) {
-	// defer ctx.OnClose()
-
+func (controller *hostController) Change(ctx *gin.Context) {
 	var hostChangeQuery request.HostChangeQuery
 	ctx.BindQuery(&hostChangeQuery)
 
@@ -229,16 +216,14 @@ func (controller *hostController) Change(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.Change(ctx.(presenter_infrastructure.Context), data, hostChangeQuery.Extension, "eng")
+	err := controller.interactor.Change(ctx, data, hostChangeQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Change")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *hostController) CheckAndCreate(ctx infrastructure.Context) {
-	// defer ctx.OnClose()
-
+func (controller *hostController) CheckAndCreate(ctx *gin.Context) {
 	var hostCreateQuery request.HostCheckAndCreateQuery
 	ctx.BindQuery(&hostCreateQuery)
 
@@ -262,7 +247,7 @@ func (controller *hostController) CheckAndCreate(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.CheckAndCreate(ctx.(presenter_infrastructure.Context), data, hostCreateQuery.Extension, "eng")
+	err := controller.interactor.CheckAndCreate(ctx, data, hostCreateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController CheckAndCreate")
 		ctx.AbortWithError(200, err)

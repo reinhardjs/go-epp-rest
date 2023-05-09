@@ -2,7 +2,6 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/merekmu/go-epp-rest/internal/adapter"
 	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers"
 )
 
@@ -62,15 +61,15 @@ func (h *handler) apiV1(c *gin.Context) {
 }
 
 func (h *handler) domainCheck(c *gin.Context) {
-	h.appController.Domain.Check(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.Check(c)
 }
 
 func (h *handler) domainCreate(c *gin.Context) {
-	h.appController.Domain.Create(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.Create(c)
 }
 
 func (h *handler) domainDelete(c *gin.Context) {
-	h.appController.Domain.Delete(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.Delete(c)
 }
 
 func (h *handler) domainInfo(c *gin.Context) {
@@ -78,97 +77,97 @@ func (h *handler) domainInfo(c *gin.Context) {
 }
 
 func (h *handler) domainSecDNSUpdate(c *gin.Context) {
-	h.appController.Domain.SecDNSUpdate(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.SecDNSUpdate(c)
 }
 
 func (h *handler) domainContactUpdate(c *gin.Context) {
-	h.appController.Domain.ContactUpdate(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.ContactUpdate(c)
 }
 
 func (h *handler) domainStatusUpdate(c *gin.Context) {
-	h.appController.Domain.StatusUpdate(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.StatusUpdate(c)
 }
 
 func (h *handler) domainAuthInfoUpdate(c *gin.Context) {
-	h.appController.Domain.AuthInfoUpdate(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.AuthInfoUpdate(c)
 }
 
 func (h *handler) domainNameserverUpdate(c *gin.Context) {
-	h.appController.Domain.NameserverUpdate(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.NameserverUpdate(c)
 }
 
 func (h *handler) domainRenew(c *gin.Context) {
-	h.appController.Domain.Renew(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.Renew(c)
 }
 
 func (h *handler) hostCheck(c *gin.Context) {
-	h.appController.Host.Check(&adapter.ContextAdapter{Context: c})
+	h.appController.Host.Check(c)
 }
 
 func (h *handler) hostCreate(c *gin.Context) {
-	h.appController.Host.Create(&adapter.ContextAdapter{Context: c})
+	h.appController.Host.Create(c)
 }
 
 func (h *handler) hostUpdate(c *gin.Context) {
-	h.appController.Host.Update(&adapter.ContextAdapter{Context: c})
+	h.appController.Host.Update(c)
 }
 
 func (h *handler) hostDelete(c *gin.Context) {
-	h.appController.Host.Delete(&adapter.ContextAdapter{Context: c})
+	h.appController.Host.Delete(c)
 }
 
 func (h *handler) hostInfo(c *gin.Context) {
-	h.appController.Host.Info(&adapter.ContextAdapter{Context: c})
+	h.appController.Host.Info(c)
 }
 
 func (h *handler) hostChange(c *gin.Context) {
-	h.appController.Host.Change(&adapter.ContextAdapter{Context: c})
+	h.appController.Host.Change(c)
 }
 
 func (h *handler) hostCheckAndCreate(c *gin.Context) {
-	h.appController.Host.CheckAndCreate(&adapter.ContextAdapter{Context: c})
+	h.appController.Host.CheckAndCreate(c)
 }
 
 func (h *handler) contactCheck(c *gin.Context) {
-	h.appController.Contact.Check(&adapter.ContextAdapter{Context: c})
+	h.appController.Contact.Check(c)
 }
 
 func (h *handler) contactCreate(c *gin.Context) {
-	h.appController.Contact.Create(&adapter.ContextAdapter{Context: c})
+	h.appController.Contact.Create(c)
 }
 
 func (h *handler) contactUpdate(c *gin.Context) {
-	h.appController.Contact.Update(&adapter.ContextAdapter{Context: c})
+	h.appController.Contact.Update(c)
 }
 
 func (h *handler) contactDelete(c *gin.Context) {
-	h.appController.Contact.Delete(&adapter.ContextAdapter{Context: c})
+	h.appController.Contact.Delete(c)
 }
 
 func (h *handler) contactInfo(c *gin.Context) {
-	h.appController.Contact.Info(&adapter.ContextAdapter{Context: c})
+	h.appController.Contact.Info(c)
 }
 
 func (h *handler) transferCheck(c *gin.Context) {
-	h.appController.Transfer.Check(&adapter.ContextAdapter{Context: c})
+	h.appController.Transfer.Check(c)
 }
 
 func (h *handler) transferRequest(c *gin.Context) {
-	h.appController.Transfer.Request(&adapter.ContextAdapter{Context: c})
+	h.appController.Transfer.Request(c)
 }
 
 func (h *handler) transferCancel(c *gin.Context) {
-	h.appController.Transfer.Cancel(&adapter.ContextAdapter{Context: c})
+	h.appController.Transfer.Cancel(c)
 }
 
 func (h *handler) transferApprove(c *gin.Context) {
-	h.appController.Transfer.Approve(&adapter.ContextAdapter{Context: c})
+	h.appController.Transfer.Approve(c)
 }
 
 func (h *handler) transferReject(c *gin.Context) {
-	h.appController.Transfer.Approve(&adapter.ContextAdapter{Context: c})
+	h.appController.Transfer.Approve(c)
 }
 
 func (h *handler) poll(c *gin.Context) {
-	h.appController.Poll.Poll(&adapter.ContextAdapter{Context: c})
+	h.appController.Poll.Poll(c)
 }

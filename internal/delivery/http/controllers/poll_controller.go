@@ -1,9 +1,8 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
-	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 )
 
@@ -12,7 +11,7 @@ type pollController struct {
 }
 
 type PollController interface {
-	Poll(c infrastructure.Context)
+	Poll(c *gin.Context)
 }
 
 func NewPollController(interactor usecase.PollInteractor) PollController {
@@ -21,10 +20,8 @@ func NewPollController(interactor usecase.PollInteractor) PollController {
 	}
 }
 
-func (controller *pollController) Poll(ctx infrastructure.Context) {
-	// defer ctx.OnClose()
-
-	err := controller.interactor.Poll(ctx.(presenter_infrastructure.Context))
+func (controller *pollController) Poll(ctx *gin.Context) {
+	err := controller.interactor.Poll(ctx)
 	if err != nil {
 		err = errors.Wrap(err, "PollController Poll")
 		ctx.AbortWithError(200, err)

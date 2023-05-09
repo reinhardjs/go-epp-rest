@@ -6,10 +6,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"gitlab.com/merekmu/go-epp-rest/internal/delivery/http/controllers/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
-	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
 )
@@ -19,16 +18,16 @@ type domainController struct {
 }
 
 type DomainController interface {
-	Check(c infrastructure.Context)
-	Create(c infrastructure.Context)
-	Delete(c infrastructure.Context)
-	Info(c infrastructure.Context)
-	SecDNSUpdate(c infrastructure.Context)
-	ContactUpdate(c infrastructure.Context)
-	StatusUpdate(c infrastructure.Context)
-	AuthInfoUpdate(c infrastructure.Context)
-	NameserverUpdate(c infrastructure.Context)
-	Renew(c infrastructure.Context)
+	Check(c *gin.Context)
+	Create(c *gin.Context)
+	Delete(c *gin.Context)
+	Info(c *gin.Context)
+	SecDNSUpdate(c *gin.Context)
+	ContactUpdate(c *gin.Context)
+	StatusUpdate(c *gin.Context)
+	AuthInfoUpdate(c *gin.Context)
+	NameserverUpdate(c *gin.Context)
+	Renew(c *gin.Context)
 }
 
 func NewDomainController(interactor usecase.DomainInteractor) DomainController {
@@ -37,7 +36,7 @@ func NewDomainController(interactor usecase.DomainInteractor) DomainController {
 	}
 }
 
-func (controller *domainController) Check(ctx infrastructure.Context) {
+func (controller *domainController) Check(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	var domainCheckQuery request.DomainCheckQuery
@@ -51,14 +50,14 @@ func (controller *domainController) Check(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.Check(ctx.(presenter_infrastructure.Context), data, "com", "eng")
+	err := controller.interactor.Check(ctx, data, "com", "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Check")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *domainController) Create(ctx infrastructure.Context) {
+func (controller *domainController) Create(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	var domainCreateQuery request.DomainCreateQuery
@@ -110,14 +109,14 @@ func (controller *domainController) Create(ctx infrastructure.Context) {
 		},
 	}
 
-	err = controller.interactor.Create(ctx.(presenter_infrastructure.Context), data, domainCreateQuery.Extension, "eng")
+	err = controller.interactor.Create(ctx, data, domainCreateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Create")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *domainController) Delete(ctx infrastructure.Context) {
+func (controller *domainController) Delete(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	var domainDeleteQuery request.DomainDeleteQuery
@@ -129,14 +128,14 @@ func (controller *domainController) Delete(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.Delete(ctx.(presenter_infrastructure.Context), data, domainDeleteQuery.Extension, "eng")
+	err := controller.interactor.Delete(ctx, data, domainDeleteQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Delete")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *domainController) Info(ctx infrastructure.Context) {
+func (controller *domainController) Info(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	// var domainInfoQuery request.DomainInfoQuery
@@ -157,14 +156,14 @@ func (controller *domainController) Info(ctx infrastructure.Context) {
 	// 	},
 	// }
 
-	// err = controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
+	// err = controller.interactor.Info(ctx, data, domainInfoQuery.Extension, "eng")
 	// if err != nil {
 	// 	err = errors.Wrap(err, "DomainController Info")
 	// 	ctx.AbortWithError(200, err)
 	// }
 }
 
-func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
+func (controller *domainController) SecDNSUpdate(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	AddDSDataList := []types.DSData{}
@@ -292,14 +291,14 @@ func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
 		}
 	}
 
-	err := controller.interactor.SecDNSUpdate(ctx.(presenter_infrastructure.Context), data, secDNSUpdateQuery.Extension, "eng")
+	err := controller.interactor.SecDNSUpdate(ctx, data, secDNSUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController SecDNSUpdate")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
+func (controller *domainController) ContactUpdate(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	var domainContactUpdateQuery request.DomainContactUpdateQuery
@@ -374,14 +373,14 @@ func (controller *domainController) ContactUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.ContactUpdate(ctx.(presenter_infrastructure.Context), data, domainContactUpdateQuery.Extension, "eng")
+	err := controller.interactor.ContactUpdate(ctx, data, domainContactUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController ContactUpdate")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
+func (controller *domainController) StatusUpdate(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	var domainStatusUpdateQuery request.DomainStatusUpdateQuery
@@ -445,14 +444,14 @@ func (controller *domainController) StatusUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.StatusUpdate(ctx.(presenter_infrastructure.Context), data, domainStatusUpdateQuery.Extension, "eng")
+	err := controller.interactor.StatusUpdate(ctx, data, domainStatusUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController StatusUpdate")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
+func (controller *domainController) AuthInfoUpdate(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	var domainAuthInfoUpdateQuery request.DomainAuthInfoUpdateQuery
@@ -473,14 +472,14 @@ func (controller *domainController) AuthInfoUpdate(ctx infrastructure.Context) {
 		},
 	}
 
-	err := controller.interactor.AuthInfoUpdate(ctx.(presenter_infrastructure.Context), data, domainAuthInfoUpdateQuery.Extension, "eng")
+	err := controller.interactor.AuthInfoUpdate(ctx, data, domainAuthInfoUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController AuthInfoUpdate")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *domainController) NameserverUpdate(ctx infrastructure.Context) {
+func (controller *domainController) NameserverUpdate(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	var domainNameserverUpdateQuery request.DomainNameserverUpdateQuery
@@ -534,14 +533,14 @@ func (controller *domainController) NameserverUpdate(ctx infrastructure.Context)
 		},
 	}
 
-	err := controller.interactor.NameserverUpdate(ctx.(presenter_infrastructure.Context), data, domainNameserverUpdateQuery.Extension, "eng")
+	err := controller.interactor.NameserverUpdate(ctx, data, domainNameserverUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController NameserverUpdate")
 		ctx.AbortWithError(200, err)
 	}
 }
 
-func (controller *domainController) Renew(ctx infrastructure.Context) {
+func (controller *domainController) Renew(ctx *gin.Context) {
 	// defer ctx.OnClose()
 
 	var domainRenewQuery request.DomainRenewQuery
@@ -571,7 +570,7 @@ func (controller *domainController) Renew(ctx infrastructure.Context) {
 		},
 	}
 
-	err = controller.interactor.Renew(ctx.(presenter_infrastructure.Context), data, domainRenewQuery.Extension, "eng")
+	err = controller.interactor.Renew(ctx, data, domainRenewQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Renew")
 		ctx.AbortWithError(200, err)
