@@ -30,7 +30,7 @@ func NewContactController(interactor usecase.ContactInteractor) ContactControlle
 }
 
 func (controller contactController) Check(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var contactCheckQuery request.ContactCheckQuery
 	ctx.BindQuery(&contactCheckQuery)
@@ -51,7 +51,7 @@ func (controller contactController) Check(ctx infrastructure.Context) {
 }
 
 func (controller contactController) Create(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var contactCreateQuery request.ContactCreateQuery
 	ctx.BindQuery(&contactCreateQuery)
@@ -95,7 +95,7 @@ func (controller contactController) Create(ctx infrastructure.Context) {
 }
 
 func (controller contactController) Update(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var contactUpdateQuery request.ContactUpdateQuery
 	ctx.BindQuery(&contactUpdateQuery)
@@ -139,7 +139,7 @@ func (controller contactController) Update(ctx infrastructure.Context) {
 }
 
 func (controller contactController) Delete(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var contactDeleteQuery request.ContactDeleteQuery
 	ctx.BindQuery(&contactDeleteQuery)
@@ -158,7 +158,7 @@ func (controller contactController) Delete(ctx infrastructure.Context) {
 }
 
 func (controller contactController) Info(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var contactInfoQuery request.ContactInfoQuery
 	ctx.BindQuery(&contactInfoQuery)

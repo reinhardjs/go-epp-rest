@@ -28,7 +28,7 @@ func NewTransferController(interactor usecase.TransferInteractor) TransferContro
 }
 
 func (controller *transferController) Check(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var transferCheckQuery request.TransferCheckQuery
 	ctx.BindQuery(&transferCheckQuery)
@@ -50,7 +50,7 @@ func (controller *transferController) Check(ctx infrastructure.Context) {
 }
 
 func (controller *transferController) Request(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var transferRequestQuery request.TransferRequestQuery
 	ctx.BindQuery(&transferRequestQuery)
@@ -99,7 +99,7 @@ func (controller *transferController) Cancel(ctx infrastructure.Context) {
 }
 
 func (controller *transferController) Approve(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var transferApproveQuery request.TransferApproveQuery
 	ctx.BindQuery(&transferApproveQuery)
@@ -124,7 +124,7 @@ func (controller *transferController) Approve(ctx infrastructure.Context) {
 }
 
 func (controller *transferController) Reject(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
 	var transferRejectQuery request.TransferRejectQuery
 	ctx.BindQuery(&transferRejectQuery)

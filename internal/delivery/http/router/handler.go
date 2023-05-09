@@ -74,7 +74,7 @@ func (h *handler) domainDelete(c *gin.Context) {
 }
 
 func (h *handler) domainInfo(c *gin.Context) {
-	h.appController.Domain.Info(&adapter.ContextAdapter{Context: c})
+	h.appController.Domain.Info(c)
 }
 
 func (h *handler) domainSecDNSUpdate(c *gin.Context) {

@@ -8,9 +8,9 @@ type ContextAdapter struct {
 	*gin.Context
 }
 
-func (c *ContextAdapter) OnClose() {
-	// Do something on request closed
-}
+// func (c *ContextAdapter) OnClose() {
+// 	// Do something on request closed
+// }
 
 func (c *ContextAdapter) AbortWithError(code int, fatalErr error) *gin.Error {
 	return c.Context.AbortWithError(code, fatalErr)
