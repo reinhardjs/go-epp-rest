@@ -114,11 +114,6 @@ func (p *SessionPool) RenewTcpConn(c *Session) (net.Conn, error) {
 
 	p.renewChan <- req
 
-	defer func() {
-		close(req.tcpConn)
-		close(req.errChan)
-	}()
-
 	select {
 	case tcpConn := <-req.tcpConn:
 		return tcpConn, nil
@@ -374,6 +369,10 @@ func (p *SessionPool) handleConnectionRenewal() {
 				req.tcpConn <- conn
 				req.session.SetConn(conn)
 			}
+
+			// close channels
+			close(req.tcpConn)
+			close(req.errChan)
 		}(req)
 	}
 }
