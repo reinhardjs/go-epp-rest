@@ -52,7 +52,7 @@ func (controller *domainController) Check(ctx *gin.Context) {
 	err := controller.interactor.Check(ctx, data, "com", "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Check")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -72,7 +72,7 @@ func (controller *domainController) Create(ctx *gin.Context) {
 	period, err := strconv.Atoi(domainCreateQuery.Period)
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Check: strconv.Atoi")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 
 	data := types.DomainCreateType{
@@ -109,7 +109,7 @@ func (controller *domainController) Create(ctx *gin.Context) {
 	err = controller.interactor.Create(ctx, data, domainCreateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Create")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -126,7 +126,7 @@ func (controller *domainController) Delete(ctx *gin.Context) {
 	err := controller.interactor.Delete(ctx, data, domainDeleteQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Delete")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -152,7 +152,7 @@ func (controller *domainController) Info(ctx *gin.Context) {
 	err = controller.interactor.Info(ctx, data, domainInfoQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Info")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -285,7 +285,7 @@ func (controller *domainController) SecDNSUpdate(ctx *gin.Context) {
 	err := controller.interactor.SecDNSUpdate(ctx, data, secDNSUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController SecDNSUpdate")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -365,7 +365,7 @@ func (controller *domainController) ContactUpdate(ctx *gin.Context) {
 	err := controller.interactor.ContactUpdate(ctx, data, domainContactUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController ContactUpdate")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -434,7 +434,7 @@ func (controller *domainController) StatusUpdate(ctx *gin.Context) {
 	err := controller.interactor.StatusUpdate(ctx, data, domainStatusUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController StatusUpdate")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -460,7 +460,7 @@ func (controller *domainController) AuthInfoUpdate(ctx *gin.Context) {
 	err := controller.interactor.AuthInfoUpdate(ctx, data, domainAuthInfoUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController AuthInfoUpdate")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -519,7 +519,7 @@ func (controller *domainController) NameserverUpdate(ctx *gin.Context) {
 	err := controller.interactor.NameserverUpdate(ctx, data, domainNameserverUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController NameserverUpdate")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -530,14 +530,14 @@ func (controller *domainController) Renew(ctx *gin.Context) {
 	period, err := strconv.Atoi(domainRenewQuery.Period)
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Renew: strconv.Atoi")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 
 	layoutFormat := "2006-01-02T15:04:05"
 	currentExpireDate, err := time.Parse(layoutFormat, fmt.Sprintf("%vT23:59:59", domainRenewQuery.CurrentExpireDate))
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Renew: time.Parse")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 
 	data := types.DomainRenewType{
@@ -554,6 +554,6 @@ func (controller *domainController) Renew(ctx *gin.Context) {
 	err = controller.interactor.Renew(ctx, data, domainRenewQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "DomainController Renew")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }

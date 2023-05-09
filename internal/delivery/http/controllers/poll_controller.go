@@ -24,6 +24,6 @@ func (controller *pollController) Poll(ctx *gin.Context) {
 	err := controller.interactor.Poll(ctx)
 	if err != nil {
 		err = errors.Wrap(err, "PollController Poll")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }

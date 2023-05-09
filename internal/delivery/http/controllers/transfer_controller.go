@@ -42,7 +42,7 @@ func (controller *transferController) Check(ctx *gin.Context) {
 	err := controller.interactor.Check(ctx, data, transferCheckQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "TransferController Check")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -65,7 +65,7 @@ func (controller *transferController) Request(ctx *gin.Context) {
 	err := controller.interactor.Request(ctx, data, transferRequestQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "TransferController Request")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -89,7 +89,7 @@ func (controller *transferController) Cancel(ctx *gin.Context) {
 	err := controller.interactor.Cancel(ctx, data, transferCancelQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "TransferController Cancel")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -112,7 +112,7 @@ func (controller *transferController) Approve(ctx *gin.Context) {
 	err := controller.interactor.Approve(ctx, data, transferApproveQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "TransferController Approve")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -135,6 +135,6 @@ func (controller *transferController) Reject(ctx *gin.Context) {
 	err := controller.interactor.Reject(ctx, data, transferRejectQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "TransferController Reject")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }

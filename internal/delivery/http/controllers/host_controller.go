@@ -45,7 +45,7 @@ func (controller *hostController) Check(ctx *gin.Context) {
 	err := controller.interactor.Check(ctx, data, hostCheckQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Check")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -80,7 +80,7 @@ func (controller *hostController) Create(ctx *gin.Context) {
 	err := controller.interactor.Create(ctx, data, hostCreateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Create")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -142,7 +142,7 @@ func (controller *hostController) Update(ctx *gin.Context) {
 	err := controller.interactor.Update(ctx, data, hostUpdateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Update")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -165,7 +165,7 @@ func (controller *hostController) Delete(ctx *gin.Context) {
 	err := controller.interactor.Delete(ctx, data, hostDeleteQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Delete")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -188,7 +188,7 @@ func (controller *hostController) Info(ctx *gin.Context) {
 	err := controller.interactor.Info(ctx, data, hostInfoQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Info")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -219,7 +219,7 @@ func (controller *hostController) Change(ctx *gin.Context) {
 	err := controller.interactor.Change(ctx, data, hostChangeQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController Change")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -250,6 +250,6 @@ func (controller *hostController) CheckAndCreate(ctx *gin.Context) {
 	err := controller.interactor.CheckAndCreate(ctx, data, hostCreateQuery.Extension, "eng")
 	if err != nil {
 		err = errors.Wrap(err, "HostController CheckAndCreate")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }

@@ -43,7 +43,7 @@ func (controller contactController) Check(ctx *gin.Context) {
 	err := controller.interactor.Check(ctx, data, "com", "eng")
 	if err != nil {
 		err = errors.Wrap(err, "ContactController Check")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -85,7 +85,7 @@ func (controller contactController) Create(ctx *gin.Context) {
 	err := controller.interactor.Create(ctx, data, "com", "eng")
 	if err != nil {
 		err = errors.Wrap(err, "ContactController Create")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -127,7 +127,7 @@ func (controller contactController) Update(ctx *gin.Context) {
 	err := controller.interactor.Update(ctx, data, "com", "eng")
 	if err != nil {
 		err = errors.Wrap(err, "ContactController Update")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -144,7 +144,7 @@ func (controller contactController) Delete(ctx *gin.Context) {
 	err := controller.interactor.Delete(ctx, data, "com", "eng")
 	if err != nil {
 		err = errors.Wrap(err, "ContactController Delete")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
 
@@ -161,6 +161,6 @@ func (controller contactController) Info(ctx *gin.Context) {
 	err := controller.interactor.Info(ctx, data, "com", "eng")
 	if err != nil {
 		err = errors.Wrap(err, "ContactController Info")
-		ctx.AbortWithError(200, err)
+		ctx.Error(err)
 	}
 }
