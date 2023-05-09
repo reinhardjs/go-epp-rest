@@ -12,7 +12,6 @@ import (
 	presenter_infrastructure "gitlab.com/merekmu/go-epp-rest/internal/presenter/infrastructure"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
-	"golang.org/x/net/idna"
 )
 
 type domainController struct {
@@ -138,31 +137,31 @@ func (controller *domainController) Delete(ctx infrastructure.Context) {
 }
 
 func (controller *domainController) Info(ctx infrastructure.Context) {
-	defer ctx.OnClose()
+	// defer ctx.OnClose()
 
-	var domainInfoQuery request.DomainInfoQuery
-	ctx.BindQuery(&domainInfoQuery)
+	// var domainInfoQuery request.DomainInfoQuery
+	// ctx.BindQuery(&domainInfoQuery)
 
-	domain := domainInfoQuery.Domain
-	domain, err := idna.ToASCII(domain)
-	if err != nil {
-		err = errors.Wrap(err, "DomainController Info: idna.ToASCII")
-		return
-	}
+	// domain := domainInfoQuery.Domain
+	// domain, err := idna.ToASCII(domain)
+	// if err != nil {
+	// 	err = errors.Wrap(err, "DomainController Info: idna.ToASCII")
+	// 	return
+	// }
 
-	data := types.DomainInfoType{
-		Info: types.DomainInfo{
-			Name: types.DomainInfoName{
-				Name: domain,
-			},
-		},
-	}
+	// data := types.DomainInfoType{
+	// 	Info: types.DomainInfo{
+	// 		Name: types.DomainInfoName{
+	// 			Name: domain,
+	// 		},
+	// 	},
+	// }
 
-	err = controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
-	if err != nil {
-		err = errors.Wrap(err, "DomainController Info")
-		ctx.AbortWithError(200, err)
-	}
+	// err = controller.interactor.Info(ctx.(presenter_infrastructure.Context), data, domainInfoQuery.Extension, "eng")
+	// if err != nil {
+	// 	err = errors.Wrap(err, "DomainController Info")
+	// 	ctx.AbortWithError(200, err)
+	// }
 }
 
 func (controller *domainController) SecDNSUpdate(ctx infrastructure.Context) {
