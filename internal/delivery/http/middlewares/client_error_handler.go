@@ -27,7 +27,6 @@ func ClientErrorHandler(c *gin.Context) {
 		switch cause.(type) {
 		case *error_types.RequestTimeOutError:
 			logger.Info(err)
-			c.Status(408)
 			c.String(408, "2400 Command failed; Request time out")
 		case *error_types.ControllerError:
 			// TODO with Controller Error
