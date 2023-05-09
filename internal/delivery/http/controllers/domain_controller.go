@@ -11,6 +11,7 @@ import (
 	"gitlab.com/merekmu/go-epp-rest/internal/domain/dto/request"
 	"gitlab.com/merekmu/go-epp-rest/internal/usecase"
 	"gitlab.com/merekmu/go-epp-rest/pkg/registry_epp/types"
+	"golang.org/x/net/idna"
 )
 
 type domainController struct {
@@ -37,8 +38,6 @@ func NewDomainController(interactor usecase.DomainInteractor) DomainController {
 }
 
 func (controller *domainController) Check(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	var domainCheckQuery request.DomainCheckQuery
 	ctx.BindQuery(&domainCheckQuery)
 
@@ -58,8 +57,6 @@ func (controller *domainController) Check(ctx *gin.Context) {
 }
 
 func (controller *domainController) Create(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	var domainCreateQuery request.DomainCreateQuery
 	ctx.BindQuery(&domainCreateQuery)
 
@@ -117,8 +114,6 @@ func (controller *domainController) Create(ctx *gin.Context) {
 }
 
 func (controller *domainController) Delete(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	var domainDeleteQuery request.DomainDeleteQuery
 	ctx.BindQuery(&domainDeleteQuery)
 
@@ -136,36 +131,32 @@ func (controller *domainController) Delete(ctx *gin.Context) {
 }
 
 func (controller *domainController) Info(ctx *gin.Context) {
-	// defer ctx.OnClose()
+	var domainInfoQuery request.DomainInfoQuery
+	ctx.BindQuery(&domainInfoQuery)
 
-	// var domainInfoQuery request.DomainInfoQuery
-	// ctx.BindQuery(&domainInfoQuery)
+	domain := domainInfoQuery.Domain
+	domain, err := idna.ToASCII(domain)
+	if err != nil {
+		err = errors.Wrap(err, "DomainController Info: idna.ToASCII")
+		return
+	}
 
-	// domain := domainInfoQuery.Domain
-	// domain, err := idna.ToASCII(domain)
-	// if err != nil {
-	// 	err = errors.Wrap(err, "DomainController Info: idna.ToASCII")
-	// 	return
-	// }
+	data := types.DomainInfoType{
+		Info: types.DomainInfo{
+			Name: types.DomainInfoName{
+				Name: domain,
+			},
+		},
+	}
 
-	// data := types.DomainInfoType{
-	// 	Info: types.DomainInfo{
-	// 		Name: types.DomainInfoName{
-	// 			Name: domain,
-	// 		},
-	// 	},
-	// }
-
-	// err = controller.interactor.Info(ctx, data, domainInfoQuery.Extension, "eng")
-	// if err != nil {
-	// 	err = errors.Wrap(err, "DomainController Info")
-	// 	ctx.AbortWithError(200, err)
-	// }
+	err = controller.interactor.Info(ctx, data, domainInfoQuery.Extension, "eng")
+	if err != nil {
+		err = errors.Wrap(err, "DomainController Info")
+		ctx.AbortWithError(200, err)
+	}
 }
 
 func (controller *domainController) SecDNSUpdate(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	AddDSDataList := []types.DSData{}
 	RemoveDSDataList := []types.DSData{}
 
@@ -299,8 +290,6 @@ func (controller *domainController) SecDNSUpdate(ctx *gin.Context) {
 }
 
 func (controller *domainController) ContactUpdate(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	var domainContactUpdateQuery request.DomainContactUpdateQuery
 	ctx.BindQuery(&domainContactUpdateQuery)
 
@@ -381,8 +370,6 @@ func (controller *domainController) ContactUpdate(ctx *gin.Context) {
 }
 
 func (controller *domainController) StatusUpdate(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	var domainStatusUpdateQuery request.DomainStatusUpdateQuery
 	ctx.BindQuery(&domainStatusUpdateQuery)
 
@@ -452,8 +439,6 @@ func (controller *domainController) StatusUpdate(ctx *gin.Context) {
 }
 
 func (controller *domainController) AuthInfoUpdate(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	var domainAuthInfoUpdateQuery request.DomainAuthInfoUpdateQuery
 	ctx.BindQuery(&domainAuthInfoUpdateQuery)
 
@@ -480,8 +465,6 @@ func (controller *domainController) AuthInfoUpdate(ctx *gin.Context) {
 }
 
 func (controller *domainController) NameserverUpdate(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	var domainNameserverUpdateQuery request.DomainNameserverUpdateQuery
 	ctx.BindQuery(&domainNameserverUpdateQuery)
 
@@ -541,8 +524,6 @@ func (controller *domainController) NameserverUpdate(ctx *gin.Context) {
 }
 
 func (controller *domainController) Renew(ctx *gin.Context) {
-	// defer ctx.OnClose()
-
 	var domainRenewQuery request.DomainRenewQuery
 	ctx.BindQuery(&domainRenewQuery)
 
