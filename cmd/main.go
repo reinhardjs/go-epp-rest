@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"runtime"
-	"runtime/debug"
 	"time"
 
 	"github.com/pkg/errors"
@@ -15,7 +14,6 @@ func periodicFree(d time.Duration) {
 	tick := time.Tick(d)
 	for range tick {
 		runtime.GC()
-		debug.FreeOSMemory()
 	}
 }
 
