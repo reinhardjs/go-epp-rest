@@ -112,6 +112,12 @@ func (p *SessionPool) RenewTcpConn(c *Session) (net.Conn, error) {
 		errChan: make(chan error, 1),
 	}
 
+	defer func() {
+		// close channels
+		close(req.tcpConn)
+		close(req.errChan)
+	}()
+
 	p.renewChan <- req
 
 	select {
@@ -171,6 +177,13 @@ func (p *SessionPool) Get() (*Session, error) {
 			errChan:    make(chan error),
 			isTimedout: make(chan bool),
 		}
+
+		defer func() {
+			// close channels
+			close(req.connChan)
+			close(req.errChan)
+			close(req.isTimedout)
+		}()
 
 		// Queue the request
 		p.requestChan <- req
@@ -346,11 +359,6 @@ func (p *SessionPool) handleConnectionRequest() {
 				}
 			}
 		}
-
-		// close channels
-		close(req.isTimedout)
-		close(req.connChan)
-		close(req.errChan)
 	}
 }
 
@@ -370,9 +378,6 @@ func (p *SessionPool) handleConnectionRenewal() {
 				req.session.SetConn(conn)
 			}
 
-			// close channels
-			close(req.tcpConn)
-			close(req.errChan)
 		}(req)
 	}
 }
