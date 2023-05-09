@@ -43,6 +43,10 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	var session *utils.Session
 
 	session, err = c.sessionPool.Get()
+	if err != nil {
+		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
+	}
+
 	defer c.sessionPool.Put(session)
 
 	requestId := c.generator.GenerateRequestId()
@@ -51,10 +55,6 @@ func (c *eppClient) Send(data []byte) (response []byte, err error) {
 	buffer.WriteString(fmt.Sprintln("\n"+requestId, " | ", sessionId))
 	buffer.WriteString(fmt.Sprintf("%v%v", " --------------- XML Request: --------------- \n", string(data)))
 	c.logger.Info(buffer.String())
-
-	if err != nil {
-		return nil, errors.Wrap(err, "EppClient Send: c.connPool.Get")
-	}
 
 	var startTime time.Time
 	var tcpConn net.Conn = session.GetTcpConn()

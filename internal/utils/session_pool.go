@@ -23,8 +23,9 @@ const maxQueueLength = 10_000
 // connRequest wraps a channel to receive a connection
 // and a channel to receive an error
 type connRequest struct {
-	connChan chan *Session
-	errChan  chan error
+	connChan   chan *Session
+	errChan    chan error
+	isTimedout chan bool
 }
 
 type connRenewal struct {
@@ -171,8 +172,9 @@ func (p *SessionPool) Get() (*Session, error) {
 	if p.maxOpenCount > 0 && p.numOpen >= p.maxOpenCount {
 		// Create the request
 		req := &connRequest{
-			connChan: make(chan *Session, 1),
-			errChan:  make(chan error, 1),
+			connChan:   make(chan *Session),
+			errChan:    make(chan error),
+			isTimedout: make(chan bool),
 		}
 
 		// Queue the request
@@ -204,7 +206,8 @@ func (p *SessionPool) Get() (*Session, error) {
 			select {
 			case <-timeoutChan:
 				hasTimeout = true
-				err := error_types.RequestTimeOutError{Detail: "request has timed out"}
+				err := error_types.RequestTimeOutError{Detail: "connection request has timed out"}
+				req.isTimedout <- true
 				return nil, &err
 			case tcpConn := <-req.connChan:
 				connSuccess = true
@@ -311,6 +314,8 @@ func (p *SessionPool) handleConnectionRequest() {
 				hasTimeout = true
 				err := error_types.RequestTimeOutError{Detail: "connection request has timed out"}
 				req.errChan <- &err
+			case <-req.isTimedout:
+				hasTimeout = true
 			default:
 				p.mu.Lock()
 
@@ -348,6 +353,7 @@ func (p *SessionPool) handleConnectionRequest() {
 		}
 
 		// close channels
+		close(req.isTimedout)
 		close(req.connChan)
 		close(req.errChan)
 	}
