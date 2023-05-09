@@ -201,7 +201,7 @@ func (p *SessionPool) Get() (*Session, error) {
 			select {
 			case <-timeoutChan:
 				hasTimeout = true
-				err := error_types.RequestTimeOutError{Detail: "connection request has timed out"}
+				err := error_types.RequestTimeOutError{Detail: "request has timed out"}
 				req.isTimedout <- true
 				return nil, &err
 			case tcpConn := <-req.connChan:
