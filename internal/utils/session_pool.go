@@ -180,14 +180,39 @@ func (p *SessionPool) Get() (*Session, error) {
 
 		p.mu.Unlock()
 
-		// Waits for either
-		// 1. Request fulfilled, or
-		// 2. An error is returned
-		select {
-		case tcpConn := <-req.connChan:
-			return tcpConn, nil
-		case err := <-req.errChan:
-			return nil, err
+		secondsTime, err := strconv.Atoi(os.Getenv(constants.REQUEST_TIMEOUT))
+		if err != nil {
+			req.errChan <- errors.New("REQUEST_TIMEOUT env value is not a valid number")
+		}
+
+		var (
+			connSuccess = false
+			hasTimeout  = false
+			connFail    = false
+
+			timeoutChan = time.After(time.Duration(secondsTime) * time.Second)
+		)
+
+		for {
+			if connSuccess || hasTimeout || connFail {
+				break
+			}
+
+			// Waits for either
+			// 1. Request fulfilled, or
+			// 2. An error is returned
+			select {
+			case <-timeoutChan:
+				hasTimeout = true
+				err := error_types.RequestTimeOutError{Detail: "connection request has timed out"}
+				req.errChan <- &err
+			case tcpConn := <-req.connChan:
+				connSuccess = true
+				return tcpConn, nil
+			case err := <-req.errChan:
+				connFail = true
+				return nil, err
+			}
 		}
 	}
 
@@ -263,9 +288,9 @@ func (p *SessionPool) openNewTcpConnection() (net.Conn, error) {
 // and attempts to fulfil any incoming requests
 func (p *SessionPool) handleConnectionRequest() {
 	for req := range p.requestChan {
-		secondsTime, err := strconv.Atoi(os.Getenv(constants.REQUEST_TIMEOUT))
+		secondsTime, err := strconv.Atoi(os.Getenv(constants.CONNECTION_REQUEST_TIMEOUT))
 		if err != nil {
-			req.errChan <- errors.New("REQUEST_TIMEOUT env value is not a valid number")
+			req.errChan <- errors.New("CONNECTION_REQUEST_TIMEOUT env value is not a valid number")
 		}
 
 		var (
@@ -284,7 +309,7 @@ func (p *SessionPool) handleConnectionRequest() {
 			// request timeout
 			case <-timeoutChan:
 				hasTimeout = true
-				err := error_types.RequestTimeOutError{Detail: "queue waiting time has timed out"}
+				err := error_types.RequestTimeOutError{Detail: "connection request has timed out"}
 				req.errChan <- &err
 			default:
 				p.mu.Lock()
