@@ -45,46 +45,36 @@ type TcpConfig struct {
 
 // SessionPool represents a pool of tcp connections
 type SessionPool struct {
-	host            string
-	port            int
-	eppClient       adapter.EppClient
-	tlsCert         *tls.Certificate
-	rootCaCert      *x509.CertPool
-	mu              sync.Mutex          // mutex to prevent race conditions
-	idleConns       map[string]*Session // holds the idle connections
-	numOpen         int                 // counter that tracks open connections
-	maxOpenCount    int
-	maxIdleCount    int
-	renewChan       chan *connRenewal
-	requestChan     chan *connRequest // A queue of connection requests
-	requestChanPool *sync.Pool
-	generator       IDGenerator
+	host         string
+	port         int
+	eppClient    adapter.EppClient
+	tlsCert      *tls.Certificate
+	rootCaCert   *x509.CertPool
+	mu           sync.Mutex          // mutex to prevent race conditions
+	idleConns    map[string]*Session // holds the idle connections
+	numOpen      int                 // counter that tracks open connections
+	maxOpenCount int
+	maxIdleCount int
+	renewChan    chan *connRenewal
+	requestChan  chan *connRequest // A queue of connection requests
+	generator    IDGenerator
 }
 
 // CreateTcpConnPool() creates a connection pool
 // and starts the worker that handles connection request
 func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
-	reqChanPool := sync.Pool{
-		New: func() interface{} {
-			return &connRequest{
-				connChan: make(chan *Session, 1),
-				errChan:  make(chan error, 1),
-			}
-		},
-	}
 
 	pool := &SessionPool{
-		host:            cfg.Host,
-		port:            cfg.Port,
-		tlsCert:         cfg.TLSCert,
-		rootCaCert:      cfg.RootCACert,
-		idleConns:       make(map[string]*Session),
-		renewChan:       make(chan *connRenewal, maxQueueLength),
-		requestChan:     make(chan *connRequest, maxQueueLength),
-		requestChanPool: &reqChanPool,
-		maxOpenCount:    cfg.MaxOpenConn,
-		maxIdleCount:    cfg.MaxIdleConns,
-		generator:       NewGenerator(),
+		host:         cfg.Host,
+		port:         cfg.Port,
+		tlsCert:      cfg.TLSCert,
+		rootCaCert:   cfg.RootCACert,
+		idleConns:    make(map[string]*Session),
+		renewChan:    make(chan *connRenewal, maxQueueLength),
+		requestChan:  make(chan *connRequest, maxQueueLength),
+		maxOpenCount: cfg.MaxOpenConn,
+		maxIdleCount: cfg.MaxIdleConns,
+		generator:    NewGenerator(),
 	}
 
 	go pool.handleConnectionRequest()
@@ -180,15 +170,15 @@ func (p *SessionPool) Get() (*Session, error) {
 	// Case 2: Queue a connection request
 	if p.maxOpenCount > 0 && p.numOpen >= p.maxOpenCount {
 		// Create the request
-		req := p.requestChanPool.Get().(*connRequest)
+		req := &connRequest{
+			connChan: make(chan *Session, 1),
+			errChan:  make(chan error, 1),
+		}
 
 		// Queue the request
 		p.requestChan <- req
 
 		p.mu.Unlock()
-
-		// put back request chan to the pool, for being re-used
-		defer p.requestChanPool.Put(req)
 
 		// Waits for either
 		// 1. Request fulfilled, or
@@ -331,6 +321,10 @@ func (p *SessionPool) handleConnectionRequest() {
 				}
 			}
 		}
+
+		// close channels
+		close(req.connChan)
+		close(req.errChan)
 	}
 }
 
