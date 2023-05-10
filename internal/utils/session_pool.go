@@ -71,7 +71,7 @@ func CreateTcpConnPool(cfg *TcpConfig) (*SessionPool, error) {
 		tlsCert:      cfg.TLSCert,
 		rootCaCert:   cfg.RootCACert,
 		idleConns:    make(map[string]*Session),
-		renewChan:    make(chan *connRenewal, maxQueueLength),
+		renewChan:    make(chan *connRenewal, cfg.MaxIdleConns),
 		requestChan:  make(chan *connRequest, maxQueueLength),
 		maxOpenCount: cfg.MaxOpenConn,
 		maxIdleCount: cfg.MaxIdleConns,
@@ -173,9 +173,9 @@ func (p *SessionPool) Get() (*Session, error) {
 	if p.maxOpenCount > 0 && p.numOpen >= p.maxOpenCount {
 		// Create the request
 		req := &connRequest{
-			connChan:   make(chan *Session),
-			errChan:    make(chan error),
-			isTimedout: make(chan bool),
+			connChan:   make(chan *Session, 1),
+			errChan:    make(chan error, 1),
+			isTimedout: make(chan bool, 1),
 		}
 
 		defer func() {
