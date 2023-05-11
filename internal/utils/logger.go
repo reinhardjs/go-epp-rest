@@ -44,15 +44,15 @@ func (l *logger) Init() {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	fileEncoder := zapcore.NewConsoleEncoder(config)
-	logFile, _ := os.OpenFile("logs/api.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	writer := zapcore.AddSync(logFile)
+	// fileEncoder := zapcore.NewConsoleEncoder(config)
+	// logFile, _ := os.OpenFile("logs/api.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	// writer := zapcore.AddSync(logFile)
 
 	consoleEncoder := zapcore.NewConsoleEncoder(config)
 	defaultLogLevel := zapcore.DebugLevel
 
 	core := zapcore.NewTee(
-		zapcore.NewCore(fileEncoder, writer, defaultLogLevel),
+		// zapcore.NewCore(fileEncoder, writer, defaultLogLevel),
 		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
 	)
 
