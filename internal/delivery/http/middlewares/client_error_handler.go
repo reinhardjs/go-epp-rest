@@ -53,10 +53,10 @@ func ClientErrorHandler(c *gin.Context) {
 				buffer.WriteString(fmt.Sprintf(" | %s %s", eppCommandError.Result.ExternalValue.Value.ReasonCode, eppCommandError.Result.ExternalValue.Reason))
 			}
 
-			if len(eppCommandError.Result.Value.Texts) > 0 {
-				value := eppCommandError.Result.Value.Texts[0]
-				buffer.WriteString(fmt.Sprintf(" | %s", value))
-			}
+			// if len(eppCommandError.Result.Value.Texts) > 0 {
+			// 	value := eppCommandError.Result.Value.Texts[0]
+			// 	buffer.WriteString(fmt.Sprintf(" | %s", value))
+			// }
 
 			c.String(200, buffer.String())
 		default:
