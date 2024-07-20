@@ -31,14 +31,12 @@ Domain EPP Rest is a RESTful API written in Go for managing domain registrations
 
 ## Usage
 ### API Endpoints
-- **Authenticate**: POST `/login`
-- **Check Domain Availability**: GET `/domains/{domain}/availability`
-- **Register Domain**: POST `/domains/register`
-- **Transfer Domain**: POST `/domains/transfer`
-- **Renew Domain**: POST `/domains/{domain}/renew`
-- **Manage Contacts**: GET `/contacts/{id}`
+- **Check Domain Availability**: GET `/domain/check`
+- **Register Domain**: POST `/domain/create`
+- **Renew Domain**: POST `/domain/renew`
+- **Get Contacts Info**: GET `/contact/info`
 
-For detailed API documentation and examples, refer to API Documentation.
+For detailed API endpoints list, go to `internal/delivery/http/router/router.go`.
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
