@@ -47,7 +47,7 @@ Ensure your code follows the Go coding style guidelines.
 Submit a pull request describing your changes.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/reinhardjs/go-epp-rest/blob/main/LICENSE) file for details.
 
 ## Contact
 For questions or support, please contact me at reinhardjsilalahi@gmail.com
