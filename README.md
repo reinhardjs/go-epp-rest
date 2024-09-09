@@ -6,6 +6,11 @@ The Extensible Provisioning Protocol (EPP) is a flexible protocol designed for a
 
 The `go-epp-rest` is a RESTful API written in Go for managing domain registrations and interactions using the EPP (Extensible Provisioning Protocol) standard. This project focuses on leveraging Go's performance and concurrency features to provide a robust solution for domain registrars and resellers.
 
+## Service Architecture
+
+![image](https://github.com/user-attachments/assets/1461dad9-3360-4c91-89d3-c4ffa180f09e)
+
+
 ## Features
 
 - **EPP Protocol Support**: Implements the EPP protocol for domain registration, transfer, renewal, and management.
